@@ -1,0 +1,51 @@
+{
+    "name": "Address",
+    "fields": [
+        {
+            "name": "id",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 36,
+            "unique": true,
+            "sqlType": null
+        }, {
+            "name": "recipient",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 120,
+            "unique": false,
+            "sqlType": null
+        }, {
+            "name": "addressLine",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 120,
+            "unique": false,
+            "sqlType": null
+        }, {
+            "name": "addressExtra",
+            "type": "STRING",
+            "required": false,
+            "maxLength": 120,
+            "unique": false,
+            "sqlType": null
+        }, {
+            "name": "postal",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 120,
+            "unique": false,
+            "sqlType": null
+        }, {
+            "name": "country",
+            "type": "STRING",
+            "required": true,
+            "maxLength": 120,
+            "unique": false,
+            "sqlType": null
+        }
+    ],
+    "foreignKeys": [],
+    "primaryKey": {"fields": ["id"]},
+    "uniqueConstraints": []
+}
