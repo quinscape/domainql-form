@@ -3,6 +3,11 @@ import toPath from "lodash.topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
 
+const PLAN_SCALAR_LIST = "$scalar-list$";
+const PLAN_COMPLEX_LIST = "$complex-list$";
+const PLAN_INPUT_OBJECT = "$input-object$";
+
+
 function findNamed(array, name)
 {
     for (let i = 0; i < array.length; i++)
@@ -118,6 +123,16 @@ function handlerFn(typeName, handlerName)
     return fn;
 }
 
+function checkNonNull(value)
+{
+    return !value ? "$FIELD required" : null
+}
+
+function checkNonNullBool(value)
+{
+    return value !== true && value !== false ? "$FIELD required" : null
+}
+
 function getValidationPlan(inputSchema, typeName)
 {
     const existing = inputSchema.validationPlan[typeName];
@@ -143,9 +158,23 @@ function getValidationPlan(inputSchema, typeName)
         const field = inputFields[i];
         const { name, type} = field;
 
+        const typeIsNonNull = isNonNull(type);
         const actualType = unwrapNonNull(type);
+        const isScalar = isScalarType(actualType);
 
-        if (isScalarType(actualType))
+        if (typeIsNonNull)
+        {
+            if (isScalar && actualType.name === "Boolean")
+            {
+                plan.push(name, checkNonNullBool);
+            }
+            else
+            {
+                plan.push(name, checkNonNull);
+            }
+        }
+
+        if (isScalar)
         {
             const fn = handlerFn(actualType.name, "validate");
 
@@ -158,11 +187,15 @@ function getValidationPlan(inputSchema, typeName)
         }
         else if (isInputType(actualType))
         {
-            plan.push(name, getValidationPlan(actualType.name))
+            const inputTypePlan = getValidationPlan(inputSchema, actualType.name);
+            if (inputTypePlan.length)
+            {
+                plan.push(name, [ PLAN_INPUT_OBJECT, ... inputTypePlan])
+            }
         }
         else if (isListType(actualType))
         {
-            const elementType = actualType.ofType;
+            const elementType = inputSchema.getType(actualType.ofType.name);
 
             if (isScalarType(elementType))
             {
@@ -170,12 +203,17 @@ function getValidationPlan(inputSchema, typeName)
 
                 if (fn)
                 {
-                    plan.push(name, [ null, fn])
+                    plan.push(name, [ PLAN_SCALAR_LIST, fn])
                 }
             }
             else
             {
-                plan.push(name, getValidationPlan(elementType.name))
+                const elementPlan = getValidationPlan(inputSchema, elementType.name);
+                if (elementPlan.length)
+                {
+                    plan.push(name, [ PLAN_COMPLEX_LIST, ... elementPlan])
+                    plan.push(name, elementPlan)
+                }
             }
         }
     }
@@ -187,32 +225,58 @@ function getValidationPlan(inputSchema, typeName)
     return plan;
 }
 
-
-function convertValue(field, fieldValue, conversionFn)
+export function isEnumType(fieldType)
 {
-    const fieldType = unwrapNonNull(field.type);
+    return fieldType && fieldType.kind === "ENUM";
+}
+
+function convertValue(inputSchema, fieldType, value, toScalar)
+{
+    fieldType = unwrapNonNull(fieldType);
 
     if (isScalarType(fieldType))
     {
-        const result = conversionFn(fieldType.name, fieldValue);
+        let result;
+        if (toScalar)
+        {
+            result = InputSchema.valueToScalar(fieldType.name, value);
+        }
+        else
+        {
+            result = InputSchema.scalarToValue(fieldType.name, value) || "";
+        }
 
-        //console.log(fieldValue, "( type", fieldType, ") => ", result, typeof result);
+        //console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar" , "=> ", result, typeof result);
 
         return result;
     }
     else if (isInputType(fieldType))
     {
-        return convertInput(fieldType, fieldValue, conversionFn);
+        if (!value)
+        {
+            return toScalar ? null : {};
+        }
+
+        return convertInput(inputSchema, inputSchema.getType(fieldType.name), value, toScalar);
     }
     else if (isListType(fieldType))
     {
-        const array = new Array(fieldValue.length);
-
-        for (let j = 0; j < fieldValue.length; j++)
+        if (!value)
         {
-            array[j] = convertValue(fieldType.ofType, fieldValue[j], conversionFn);
+            return toScalar ? null : [];
+        }
+
+        const array = new Array(value.length);
+
+        for (let j = 0; j < value.length; j++)
+        {
+            array[j] = convertValue(inputSchema, inputSchema.getType(fieldType.ofType.name), value[j], toScalar);
         }
         return array;
+    }
+    else if (isEnumType(fieldType))
+    {
+        return value;
     }
     else
     {
@@ -221,7 +285,7 @@ function convertValue(field, fieldValue, conversionFn)
 
 }
 
-function convertInput(baseTypeDef, value, conversionFn)
+function convertInput(inputSchema, baseTypeDef, value, toScalar)
 {
     const { inputFields } = baseTypeDef;
 
@@ -232,14 +296,14 @@ function convertInput(baseTypeDef, value, conversionFn)
         const field = inputFields[i];
         const name = field.name;
 
-        out[name] = convertValue(field, value[name], conversionFn);
+        out[name] = convertValue(inputSchema, field.type, value[name], toScalar);
     }
     return out;
 }
 
 function executeValidationPlan(values, validationPlan)
 {
-    if (validationPlan[0] === null)
+    if (validationPlan[0] === PLAN_SCALAR_LIST)
     {
         const result = validationPlan[1](values);
 
@@ -268,19 +332,24 @@ function executeValidationPlan(values, validationPlan)
         }
         else
         {
-            const complex = fieldValue;
-            if (complex.length && complex[0])
+            if (fnOrArray[0] === PLAN_COMPLEX_LIST)
             {
-                const array = new Array(complex.length);
-                for (let j = 0; j < complex.length; j++)
+                if (fieldValue)
                 {
-                    array[j] = executeValidationPlan(complex[j], fnOrArray);
+                    const array = new Array(fieldValue.length);
+                    for (let j = 0; j < fieldValue.length; j++)
+                    {
+                        array[j] = executeValidationPlan(fieldValue[j], fnOrArray.slice(1));
+                    }
+                    errors[name] = array;
                 }
-                errors[name] = array;
             }
-            else
+            else if (fnOrArray[0] === PLAN_INPUT_OBJECT)
             {
-                errors[name] = executeValidationPlan(complex, fnOrArray);
+                if (fieldValue)
+                {
+                    errors[name] = executeValidationPlan(fieldValue, fnOrArray.slice(1));
+                }
             }
         }
     }
@@ -348,7 +417,7 @@ class InputSchema
             throw new Error(typeName + " is not a known input type: " + JSON.stringify(baseTypeDef))
         }
 
-        return convertInput(baseTypeDef, value, InputSchema.scalarToValue);
+        return convertInput(this, baseTypeDef, value, false);
     }
 
     fromValues(typeName, value)
@@ -359,7 +428,7 @@ class InputSchema
             throw new Error(typeName + " is not a known input type: " + JSON.stringify(baseTypeDef))
         }
 
-        return convertInput(baseTypeDef, value, InputSchema.valueToScalar);
+        return convertInput(this, baseTypeDef, value, true);
     }
 
     validate(type, values)
