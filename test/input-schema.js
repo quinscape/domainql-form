@@ -35,7 +35,6 @@ describe("InputSchema", function () {
         const inputSchema = new InputSchema(rawSchema);
 
         {
-
             const errors = inputSchema.validate("DomainTypeInput", {});
 
             assert(Object.keys(errors).length === 5);
@@ -47,8 +46,8 @@ describe("InputSchema", function () {
             assert( errors.uniqueConstraints === "$FIELD required");
 
         }
-        {
 
+        {
             const errors = inputSchema.validate("DomainTypeInput", {
                 name: "Test",
                 fields: [],
@@ -59,17 +58,10 @@ describe("InputSchema", function () {
                 foreignKeys: []
             });
 
-            assert(Object.keys(errors).length === 4);
-
-            assert( errors.fields.length === 0);
-            assert( Object.keys(errors.primaryKey).length === 0);
-            assert( errors.foreignKeys.length === 0);
-            assert( errors.uniqueConstraints.length === 0);
-
+            assert(errors === null);
         }
 
         {
-
             const errors = inputSchema.validate("DomainTypeInput", {
                 name: "Test",
                 fields: [{
@@ -87,18 +79,13 @@ describe("InputSchema", function () {
 
             console.log(errors);
 
-            assert(Object.keys(errors).length === 4);
+            assert(Object.keys(errors).length === 1);
 
             assert( errors.fields.length === 1);
             assert( errors.fields[0].maxLength === "Invalid Integer");
-            assert( Object.keys(errors.primaryKey).length === 0);
-            assert( errors.foreignKeys.length === 0);
-            assert( errors.uniqueConstraints.length === 0);
-
         }
-
-
     });
+    
     it("converts formik values back to typed values", function () {
 
         const inputSchema = new InputSchema(rawSchema);

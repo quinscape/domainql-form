@@ -312,7 +312,9 @@ function executeValidationPlan(values, validationPlan)
         return result;
     }
 
-    const errors = {};
+    let errors = null;
+
+    let haveErrors = false;
 
     for (let i = 0; i < validationPlan.length; i+= 2)
     {
@@ -327,7 +329,9 @@ function executeValidationPlan(values, validationPlan)
             //console.log("field ", name, ": ", fieldValue, " => ", error);
             if (error)
             {
+                errors = errors || {};
                 errors[name] = error;
+                haveErrors = true;
             }
         }
         else
@@ -336,19 +340,37 @@ function executeValidationPlan(values, validationPlan)
             {
                 if (fieldValue)
                 {
-                    const array = new Array(fieldValue.length);
+                    let array = null;
+
                     for (let j = 0; j < fieldValue.length; j++)
                     {
-                        array[j] = executeValidationPlan(fieldValue[j], fnOrArray.slice(1));
+                        const err = executeValidationPlan(fieldValue[j], fnOrArray.slice(1));
+                        if (err)
+                        {
+                            array = array || new Array(fieldValue.length);
+                            array[j] = err;
+                        }
                     }
-                    errors[name] = array;
+
+                    if (array)
+                    {
+                        errors = errors || {};
+                        errors[name] = array;
+                        haveErrors = true;
+                    }
                 }
             }
             else if (fnOrArray[0] === PLAN_INPUT_OBJECT)
             {
                 if (fieldValue)
                 {
-                    errors[name] = executeValidationPlan(fieldValue, fnOrArray.slice(1));
+                    const err = executeValidationPlan(fieldValue, fnOrArray.slice(1));
+                    if (err)
+                    {
+                        errors = errors || {};
+                        errors[name] = err;
+                        haveErrors = true;
+                    }
                 }
             }
         }
