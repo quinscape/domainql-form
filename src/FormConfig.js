@@ -3,38 +3,59 @@ import React from "react"
 import DEFAULT_RENDERERS from "./default-renderers"
 import DEFAULT_STATIC_RENDERERS from "./default-static-renderers"
 
-import { isScalarType, unwrapNonNull } from "./InputSchema";
+import { isEnumType, isScalarType, unwrapNonNull } from "./InputSchema";
 
 let renderers;
-
+let labelLookup = null;
 let staticRenderers;
 
-function matchesRule(rule, matchType, matchFieldType, matchName)
+let noneText = "---";
+
+/**
+ * Checks if the given rule matches the given current fields. If a field exists in the rule it must be equal
+ * to the current field value
+ *
+ * @param {Object} rule             rule object
+ * @param {String} currentType          current "type" field, referencing a domain type  
+ * @param {String} currentKind          current "kind" field ("ENUM" OR "SCALAR)
+ * @param {String} currentFieldType     current scalar "fieldType" field (e.g. "String")
+ * @param {String} currentName          current "name" of the field 
+ * @returns {boolean}
+ */
+function matchesRule(rule, currentType, currentKind, currentFieldType, currentName)
 {
-    const { type, fieldType, name } = rule;
+    const { type, fieldType, kind, name } = rule;
 
     return (
-        (type !== undefined && type === matchType) ||
-        (fieldType !== undefined && fieldType === matchFieldType) ||
-        (name !== undefined && name === matchName)
+        (type !== undefined && type === currentType) ||
+        (kind !== undefined && kind === currentKind) ||
+        (fieldType !== undefined && fieldType === currentFieldType) ||
+        (name !== undefined && name === currentName)
     );
 }
 
 function validateRule(rule, index)
 {
-    const { type, fieldType, name } = rule;
+    const { type, kind, fieldType, name } = rule;
 
-    if (type === undefined && fieldType === undefined && name === undefined)
+    if (type === undefined && kind === undefined && fieldType === undefined && name === undefined)
     {
-        throw new Error("Rule must define at least one of type, fieldType or name: " + JSON.stringify(rule) + " (index = " + index + " )");
+        throw new Error("Rule must define at least one of type, kind fieldType or name: " + JSON.stringify(rule) + " (index = " + index + " )");
     }
 }
 
+/**
+ * Returns true if the given two rules are equal, produce the same matches.
+ *
+ * @param ruleA     Rule a
+ * @param ruleB     Rule b
+ * @returns {boolean}   true if equal
+ */
 function isEqual(ruleA, ruleB)
 {
-    const { type: typeA, fieldType: fieldTypeA, name: nameA } = ruleA;
-    const { type: typeB, fieldType: fieldTypeB, name: nameB } = ruleB;
-    return typeA === typeB && fieldTypeA === fieldTypeB && nameA === nameB;
+    const { type: typeA, kind: kindA, fieldType: fieldTypeA, name: nameA } = ruleA;
+    const { type: typeB, kind: kindB, fieldType: fieldTypeB, name: nameB } = ruleB;
+    return typeA === typeB && kindA === kindB && fieldTypeA === fieldTypeB && nameA === nameB;
 }
 
 function validateRules(rules)
@@ -73,14 +94,14 @@ function validateRules(rules)
     }
 }
 
-function findRenderer(type, fieldType, fieldName)
+function findRenderer(type, kind, fieldType, fieldName)
 {
     const last = renderers.length - 1;
     for (let i = 0; i < last; i++)
     {
         const { rule, render } = renderers[i];
 
-        if (matchesRule(rule, type, fieldType, fieldName))
+        if (matchesRule(rule, type, kind, fieldType, fieldName))
         {
             //console.log(renderers[i], "matches", {type, fieldType, fieldName});
             return render;
@@ -101,9 +122,9 @@ export function resolveStaticRenderer(name)
 
 /**
  *
- * @type {{get: FieldRenderers.get, reset: FieldRenderers.reset, register(*=): void, replaceRenderers: FieldRenderers.replaceRenderers}}
+ * @type {{get: FormConfig.get, reset: FormConfig.reset, register(*=): void, replaceRenderers: FormConfig.replaceRenderers}}
  */
-const FieldRenderers = {
+const FormConfig = {
 
     /**
      * Resolves the render method for the given context
@@ -115,14 +136,16 @@ const FieldRenderers = {
     {
         const { fieldType, path } = fieldContext;
 
-        const schemaType = unwrapNonNull(fieldType);
+        const actualType = unwrapNonNull(fieldType);
 
-        if (!isScalarType(schemaType))
+        //console.log("GET RENDERER", fieldType, path, "=>", actualType);
+
+        if ( !isScalarType(actualType) && !isEnumType(actualType))
         {
-            throw new Error("Field  type for "+ type + "." + path + " is no scalar: " + JSON.stringify(schemaType));
+            throw new Error("Field  type for "+ fieldContext.formContext.type + "." + path + " is no scalar or enum: " + JSON.stringify(actualType));
         }
 
-        return findRenderer( fieldContext.formContext.type, schemaType.name, path[path.length - 1]);
+        return findRenderer( fieldContext.formContext.type, actualType.kind, actualType.name, path[path.length - 1]);
     },
 
     renderStatic: function(typeName, value)
@@ -132,7 +155,7 @@ const FieldRenderers = {
 
     reset: function () {
 
-        FieldRenderers.replaceRenderers(
+        FormConfig.replaceRenderers(
             DEFAULT_RENDERERS
         );
 
@@ -170,11 +193,29 @@ const FieldRenderers = {
     {
         validateRules(newRenderers);
         renderers = newRenderers;
+    },
+
+    registerLabelLookup: function(func)
+    {
+        labelLookup = func;
+    },
+
+    lookupLabel: function(formContext, name) {
+        return labelLookup ? labelLookup(formContext, name) : name;
+    },
+
+    registerNoneText: function(txt)
+    {
+        noneText = txt;
+    },
+
+    none: function () {
+        return noneText;
     }
 };
 
 
-FieldRenderers.reset();
+FormConfig.reset();
 
 /**
  * Context object given to the renderer functions.
@@ -195,5 +236,5 @@ FieldRenderers.reset();
  * @property {string} fieldId           Field id. This is either the id prop given to the GQLField or type-based auto-generated id
 
  */
-export default FieldRenderers;
+export default FormConfig;
 

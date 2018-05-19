@@ -7,8 +7,10 @@ const PLAN_SCALAR_LIST = "$scalar-list$";
 const PLAN_COMPLEX_LIST = "$complex-list$";
 const PLAN_INPUT_OBJECT = "$input-object$";
 
+const NO_ERRORS = {};
 
-function findNamed(array, name)
+
+export function findNamed(array, name)
 {
     for (let i = 0; i < array.length; i++)
     {
@@ -20,7 +22,6 @@ function findNamed(array, name)
     }
 
     return null;
-
 }
 
 let converter;
@@ -72,30 +73,51 @@ export function unwrapNonNull(type)
 }
 
 
-function resolve(current, path, pos)
+function resolve(inputSchema, current, path, pos)
 {
     const len = path.length;
 
-    if (!isInputType(current))
+    current = unwrapNonNull(current);
+
+    const prop = path[pos];
+    const next = pos + 1;
+
+    if (isListType(current))
+    {
+        current = inputSchema.getType(current.ofType.name);
+
+        if (next === len)
+        {
+            return current;
+        }
+
+        return resolve(inputSchema, current, path, next);
+    }
+    else if (!isInputType(current))
     {
         throw new Error("Invalid type '" + current.name + "': " + JSON.stringify(current));
     }
 
-    const prop = path[pos];
-    current = findNamed(current.inputFields, prop).type;
+    const found = findNamed(current.inputFields, prop);
+
+    if (!found)
+    {
+        throw new Error("Could not find '" + prop + "' ( path = " + path + ", pos = " + pos + ") in " + JSON.stringify(current))
+    }
+
+    current = found.type;
 
     if (!current)
     {
         throw new Error("Could not find field '" + prop + "' in type '" + current.name + "'");
     }
 
-    const next = pos + 1;
     if (next === len)
     {
         return current;
     }
 
-    return resolve(current, path, next);
+    return resolve(inputSchema, current, path, next);
 }
 
 function handlerFn(typeName, handlerName)
@@ -243,7 +265,12 @@ function convertValue(inputSchema, fieldType, value, toScalar)
         }
         else
         {
-            result = InputSchema.scalarToValue(fieldType.name, value) || "";
+            result = InputSchema.scalarToValue(fieldType.name, value);
+
+            if (fieldType.name !== "Boolean")
+            {
+                result = result || "";
+            }
         }
 
         //console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar" , "=> ", result, typeof result);
@@ -410,7 +437,7 @@ class InputSchema
 
         const currentType = this.getType(typeName);
 
-        return resolve(currentType, path, 0);
+        return resolve(this, currentType, path, 0);
     }
 
     static validate(scalarType, value)
@@ -453,6 +480,11 @@ class InputSchema
         return convertInput(this, baseTypeDef, value, true);
     }
 
+    getTypes()
+    {
+        return this.schema.types;
+    }
+
     validate(type, values)
     {
         const validationPlan = getValidationPlan(this, type);
@@ -461,7 +493,7 @@ class InputSchema
 
         //console.log({errors});
 
-        return errors;
+        return errors || NO_ERRORS;
     }
 
 }

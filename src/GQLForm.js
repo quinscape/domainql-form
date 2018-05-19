@@ -9,6 +9,7 @@ import FieldMode from "./FieldMode"
 
 import PropTypes from "prop-types"
 import keys from "./util/keys";
+import FormConfig from "./FormConfig";
 
 export const GQLFormContext = React.createContext(null);
 
@@ -41,15 +42,38 @@ export function FormContext(inputSchema, type, mode, options)
     this.options = options;
 }
 
+
+FormContext.prototype.getPath = function (name) {
+    const { basePath } = this.options;
+    if (basePath)
+    {
+        return name !== "." ? basePath + "." + name : basePath;
+    }
+    else
+    {
+        return name;
+    }
+}
+
 export const FORM_OPTIONS = {
     horizontal: PropTypes.bool,
     labelColumnClass: PropTypes.string,
     wrapperColumnClass: PropTypes.string,
     currency: PropTypes.string,
     currencyAddonRight: PropTypes.bool,
-    lookupLabel: PropTypes.func
+    lookupLabel: PropTypes.func,
+
+    ////////// INTERNAL PROPS ////////// 
+
+    // current base path within the formik values. Will be set e.g. for lists
+    basePath: PropTypes.string
 };
 
+/**
+ *
+ * @param options
+ * @param props
+ */
 export function mergeOptions(options, props)
 {
     const optionNames = keys(FORM_OPTIONS);
@@ -116,8 +140,9 @@ class GQLForm extends React.Component {
         wrapperColumnClass: "col-md-7",
         mode: FieldMode.NORMAL,
         currency: "EUR",
+        basePath: "",
         currencyAddonRight: true,
-        lookupLabel: (formContext, name) => name
+        lookupLabel: FormConfig.lookupLabel
     };
 
     constructor(props, context)
@@ -152,17 +177,22 @@ class GQLForm extends React.Component {
 
     validate = (values) => {
 
-        const { inputSchema, type, validate: localValidate } = this.props;
+        const { inputSchema, type, validate } = this.props;
 
         const errors = inputSchema.validate(type, values);
 
-        if (localValidate)
+        if (validate)
         {
-            const localErrors = localValidate(values);
+            const localErrors = validate(values);
             assign(errors, localErrors);
         }
         return errors;
     };
+
+    componentDidMount()
+    {
+        this._component.getFormikBag().validateForm();
+    }
 
     render()
     {
@@ -173,6 +203,7 @@ class GQLForm extends React.Component {
         return (
             <GQLFormContext.Provider value={ this.state.formContext }>
                 <Formik
+                    ref={ c => this._component = c }
                     isInitialValid={ isInitialValid }
                     initialValues={ initial }
                     validate={ this.validate }
@@ -193,6 +224,7 @@ class GQLForm extends React.Component {
      */
     renderForm = formikProps => {
         const { children } = this.props;
+
         return (
             <form
                 className={
@@ -205,7 +237,7 @@ class GQLForm extends React.Component {
                 onReset={ formikProps.handleReset }
             >
                 {
-                    children(formikProps)
+                    typeof children === "function" ? children(formikProps) : children
                 }
             </form>
         );
@@ -223,6 +255,5 @@ export function setCurrencyDefaults(currency, currencyAddonRight)
     GQLForm.defaultProps.currency = currency;
     GQLForm.defaultProps.currencyAddonRight = currencyAddonRight;
 }
-
 
 export default GQLForm

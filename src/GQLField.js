@@ -1,7 +1,7 @@
 import React from "react"
 import toPath from "lodash.topath"
 
-import FieldRenderers from "./field-renderers"
+import FormConfig from "./FormConfig"
 
 import { GQLFormContext } from "./GQLForm"
 import PropTypes from "prop-types"
@@ -38,23 +38,46 @@ class GQLField extends React.Component {
 
     renderWithFormContext = formContext => {
 
-        const { id, name, children } = this.props;
-        
+        const { id, name, label, children } = this.props;
+
         const { formik } = this.context;
 
-        const fieldId =  id || "field-" + formContext.type + "-" + name;
 
-        const path = toPath(name);
+        let fieldId;
+        let qualifiedName;
+        let path;
+        let fieldType;
+        let effectiveLabel;
 
-        const fieldType = formContext.inputSchema.resolveType(formContext.type, path);
+        if (name && name.length)
+        {
+            qualifiedName = formContext.getPath(name);
+            path = toPath(qualifiedName);
+            const lastSegment = path[path.length - 1];
+
+            fieldId = id || "field-" + formContext.type + "-" + lastSegment;
+
+
+            fieldType = formContext.inputSchema.resolveType(formContext.type, path);
+            effectiveLabel = typeof label === "string" ? label : formContext.options.lookupLabel(formContext, lastSegment);
+        }
+        else
+        {
+            fieldId = id;
+            qualifiedName = null;
+            path = null;
+            fieldType = null;
+            effectiveLabel = label || "";
+        }
 
         const fieldContext = {
             formContext,
             formik,
             fieldId,
             fieldType,
+            qualifiedName,
             path,
-            label: this.props.label || formContext.options.lookupLabel(formContext, name),
+            label: effectiveLabel,
             ... this.props
         };
 
@@ -64,7 +87,7 @@ class GQLField extends React.Component {
         }
         else
         {
-            const renderFn = FieldRenderers.get(fieldContext);
+            const renderFn = FormConfig.get(fieldContext);
             return renderFn(fieldContext);
         }
     };

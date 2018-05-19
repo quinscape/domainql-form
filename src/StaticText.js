@@ -1,10 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
 import get from "lodash.get"
-import toPath from "lodash.topath"
-
-import InputSchema from "./InputSchema"
-import FieldRenderers from "./field-renderers"
+import FormConfig from "./FormConfig"
+import { GQLFormContext } from "./GQLForm"
 
 
 /**
@@ -13,9 +11,8 @@ import FieldRenderers from "./field-renderers"
 class StaticText extends React.Component {
 
     static propTypes = {
-        inputSchema: PropTypes.instanceOf(InputSchema).isRequired,
         type: PropTypes.string.isRequired,
-        value: PropTypes.any.isRequired,
+        value: PropTypes.any,
         name: PropTypes.oneOfType([
             PropTypes.string,
             PropTypes.array
@@ -35,13 +32,23 @@ class StaticText extends React.Component {
 
     render()
     {
+        return (
+            <GQLFormContext.Consumer>
+                {
+                    this.renderWithFormContext
+                }
+            </GQLFormContext.Consumer>
+        )
+    }
+
+    renderWithFormContext = formContext => {
         const { name, value, type, inputSchema } = this.props;
 
         let result, resultType;
         if (name)
         {
-            const path = toPath(name);
-            resultType = inputSchema.resolveType(type, path);
+            const path = formContext.getPath(name);
+            resultType = inputSchema.resolveType(formContext.type, path);
             result = get(value, path);
         }
         else
@@ -49,8 +56,9 @@ class StaticText extends React.Component {
             resultType = inputSchema.getType(type);
             result = value;
         }
+
         return (
-            FieldRenderers.renderStatic(resultType.name, result)
+            FormConfig.renderStatic(resultType.name, result)
         );
 
     };

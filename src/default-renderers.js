@@ -3,84 +3,36 @@ import cx from "classnames"
 
 import FieldMode from "./FieldMode"
 import InputSchema, { unwrapNonNull } from "./InputSchema"
-import { resolveStaticRenderer } from "./field-renderers"
+import { resolveStaticRenderer } from "./FormConfig"
 
-import toPath from "lodash.topath"
 import get from "lodash.get"
 
-/**
- * Renders a .form-group wrapper from our standard render context. Is used by the default field renderer
- * and can be used for custom fields
- *
- * @param props
- * @returns {*}
- * @constructor
- */
-export function FormGroup(props)
+import FormGroup from "./FormGroup"
+
+
+function renderStatic(fieldType, inputClass, fieldValue)
 {
-    const {
-        formContext,
-        fieldId,
-        label,
-        helpText,
-        labelClass,
-        errorMessage,
-        children
-    } = props;
+    const scalarType = unwrapNonNull(fieldType);
 
-    const { horizontal, labelColumnClass, wrapperColumnClass } = formContext.options;
-
-
-    const labelElement = (
-        <label
-            className={
-                cx(
-                    "col-form-label",
-                    horizontal ? labelColumnClass : null,
-                    labelClass
-                )
-            }
-            htmlFor={ fieldId }
-        >
-            { label }
-        </label>
-    );
-
-    let helpBlock = false;
-
-
-    const formText = errorMessage || helpText;
-
-    if (formText)
-    {
-        helpBlock = (
-            <p className={ cx("form-text", errorMessage ? "invalid-feedback" : "text-muted") }>
-                { formText }
-            </p>
-        )
-    }
+    const staticRenderer = resolveStaticRenderer(scalarType.name);
 
     return (
-        <div className={
-            cx(
-                "form-group",
-                horizontal ? "row" : null,
-                errorMessage && "has-error"
-            )
-        }>
-            { labelElement }
-            {
-                horizontal ? (
-                    <div className={ wrapperColumnClass || "col-md-9" }>
-                        { children }
-                        { helpBlock }
-                    </div>
-                ) : (
-                    children
+        <p className={
+                cx(
+                    inputClass,
+                    "form-control-plaintext"
                 )
             }
-            { !horizontal && helpBlock }
-        </div>
+        >
+            {
+                staticRenderer(
+                    InputSchema.valueToScalar(
+                        scalarType.name,
+                        fieldValue
+                    )
+                )
+            }
+        </p>
     );
 }
 
@@ -91,10 +43,12 @@ const DEFAULT_RENDERERS =
     [
         {
             rule: { fieldType: "Boolean" },
+
+            // CHECKBOX
+
             render: ctx => {
 
-                const { name, mode, formik, formContext, fieldId, inputClass, label, labelClass, title, path } = ctx;
-                const { horizontal, labelColumnClass, wrapperColumnClass } = formContext.options;
+                const { mode, formik, formContext, fieldId, inputClass, label, labelClass, title, path, qualifiedName } = ctx;
 
                 const fieldValue = get(formik.values, path);
 
@@ -123,10 +77,10 @@ const DEFAULT_RENDERERS =
                 {
 
                     checkBoxElement = (
-                        <div className={ cx("form-check") }>
+                        <div className="form-check">
                             <input
                                 id={ fieldId }
-                                name={ name }
+                                name={ qualifiedName }
                                 className={ cx(inputClass, "form-check-input") }
                                 type="checkbox"
                                 title={ title }
@@ -146,25 +100,92 @@ const DEFAULT_RENDERERS =
                     );
                 }
 
-                if (horizontal)
+                return (
+                    <FormGroup
+                        { ... ctx }
+                        label=""
+                    >
+                        {
+                            checkBoxElement
+                        }
+                    </FormGroup>
+                );
+            }
+        },
+
+        {
+            rule: { kind: "ENUM" },
+
+            // ENUM SELECT
+
+            render: ctx => {
+
+                const {
+                    formik,
+                    fieldId,
+                    name,
+                    mode,
+                    inputClass,
+                    placeholder,
+                    formContext,
+                    fieldType,
+                    title,
+                    path,
+                    qualifiedName
+                } = ctx;
+
+                const effectiveMode = mode || formContext.mode;
+
+                const errorMessage = get(formik.errors, path);
+
+                const fieldValue = get(formik.values, path);
+
+                let fieldElement;
+                if (effectiveMode === FieldMode.READ_ONLY)
                 {
-                    checkBoxElement = (
-                        <div className="row">
-                            <div className={ labelColumnClass }>{ "\u00a0" }</div>
-                            <div className={ wrapperColumnClass }>
-                                <div className="form-control-plaintext">
-                                    {
-                                        checkBoxElement
-                                    }
-                                </div>
-                            </div>
-                        </div>
-                    )
+                    fieldElement = renderStatic(fieldType, inputClass, fieldValue);
+                }
+                else
+                {
+                    const actualType = unwrapNonNull(fieldType);
+
+                    const enumType = formContext.inputSchema.getType(actualType.name);
+
+                    fieldElement = (
+                        <select
+                            id={fieldId}
+                            name={qualifiedName}
+                            className={cx(inputClass, "form-control", errorMessage && "is-invalid")}
+                            title={title}
+                            disabled={effectiveMode === FieldMode.DISABLED}
+                            value={fieldValue}
+                            onChange={formik.handleChange}
+                            onBlur={formik.handleBlur}
+                        >
+                            {
+                                enumType.enumValues.map(enumValue =>
+                                    <option key={ enumValue.name }>
+                                        {
+                                            enumValue.name
+                                        }
+                                    </option>
+                                )
+                            }
+
+                        </select>
+                    );
                 }
 
                 return (
-                    checkBoxElement
-                );
+                    <FormGroup
+                        { ... ctx }
+                        errorMessage={ errorMessage }
+                    >
+                        {
+                            fieldElement
+                        }
+                    </FormGroup>
+                )
             }
         },
 
@@ -189,7 +210,8 @@ const DEFAULT_RENDERERS =
                     formContext,
                     fieldType,
                     title,
-                    path
+                    path,
+                    qualifiedName
                 } = ctx;
 
                 const effectiveMode = mode || formContext.mode;
@@ -203,29 +225,14 @@ const DEFAULT_RENDERERS =
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
                 {
-                    const scalarType = unwrapNonNull(fieldType);
-
-                    const staticRenderer = resolveStaticRenderer(scalarType.name);
-
-                    fieldElement = (
-                        <p className={ cx(inputClass, "form-control-plaintext") }>
-                            {
-                                 staticRenderer(
-                                     InputSchema.valueToScalar(
-                                         scalarType.name,
-                                         fieldValue
-                                     )
-                                 )
-                            }
-                        </p>
-                    );
+                    fieldElement = renderStatic(fieldType, inputClass, fieldValue);
                 }
                 else
                 {
                     fieldElement = (
                         <input
                             id={ fieldId }
-                            name={ name }
+                            name={ qualifiedName }
                             className={ cx(inputClass, "form-control", errorMessage && "is-invalid") }
                             type="text"
                             placeholder={ placeholder }

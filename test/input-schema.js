@@ -108,4 +108,5 @@ describe("InputSchema", function () {
         assert( converted.fields[0].maxLength === 36);
 
     });
+    
 });
