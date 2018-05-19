@@ -29,11 +29,12 @@
     },
     "scripts": {
         "prepublish": "cross-env NODE_ENV=production babel src --out-dir lib",
+        "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir ../ea-modern/node_modules/domainql-form/lib",
         "test": "cross-env NODE_ENV=test mocha --require babel-register -R spec test/"
     },
     "peerDependencies": {
         "bignumber.js": "^7.0.1",
-        "formik": "^0.11.11",
+        "formik": "^1.0.0-beta.2",
         "prop-types": "^15.6.1",
         "react": "^16.3.2"
     }
