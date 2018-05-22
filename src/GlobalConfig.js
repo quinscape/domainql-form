@@ -161,14 +161,14 @@ const GlobalConfig = {
 
         staticRenderers = DEFAULT_STATIC_RENDERERS;
     },
-    register(newEntry)
+    register(newRule)
     {
         // if we have no rule
-        if (!newEntry.rule)
+        if (!newRule.rule)
         {
             // we replace the last entry because we can only have one entry without rule / being the default renderer
             const last = renderers.length - 1;
-            renderers[last] = newEntry;
+            renderers[last] = newRule;
         }
         else
         {
@@ -177,15 +177,15 @@ const GlobalConfig = {
             {
                 const e = renderers[i];
 
-                if (isEqual(e.rule, newEntry.rule))
+                if (isEqual(e.rule, newRule.rule))
                 {
-                    renderers[i] = newEntry;
+                    renderers[i] = newRule;
                     return;
                 }
             }
 
             // otherwise we move it to the first position in the list / to being the highest priority rule
-            renderers.unshift(newEntry);
+            renderers.unshift(newRule);
         }
     },
 

@@ -5,8 +5,8 @@ import toPath from "lodash.topath";
 import get from "lodash.get";
 
 import ListHelper from "./util/ListHelper"
-import FormConfig,{ FORM_CONFIG_PROPTYPES } from "./FormConfig";
-
+import FormConfig from "./FormConfig"
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 /**
  * Selects one object from a list of objects
@@ -69,7 +69,7 @@ class FormSelector extends React.Component {
          */
         renderRowToolbar: PropTypes.func,
 
-        ... FORM_CONFIG_PROPTYPES
+        ... FORM_CONFIG_PROP_TYPES
     };
 
     static defaultProps = {

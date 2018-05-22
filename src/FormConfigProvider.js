@@ -1,9 +1,15 @@
 import React from "react"
 import PropTypes from "proptypes"
 
-import FormConfig, { FORM_CONFIG_PROPTYPES } from "./FormConfig"
+import FormConfig from "./FormConfig"
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
+
 import InputSchema from "./InputSchema";
 
+
+/**
+ * Allows the definition defaults for form config options and schema at the top of the application component hierarchy.
+ */
 class FormConfigProvider extends React.Component {
 
     state = FormConfigProvider.getDerivedStateFromProps(this.props, null);
@@ -15,7 +21,7 @@ class FormConfigProvider extends React.Component {
             PropTypes.object
         ]),
         // default Form configaration properties for all child <Form/> components.
-        ... FORM_CONFIG_PROPTYPES
+        ... FORM_CONFIG_PROP_TYPES
     };
 
     static getDerivedStateFromProps(nextProps, prevState)

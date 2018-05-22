@@ -8,6 +8,8 @@ import PropTypes from "prop-types"
 import FormConfig from "./FormConfig";
 import InputSchema from "./InputSchema";
 
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
+
 function getSchema(formConfig, props)
 {
     const { schema: schemaFromProps } = props;
@@ -148,6 +150,9 @@ class InnerForm extends React.Component {
 
 }
 
+/**
+ * Form description
+ */
 class Form extends React.Component {
 
 
@@ -193,7 +198,7 @@ class Form extends React.Component {
          */
         validate: PropTypes.func,
 
-        //... FORM_CONFIG_PROPTYPES
+        ... FORM_CONFIG_PROP_TYPES
         
     };
 

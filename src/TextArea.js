@@ -16,16 +16,49 @@ import cx from "classnames";
 class TextArea extends React.Component {
 
     static propTypes = {
+        /**
+         * Name / path for this field (e.g. "name", but also "foos.0.name")
+         */
         name: PropTypes.string.isRequired,
+        /**
+         * Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
+         */
         mode: PropTypes.oneOf(FieldMode.values()),
+        /**
+         * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
+         */
         helpText: PropTypes.string,
+        /**
+         * Title attribute
+         */
         title: PropTypes.string,
+        /**
+         * Label for the field.
+         */
         label: PropTypes.string,
-        rows: PropTypes.number,
-        cols: PropTypes.number,
+        /**
+         * Placeholder text to render for the empty text area.
+         */
         placeholder: PropTypes.string,
+
+        /**
+         * Additional HTML classes for the textarea element.
+         */
         inputClass: PropTypes.string,
-        labelClass: PropTypes.string
+
+        /**
+         * Additional HTML classes for the label element.
+         */
+        labelClass: PropTypes.string,
+
+        /**
+         * Rows attribute for the textarea element (default is 3)
+         */
+        rows: PropTypes.number,
+        /**
+         * Cols attribute for the textarea element (default is 60)
+         */
+        cols: PropTypes.number,
     };
 
     static defaultProps = {

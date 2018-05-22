@@ -1,7 +1,8 @@
 import React from "react"
 import PropTypes from "proptypes"
 import ListHelper from "./util/ListHelper";
-import FormConfig,{ FORM_CONFIG_PROPTYPES } from "./FormConfig";
+import FormConfig from "./FormConfig"
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 class FormList extends React.Component {
 
@@ -50,7 +51,7 @@ class FormList extends React.Component {
          */
         renderRowToolbar: PropTypes.func,
 
-        ... FORM_CONFIG_PROPTYPES
+        ... FORM_CONFIG_PROP_TYPES
     };
 
     static defaultProps = {

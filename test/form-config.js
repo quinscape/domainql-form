@@ -3,8 +3,10 @@ import React from "react"
 import assert from "power-assert"
 import FormConfig, {
     DEFAULT_OPTIONS,
-    FORM_CONFIG_PROPTYPES
 } from "../src/FormConfig";
+
+
+import FORM_CONFIG_PROP_TYPES from "../src/FormConfigPropTypes"
 
 
 describe("FormConfig", function () {
@@ -13,9 +15,9 @@ describe("FormConfig", function () {
 
         const merged = FormConfig.mergeOptions( DEFAULT_OPTIONS, {});
 
-        for (let name in FORM_CONFIG_PROPTYPES)
+        for (let name in FORM_CONFIG_PROP_TYPES)
         {
-            if (FORM_CONFIG_PROPTYPES.hasOwnProperty(name))
+            if (FORM_CONFIG_PROP_TYPES.hasOwnProperty(name))
             {
                 assert(merged[name] === DEFAULT_OPTIONS[name]);
             }

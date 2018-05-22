@@ -15,43 +15,9 @@ export const DEFAULT_OPTIONS = {
     lookupLabel: GlobalConfig.lookupLabel
 };
 
-export const FORM_CONFIG_PROPTYPES = {
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
-    /**
-     * True to use "horizontal" bootstrap form groups
-     */
-    horizontal: PropTypes.bool,
-    /**
-     * Additional label column class to use if in horizontal mode.
-     */
-    labelColumnClass: PropTypes.string,
-    /**
-     * Additional wrapper column class to use if in horizontal mode.
-     */
-    wrapperColumnClass: PropTypes.string,
-
-    /**
-     * Currency ISO code for Currency fields
-     */
-    currency: PropTypes.string,
-
-    /**
-     * True if the currency addon is on the right side of the input component.
-     */
-    currencyAddonRight: PropTypes.bool,
-
-    /**
-     * Optional function to look up a form field label based on formConfig and field name / path.
-     */
-    lookupLabel: PropTypes.func,
-
-    /**
-     * Default mode for input components within the Form.
-     */
-    mode: PropTypes.oneOf(FieldMode.values()),
-};
-
-const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROPTYPES);
+const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
 
 const context = React.createContext(null);
 
