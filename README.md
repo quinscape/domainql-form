@@ -8,6 +8,12 @@ by domainql.
 It follows bootstrap 4 form conventions and provides a convenient high-level
 field abstraction over it.
 
+## Documentation
+
+* [Getting started](./docs/getting-started.md)
+* [Component Reference](./docs/component-reference.md)
+* [Miscellaneous](./docs/misc.md)
+
 
 ## GraphQL Compatibility
 
