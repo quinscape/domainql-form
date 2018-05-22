@@ -409,6 +409,11 @@ class InputSchema
 {
     constructor(schema)
     {
+        if (!schema.types || typeof schema.types.length !== "number")
+        {
+            throw new Error("Given Schema object has no 'types' array property");
+        }
+
         this.schema = schema;
         this.validationPlan = {};
     }
