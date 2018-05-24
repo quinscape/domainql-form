@@ -1,8 +1,8 @@
 import React from "react"
 import PropTypes from "prop-types"
 import get from "lodash.get"
+import GlobalConfig from "./GlobalConfig"
 import FormConfig from "./FormConfig"
-import { GQLFormContext } from "./GQLForm"
 
 
 /**
@@ -33,32 +33,32 @@ class StaticText extends React.Component {
     render()
     {
         return (
-            <GQLFormContext.Consumer>
+            <FormConfig.Consumer>
                 {
                     this.renderWithFormContext
                 }
-            </GQLFormContext.Consumer>
+            </FormConfig.Consumer>
         )
     }
 
-    renderWithFormContext = formContext => {
-        const { name, value, type, inputSchema } = this.props;
+    renderWithFormContext = formConfig => {
+        const { name, value, type, schema } = this.props;
 
         let result, resultType;
         if (name)
         {
-            const path = formContext.getPath(name);
-            resultType = inputSchema.resolveType(formContext.type, path);
+            const path = formConfig.getPath(name);
+            resultType = schema.resolveType(formConfig.type, path);
             result = get(value, path);
         }
         else
         {
-            resultType = inputSchema.getType(type);
+            resultType = schema.getType(type);
             result = value;
         }
 
         return (
-            FormConfig.renderStatic(resultType.name, result)
+            GlobalConfig.renderStatic(resultType.name, result)
         );
 
     };

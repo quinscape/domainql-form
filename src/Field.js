@@ -1,18 +1,14 @@
 import React from "react"
 import toPath from "lodash.topath"
 
+import GlobalConfig from "./GlobalConfig"
 import FormConfig from "./FormConfig"
 
-import { GQLFormContext } from "./GQLForm"
 import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
 
-class GQLField extends React.Component {
-
-    static contextTypes = {
-        formik: PropTypes.object
-    };
+class Field extends React.Component {
 
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -28,20 +24,19 @@ class GQLField extends React.Component {
     render()
     {
         return (
-            <GQLFormContext.Consumer>
+            <FormConfig.Consumer>
                 {
-                    this.renderWithFormContext
+                    this.renderWithFormConfig
                 }
-            </GQLFormContext.Consumer>
+            </FormConfig.Consumer>
         )
     }
 
-    renderWithFormContext = formContext => {
+    renderWithFormConfig = formConfig => {
 
         const { id, name, label, children } = this.props;
 
-        const { formik } = this.context;
-
+        const { type }  = formConfig;
 
         let fieldId;
         let qualifiedName;
@@ -51,15 +46,15 @@ class GQLField extends React.Component {
 
         if (name && name.length)
         {
-            qualifiedName = formContext.getPath(name);
+            qualifiedName = formConfig.getPath(name);
             path = toPath(qualifiedName);
             const lastSegment = path[path.length - 1];
 
-            fieldId = id || "field-" + formContext.type + "-" + lastSegment;
+            fieldId = id || "field-" + type + "-" + lastSegment;
 
 
-            fieldType = formContext.inputSchema.resolveType(formContext.type, path);
-            effectiveLabel = typeof label === "string" ? label : formContext.options.lookupLabel(formContext, lastSegment);
+            fieldType = formConfig.schema.resolveType(type, path);
+            effectiveLabel = typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
         }
         else
         {
@@ -71,8 +66,7 @@ class GQLField extends React.Component {
         }
 
         const fieldContext = {
-            formContext,
-            formik,
+            formConfig,
             fieldId,
             fieldType,
             qualifiedName,
@@ -87,11 +81,11 @@ class GQLField extends React.Component {
         }
         else
         {
-            const renderFn = FormConfig.get(fieldContext);
+            const renderFn = GlobalConfig.get(fieldContext);
             return renderFn(fieldContext);
         }
     };
 
 }
 
-export default GQLField
+export default Field

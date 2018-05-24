@@ -1,14 +1,12 @@
-import React from "react"
 import toPath from "lodash.topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
 
-const PLAN_SCALAR_LIST = "$scalar-list$";
-const PLAN_COMPLEX_LIST = "$complex-list$";
-const PLAN_INPUT_OBJECT = "$input-object$";
+const PLAN_SCALAR_LIST = { __scalar_list : true };
+const PLAN_COMPLEX_LIST = { __complex_list : true };
+const PLAN_INPUT_OBJECT = { __input_object : true };
 
 const NO_ERRORS = {};
-
 
 export function findNamed(array, name)
 {
@@ -31,6 +29,14 @@ export function resetConverter()
     converter = DEFAULT_CONVERTERS;
 }
 
+/**
+ * Register new scalar converter / validator
+ *
+ * @param {String} type                 type name
+ * @param {function} validate           validates the given string value and returns an error message if the value is invalid
+ * @param {function} scalarToValue      converts the scalar value to a user-editable string representation
+ * @param {function} valueToScalar      converts the string representation back to a scalar value
+ */
 export function registerCustomConverter(type, validate, scalarToValue, valueToScalar)
 {
     converter[type] = {
@@ -341,8 +347,6 @@ function executeValidationPlan(values, validationPlan)
 
     let errors = null;
 
-    let haveErrors = false;
-
     for (let i = 0; i < validationPlan.length; i+= 2)
     {
         const name = validationPlan[i];
@@ -358,7 +362,6 @@ function executeValidationPlan(values, validationPlan)
             {
                 errors = errors || {};
                 errors[name] = error;
-                haveErrors = true;
             }
         }
         else
@@ -383,7 +386,6 @@ function executeValidationPlan(values, validationPlan)
                     {
                         errors = errors || {};
                         errors[name] = array;
-                        haveErrors = true;
                     }
                 }
             }
@@ -396,7 +398,6 @@ function executeValidationPlan(values, validationPlan)
                     {
                         errors = errors || {};
                         errors[name] = err;
-                        haveErrors = true;
                     }
                 }
             }
@@ -409,7 +410,9 @@ class InputSchema
 {
     constructor(schema)
     {
-        if (!schema.types || typeof schema.types.length !== "number")
+        const { types } = schema;
+
+        if (!types || typeof types.length !== "number")
         {
             throw new Error("Given Schema object has no 'types' array property");
         }
@@ -496,13 +499,9 @@ class InputSchema
 
         const errors = executeValidationPlan(values, validationPlan);
 
-        //console.log({errors});
-
         return errors || NO_ERRORS;
     }
 
 }
-
-export const InputSchemaContext = React.createContext(null);
 
 export default InputSchema

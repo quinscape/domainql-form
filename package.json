@@ -1,6 +1,6 @@
 {
     "name": "domainql-form",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "Formik based form helpers for GraphQL",
     "main": "lib/index.js",
     "author": "Sven Helmberger",
@@ -8,7 +8,8 @@
     "dependencies": {
         "classnames": "^2.2.5",
         "lodash.get": "^4.4.2",
-        "lodash.topath": "^4.5.2"
+        "lodash.topath": "^4.5.2",
+        "proptypes": "^1.1.0"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -23,19 +24,25 @@
         "babel-register": "^6.26.0",
         "bignumber.js": "^7.0.1",
         "cross-env": "^5.1.4",
+        "enzyme": "^3.3.0",
+        "enzyme-adapter-react-16": "^1.1.1",
+        "formik": "^1.0.0-beta.2",
+        "jsdom": "^11.11.0",
         "mocha": "^5.1.1",
         "power-assert": "^1.5.0",
-        "react": "^16.3.2"
+        "react": "^16.4.0",
+        "react-dom": "^16.4.0",
+        "sinon": "^5.0.10"
     },
     "scripts": {
         "prepublish": "cross-env NODE_ENV=production babel src --out-dir lib",
-        "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir ../ea-modern/node_modules/domainql-form/lib",
-        "test": "cross-env NODE_ENV=test mocha --require babel-register -R spec test/"
+        "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir lib",
+        "test": "cross-env NODE_ENV=test mocha -r babel-register -r test/setup.js -R spec test/"
     },
     "peerDependencies": {
         "bignumber.js": "^7.0.1",
         "formik": "^1.0.0-beta.2",
         "prop-types": "^15.6.1",
-        "react": "^16.3.2"
+        "react": "^16.4.0"
     }
 }

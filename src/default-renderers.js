@@ -3,7 +3,7 @@ import cx from "classnames"
 
 import FieldMode from "./FieldMode"
 import InputSchema, { unwrapNonNull } from "./InputSchema"
-import { resolveStaticRenderer } from "./FormConfig"
+import { resolveStaticRenderer } from "./GlobalConfig"
 
 import get from "lodash.get"
 
@@ -48,11 +48,13 @@ const DEFAULT_RENDERERS =
 
             render: ctx => {
 
-                const { mode, formik, formContext, fieldId, inputClass, label, labelClass, title, path, qualifiedName } = ctx;
+                const { mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName } = ctx;
 
-                const fieldValue = get(formik.values, path);
+                const { formikProps } = formConfig;
 
-                const effectiveMode = mode || formContext.mode;
+                const fieldValue = get(formikProps.values, path);
+
+                const effectiveMode = mode || formConfig.options.mode;
 
                 //console.log("checkbox value = ", fieldValue);
 
@@ -85,8 +87,8 @@ const DEFAULT_RENDERERS =
                                 type="checkbox"
                                 title={ title }
                                 checked={ fieldValue }
-                                onChange={ formik.handleChange }
-                                onBlur={ formik.handleBlur }
+                                onChange={ formikProps.handleChange }
+                                onBlur={ formikProps.handleBlur }
                                 disabled={ effectiveMode === FieldMode.DISABLED }
                             />
                             <label
@@ -121,24 +123,26 @@ const DEFAULT_RENDERERS =
             render: ctx => {
 
                 const {
-                    formik,
                     fieldId,
                     name,
                     mode,
                     inputClass,
                     placeholder,
-                    formContext,
+                    formConfig,
                     fieldType,
                     title,
                     path,
                     qualifiedName
                 } = ctx;
 
-                const effectiveMode = mode || formContext.mode;
+                const { formikProps } = formConfig;
 
-                const errorMessage = get(formik.errors, path);
 
-                const fieldValue = get(formik.values, path);
+                const effectiveMode = mode || formConfig.options.mode;
+
+                const errorMessage = get(formikProps.errors, path);
+
+                const fieldValue = get(formikProps.values, path);
 
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
@@ -149,7 +153,7 @@ const DEFAULT_RENDERERS =
                 {
                     const actualType = unwrapNonNull(fieldType);
 
-                    const enumType = formContext.inputSchema.getType(actualType.name);
+                    const enumType = formConfig.schema.getType(actualType.name);
 
                     fieldElement = (
                         <select
@@ -159,8 +163,8 @@ const DEFAULT_RENDERERS =
                             title={title}
                             disabled={effectiveMode === FieldMode.DISABLED}
                             value={fieldValue}
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
+                            onChange={formikProps.handleChange}
+                            onBlur={formikProps.handleBlur}
                         >
                             {
                                 enumType.enumValues.map(enumValue =>
@@ -201,26 +205,28 @@ const DEFAULT_RENDERERS =
             render: ctx => {
 
                 const {
-                    formik,
                     fieldId,
                     name,
                     mode,
                     inputClass,
                     placeholder,
-                    formContext,
+                    formConfig,
                     fieldType,
                     title,
                     path,
                     qualifiedName
                 } = ctx;
 
-                const effectiveMode = mode || formContext.mode;
+                const { currency, currencyAddonRight, mode : modeFromOptions } = formConfig.options;
+                const effectiveMode = mode || modeFromOptions;
 
-                const { currency, currencyAddonRight } = formContext.options;
+                const { formikProps } = formConfig;
 
-                const errorMessage = get(formik.errors, path);
 
-                const fieldValue = get(formik.values, path);
+                const errorMessage = get(formikProps.errors, path);
+
+                const fieldValue = get(formikProps.values, path);
+                //console.log({formikProps, fieldValue});
 
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
@@ -239,8 +245,8 @@ const DEFAULT_RENDERERS =
                             title={ title }
                             disabled={ effectiveMode === FieldMode.DISABLED }
                             value={ fieldValue }
-                            onChange={ formik.handleChange }
-                            onBlur={ formik.handleBlur }
+                            onChange={ formikProps.handleChange }
+                            onBlur={ formikProps.handleBlur }
                         />
                     );
 

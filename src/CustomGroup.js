@@ -1,15 +1,15 @@
 import React from "react"
 import PropTypes from "prop-types"
 import FormGroup from "./FormGroup"
-import GQLField from "./GQLField"
+import Field from "./Field"
 
 let count = 0;
 
 /**
  * Custom form group to render arbitrary content encapsulated by a form group with label. If you need an actual
- * custom input, use GQLField in your own component. (see e.g. GQLTextArea as an in-library example of a custom field)
+ * custom input, use Field in your own component. (see e.g. TextArea as an example of a custom field)
  */
-class GQLCustomGroup extends React.Component {
+class CustomGroup extends React.Component {
 
     static propTypes = {
         // label text
@@ -33,7 +33,7 @@ class GQLCustomGroup extends React.Component {
     render()
     {
         return (
-            <GQLField
+            <Field
                 { ...this.props }
                 id={ this.state.fieldId }
                 name=""
@@ -41,7 +41,7 @@ class GQLCustomGroup extends React.Component {
                 {
                     this.renderWithFieldContext
                 }
-            </GQLField>
+            </Field>
         )
     }
 
@@ -68,4 +68,4 @@ class GQLCustomGroup extends React.Component {
     };
 }
 
-export default GQLCustomGroup
+export default CustomGroup

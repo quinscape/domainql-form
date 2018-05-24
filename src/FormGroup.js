@@ -3,11 +3,10 @@ import cx from "classnames";
 
 
 /**
- * Renders a .form-group wrapper from our standard render context. Is used by the default field renderer
- * and can be used for custom fields.
+ * Renders a .form-group wrapper from our standard render context. Is used by internally the default field renderers
+ * and can be used for implementing custom fields.
  *
- * This should be mostly used to write custom field implementation. If you just need a custom group with
- * arbitrary content, use GQLCustomGroup.
+ * If you just need a bootstrap form group with arbitrary content, use CustomGroup.
  *
  * @param props
  * @returns {*}
@@ -22,7 +21,7 @@ class FormGroup extends React.Component
     render()
     {
         const {
-            formContext,
+            formConfig,
             fieldId,
             label,
             helpText,
@@ -31,7 +30,7 @@ class FormGroup extends React.Component
             children
         } = this.props;
 
-        const { horizontal, labelColumnClass, wrapperColumnClass } = formContext.options;
+        const { horizontal, labelColumnClass, wrapperColumnClass } = formConfig.options;
 
         const labelElement = label ? (
             <label

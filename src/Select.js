@@ -3,15 +3,16 @@ import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
 import FormGroup from "./FormGroup"
-import FormConfig from "./FormConfig"
-import GQLField from "./GQLField"
+import GlobalConfig from "./GlobalConfig"
+import withFormConfig from "./withFormConfig"
+import Field from "./Field"
 import get from "lodash.get";
 import cx from "classnames";
 
 /**
  * Allows selection from a list of string values for a target field.
  */
-class GQLSelect extends React.Component {
+class Select extends React.Component {
 
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -41,14 +42,14 @@ class GQLSelect extends React.Component {
 
         if (!ev.isDefaultPrevented())
         {
-            return fieldContext.formik.handleChange(ev);
+            return fieldContext.formConfig.formikProps.handleChange(ev);
         }
     };
 
     render()
     {
         return (
-            <GQLField
+            <Field
                 { ...this.props }
                 values={ null }
             >
@@ -56,20 +57,22 @@ class GQLSelect extends React.Component {
                 {
                     this.renderWithFieldContext
                 }
-            </GQLField>
+            </Field>
         )
     }
 
     renderWithFieldContext = fieldContext => {
-        //console.log("render GQLSelect", fieldContext);
+        //console.log("render Select", fieldContext);
 
         const { values, inputClass, required } = this.props;
-        const { formik, path, qualifiedName } = fieldContext;
+        const { formConfig, path, qualifiedName } = fieldContext;
 
-        const errorMessage = get(formik.errors, path);
-        const fieldValue = get(formik.values, path);
+        const { formikProps } = formConfig;
 
-        const noneText = FormConfig.none();
+        const errorMessage = get(formikProps.errors, path);
+        const fieldValue = get(formikProps.values, path);
+
+        const noneText = GlobalConfig.none();
 
 
         return (
@@ -88,7 +91,7 @@ class GQLSelect extends React.Component {
                     name={ qualifiedName }
                     value={ fieldValue }
                     onChange={ ev => this.handleChange(fieldContext, ev) }
-                    onBlur={ formik.handleBlur }
+                    onBlur={ formikProps.handleBlur }
                 >
                     {
                         !required && <option key="" value="">{ noneText }</option>
@@ -110,4 +113,4 @@ class GQLSelect extends React.Component {
     };
 }
 
-export default GQLSelect
+export default withFormConfig(Select)

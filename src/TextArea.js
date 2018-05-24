@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
 import FormGroup from "./FormGroup"
-import GQLField from "./GQLField"
+import Field from "./Field"
 import get from "lodash.get";
 import cx from "classnames";
 
@@ -13,7 +13,7 @@ import cx from "classnames";
  *
  * This is a good example how to implement custom fields.
  */
-class GQLTextArea extends React.Component {
+class TextArea extends React.Component {
 
     static propTypes = {
         name: PropTypes.string.isRequired,
@@ -36,7 +36,7 @@ class GQLTextArea extends React.Component {
     render()
     {
         return (
-            <GQLField
+            <Field
                 { ...this.props }
                 rows={ null }
                 cols={ null }
@@ -44,17 +44,18 @@ class GQLTextArea extends React.Component {
                 {
                     this.renderWithFieldContext
                 }
-            </GQLField>
+            </Field>
         )
     }
 
     renderWithFieldContext = fieldContext => {
 
-        const { name, rows, cols, inputClass, placeholder } = this.props;
-        const { formik, path } = fieldContext;
+        const { rows, cols, inputClass, placeholder } = this.props;
+        const { qualifiedName, path } = fieldContext;
+        const { formikProps } = fieldContext.formConfig;
 
-        const errorMessage = get(formik.errors, path);
-        const fieldValue = get(formik.values, path);
+        const errorMessage = get(formikProps.errors, path);
+        const fieldValue = get(formikProps.values, path);
 
         return (
             <FormGroup
@@ -71,15 +72,15 @@ class GQLTextArea extends React.Component {
                     }
                     rows={ rows }
                     cols={ cols }
-                    name={ name }
+                    name={ qualifiedName }
                     value={ fieldValue }
                     placeholder={ placeholder }
-                    onChange={ formik.handleChange }
-                    onBlur={ formik.handleBlur }
+                    onChange={ formikProps.handleChange }
+                    onBlur={ formikProps.handleBlur }
                 />
             </FormGroup>
         )
     };
 }
 
-export default GQLTextArea
+export default TextArea

@@ -58,7 +58,7 @@ describe("InputSchema", function () {
                 foreignKeys: []
             });
 
-            assert(errors === null);
+            assert.deepEqual(errors , {});
         }
 
         {
@@ -77,7 +77,7 @@ describe("InputSchema", function () {
                 foreignKeys: []
             });
 
-            console.log(errors);
+            //console.log(errors);
 
             assert(Object.keys(errors).length === 1);
 
