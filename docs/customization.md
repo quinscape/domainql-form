@@ -86,6 +86,8 @@ As convenient as it is to have automatic field type support, often you
 need ( a lot) more information to render your field. Select.js and TextArea.js are examples of that.
 &lt;TextArea/&gt; doesn't really need more information, it's more of special mode.
 
+### Field Implementation skeleton
+
 ```js
 class MyField extends React.Component
 {
@@ -97,7 +99,20 @@ class MyField extends React.Component
             >
                 {
                     ctx => {
-                        // your render code
+                        
+                        // your render code 
+                        // err is a potential error message or null
+                        
+                        return (
+                            <FormGroup
+                                { ... ctx }
+                                errorMessage={ err }
+                            >
+                                {
+                                    /* Custom field components */
+                                }    
+                            </FormGroup>
+                        )
                     }
                 }
             </Field>
@@ -107,7 +122,12 @@ class MyField extends React.Component
 
 ```
  
-See TextArea.js and Select.js for in-library examples of this. 
+See TextArea.js and Select.js for in-library examples of this.
+
+The &lt;FormGroup/&gt; component renders the default surrounding markup
+for a bootstrap 4 form group and given field context.
+
+**Note**: make sure you spread over all properties of the field context received from &lt;Field/&gt;. 
  
 ## Field Context
 

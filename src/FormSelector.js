@@ -9,7 +9,8 @@ import FormConfig from "./FormConfig"
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 /**
- * Selects one object from a list of objects
+ * Helper to edit a list of complex input objects, similar to &lt;FormList/&gt;, it only edits one element at a time and
+ * lets the user select from a list of elements.
  */
 class FormSelector extends React.Component {
 
@@ -68,6 +69,16 @@ class FormSelector extends React.Component {
          * render additional elements into the per row toolbars
          */
         renderRowToolbar: PropTypes.func,
+
+        /**
+         * Text to render if no rows are rendered.
+         */
+        emptyText: PropTypes.string,
+
+        /**
+         * Horizontal mode (default is true)
+         */
+        horizontal: PropTypes.string,
 
         ... FORM_CONFIG_PROP_TYPES
     };
@@ -141,7 +152,7 @@ class FormSelector extends React.Component {
                                                                         }}
                                                                     >
                                                                         {
-                                                                            label
+                                                                            label || "<empty>"
                                                                         }
                                                                     </a>
                                                                     <div className="float-right">

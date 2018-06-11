@@ -135,6 +135,73 @@ placeholder | string | Placeholder text to render for the empty text area.
 required | bool | If true, the user must select one of the given values, if false, the user will also be given an empty option.
 title | string | Title attribute
 **values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option.
+### &lt;Select/&gt; example
+
+```js
+<Form
+    type="FooInput"
+    value={ foo }
+    horizontal={ true }
+    onSubmit={ (foo, actions) => {
+
+        // ... your submit code, 
+        // foo.name will be the current selection
+    } }
+>
+    <Select 
+        name="name" 
+        values={ [
+            'AAA', 
+            'BBB', 
+            'CCC'
+            ] 
+        }
+    />
+    
+</Form>
+```
+## &lt;FormList/&gt;
+
+Helper to render a list of inputs. Both a list of scalar values as well as a list of complex input objects is supported.
+
+### Props
+
+ Name | Type | Description 
+------|------|-------------
+addLabel | string | Label to put on the add button (default is "Add")
+canRemove | bool | If true (the default), the user can remove objects as long as there are more than "minObjects" objects. If false the user can never remove objects.
+canSort | bool | If true (the default), the user can sort the list of objects with up and down buttons for each object.
+emptyText | string | Text to render if no rows are rendered.
+horizontal | string | Horizontal mode (default is true)
+minObjects | number | Mininum number of objects in the list. (default is 0)
+**name** (required) | string | Name/path of the list field for this &lt;FormList/&gt;
+newObject | func | optional factory method to produce new values. If no newObject prop is given, the user cannot add objects to the list.
+removeCheck | string | Text of the remove object confirmation (default is "Remove Object?")
+renderRowToolbar | func | render additional elements into the per row toolbars
+renderToolbar | func | render additional elements into the list toolbar
+… | config props | See "Form Config Props" below
+## &lt;FormSelector/&gt;
+
+Helper to edit a list of complex input objects, similar to &lt;FormList/&gt;, it only edits one element at a time and
+lets the user select from a list of elements.
+
+### Props
+
+ Name | Type | Description 
+------|------|-------------
+addLabel | string | Label to put on the add button (default is "Add")
+canRemove | bool | If true (the default), the user can remove objects as long as there are more than "minObjects" objects. If false the user can never remove objects.
+canSort | bool | If true (the default), the user can sort the list of objects with up and down buttons for each object.
+emptyText | string | Text to render if no rows are rendered.
+horizontal | string | Horizontal mode (default is true)
+minObjects | number | Mininum number of objects in the list. (default is 0)
+**name** (required) | string | Name/path of the list field for this <FormSelector/>
+newObject | func | optional factory method to produce new values. If no newObject prop is given, the user cannot add objects to the list.
+removeCheck | string | Text of the remove object confirmation (default is "Remove Object?")
+renderRowToolbar | func | render additional elements into the per row toolbars
+renderToolbar | func | render additional elements into the list toolbar
+**selector** (required) | string or func | Field to select one object from the list of objects by. Can also be a function that renders a representation of a given object.
+… | config props | See "Form Config Props" below
 # Form Config Components
 
 ## &lt;FormConfigProvider/&gt;
@@ -214,3 +281,20 @@ being available in all lifecycle methods etc pp.
  schema      | InputSchema instance   | input schema
  options     | object                 | current set of default options
  basePath    | string                 | Current prefix for field names/paths
+# Helper Components
+
+## &lt;FormGroup/&gt;
+
+Renders a .form-group wrapper from our standard render context. Is used by internally the default field renderers
+and can be used for implementing custom fields.
+
+If you just need a bootstrap form group with arbitrary content, use CustomGroup.
+
+Read [Form Customization](./customization.md) for an usage example and make sure FormGroup is what you want.
+
+### Props
+
+ Name | Type | Description 
+------|------|-------------
+errorMessage | string | Error message to render for this form group.
+formGroupClass | string | Marker class for the form group, (default is "form-group")

@@ -12,7 +12,10 @@ const COMPONENTS = [
             "../src/Field.js",
             "./snippets/FieldMode.md",
             "../src/TextArea.js",
-            "../src/Select.js"
+            "../src/Select.js",
+            "./snippets/Select.md",
+            "../src/FormList.js",
+            "../src/FormSelector.js",
         ]
     },
     {
@@ -27,7 +30,13 @@ const COMPONENTS = [
         name: "",
         components: [
             generateConfigPseudoComponent,
-            "./snippets/FormConfig.md",
+            "./snippets/FormConfig.md"
+        ]
+    },
+    {
+        name: "Helper Components",
+        components: [
+            "../src/FormGroup.js"
         ]
     }
 ];
@@ -82,6 +91,11 @@ function handleFormConfig(source)
 
 function renderType(type)
 {
+    if (!type)
+    {
+        return "---";
+    }
+
     const { name, value } = type;
 
     if (name === "union")
@@ -140,6 +154,73 @@ function renderComponentName(displayName)
     return  "&lt;" + displayName + "/&gt;";
 }
 
+function renderComponent(component)
+{
+    // try
+    // {
+        let out = "";
+
+        let fileName, content;
+        if (typeof component === "function")
+        {
+            content = component();
+            fileName = "fn()";
+        }
+        else
+        {
+            fileName = path.resolve(__dirname, component);
+            content =  fs.readFileSync( fileName, "UTF-8");
+        }
+
+        if (endsWith(fileName, ".md"))
+        {
+            out += content
+        }
+        else
+        {
+            const info = reactDocGen.parse( handleFormConfig(content));
+
+            out += "## " + renderComponentName(info.displayName) + DOUBLE_BREAK;
+            out += info.description + DOUBLE_BREAK;
+
+
+            const { props } = info;
+
+            out += "### Props" + DOUBLE_BREAK;
+
+            out += " Name | Type | Description " + BREAK;
+            out += "------|------|-------------" + BREAK;
+
+            const propNames = Object.keys(props);
+            propNames.sort();
+
+            for (let k = 0; k < propNames.length; k++)
+            {
+                const propName = propNames[k];
+
+                const { type, required, description } = props[propName];
+
+                if (!type)
+                {
+                    throw new Error("Error in " + fileName + ": Prop " + propName + " has default value, but no propType definition");
+                }
+                out += (required ? "**" + propName + "**" + " (required)" : propName) + " | " + renderType(type) + " | " + renderDescription(description) + BREAK;
+            }
+
+
+            // console.log(
+            //     JSON.stringify(info, null, 4)
+            // );
+        }
+        return out;
+
+    // }
+    // catch(e)
+    // {
+    //     throw new Error("Error rendering component " + component + ": " + e);
+    // }
+}
+
 function main()
 
 {
@@ -157,56 +238,7 @@ function main()
 
         for (let j = 0; j < components.length; j++)
         {
-            const component = components[j];
-
-            let fileName, content;
-            if (typeof component === "function")
-            {
-                content = component();
-                fileName = "fn()";
-            }
-            else
-            {
-                fileName = path.resolve(__dirname, component);
-                content =  fs.readFileSync( fileName, "UTF-8");
-            }
-
-            if (endsWith(fileName, ".md"))
-            {
-                out += content
-            }
-            else
-            {
-                const info = reactDocGen.parse( handleFormConfig(content));
-
-                out += "## " + renderComponentName(info.displayName) + DOUBLE_BREAK;
-                out += info.description + DOUBLE_BREAK;
-
-
-                const { props } = info;
-
-                out += "### Props" + DOUBLE_BREAK;
-
-                out += " Name | Type | Description " + BREAK;
-                out += "------|------|-------------" + BREAK;
-
-                const propNames = Object.keys(props);
-                propNames.sort();
-
-                for (let k = 0; k < propNames.length; k++)
-                {
-                    const propName = propNames[k];
-
-                    const { type, required, description } = props[propName];
-
-                    out += (required ? "**" + propName + "**" + " (required)" : propName) + " | " + renderType(type) + " | " + renderDescription(description) + BREAK;
-                }
-
-
-                // console.log(
-                //     JSON.stringify(info, null, 4)
-                // );
-            }
+            out += renderComponent(components[j]);
         }
     }
 

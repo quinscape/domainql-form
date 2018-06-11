@@ -4,12 +4,16 @@ import ListHelper from "./util/ListHelper";
 import FormConfig from "./FormConfig"
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
+
+/**
+ * Helper to render a list of inputs. Both a list of scalar values as well as a list of complex input objects is supported.
+ */
 class FormList extends React.Component {
 
     static propTypes = {
 
         /**
-         * Name/path of the list field for this <FormSelector/>
+         * Name/path of the list field for this &lt;FormList/&gt;
          */
         name: PropTypes.string.isRequired,
 
@@ -50,6 +54,16 @@ class FormList extends React.Component {
          * render additional elements into the per row toolbars
          */
         renderRowToolbar: PropTypes.func,
+
+        /**
+         * Text to render if no rows are rendered.
+         */
+        emptyText: PropTypes.string,
+
+        /**
+         * Horizontal mode (default is true)
+         */
+        horizontal: PropTypes.string,
 
         ... FORM_CONFIG_PROP_TYPES
     };

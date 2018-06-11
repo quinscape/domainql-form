@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "proptypes";
 import cx from "classnames";
 
 
@@ -8,12 +9,22 @@ import cx from "classnames";
  *
  * If you just need a bootstrap form group with arbitrary content, use CustomGroup.
  *
- * @param props
- * @returns {*}
- * @constructor
+ * Read [Form Customization](./customization.md) for an usage example and make sure FormGroup is what you want.
  */
 class FormGroup extends React.Component
 {
+    static propTypes = {
+        /**
+         * Marker class for the form group, (default is "form-group")
+         */
+        formGroupClass: PropTypes.string,
+
+        /**
+         * Error message to render for this form group.
+         */
+        errorMessage: PropTypes.string
+    };
+
     static defaultProps = {
         formGroupClass : "form-group"
     };
