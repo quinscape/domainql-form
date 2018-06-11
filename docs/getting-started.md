@@ -174,7 +174,7 @@ as typed GraphQL data.
 The `horizontal` flag puts the whole form into horizontal mode and makes
 all fields render horizontally. 
 
-## &lt;Field/&gt;&lt;Field/&gt; abstraction
+## &lt;Field/&gt; abstraction
 
 Domainql-form works based on a high-level field abstraction that tries to simplify the
 components needed to express a form.
@@ -195,5 +195,5 @@ a HTML select.
 ## Navigation
  
  * **Getting Started**
- * [Component Reference](./docs/component-reference.md)
- * [Customization](./docs/customization.md)
+ * [Component Reference](./component-reference.md)
+ * [Customization](./customization.md)

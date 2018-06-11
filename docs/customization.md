@@ -124,6 +124,6 @@ field element.
  path          | array        | full qualified path
  ...           | Props        | all props of the current &lt;Field/&gt;
  
-* [Getting started](./docs/getting-started.md)
-* [Component Reference](./docs/component-reference.md)
+* [Getting started](./getting-started.md)
+* [Component Reference](./component-reference.md)
 * **Customization**
