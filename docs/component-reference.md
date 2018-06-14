@@ -143,7 +143,6 @@ title | string | Title attribute
     value={ foo }
     horizontal={ true }
     onSubmit={ (foo, actions) => {
-
         // ... your submit code, 
         // foo.name will be the current selection
     } }

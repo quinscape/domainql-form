@@ -53,6 +53,8 @@ class Select extends React.Component {
 
         /**
          * Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option.
+         *
+         * The values can be either a string or an object with `name` and `value` property.
          */
         values: PropTypes.array.isRequired,
 
@@ -137,15 +139,32 @@ class Select extends React.Component {
                         !required && <option key="" value="">{ noneText }</option>
                     }
                     {
-                        values.map(v => (
-                            <option
-                                key={ v }
-                            >
-                                {
-                                    v
-                                }
-                            </option>
-                        ))
+                        values.map(v => {
+
+                            let name, value;
+                            if (typeof v === "string")
+                            {
+                                name = v;
+                                value = v;
+                            }
+                            else
+                            {
+                                name = v.name;
+                                value = v.value;
+                            }
+
+
+                            return (
+                                <option
+                                    key={value}
+                                    value={value}
+                                >
+                                    {
+                                        name
+                                    }
+                                </option>
+                            );
+                        })
                     }
                 </select>
             </FormGroup>
