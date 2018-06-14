@@ -4,7 +4,8 @@
     "description": "Formik based form helpers for GraphQL",
     "main": "lib/index.js",
     "author": "Sven Helmberger",
-    "license": "Apache-2.0",
+    "license": "-",
+    "private" true,
     "dependencies": {
         "classnames": "^2.2.5",
         "lodash.get": "^4.4.2",
