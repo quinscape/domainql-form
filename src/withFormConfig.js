@@ -1,6 +1,7 @@
 import React from "react"
 
 import FormConfig from "./FormConfig"
+import getDisplayName from "./util/getDisplayName";
 
 /**
  * Convenience HOC that provides the current FormConfig as formConfig prop to the wrapper component, the advantage
@@ -14,6 +15,8 @@ export default function(Component)
 {
     return class extends React.Component
     {
+        static displayName = "withFormConfig(" + getDisplayName(Component) + ")";
+
         render()
         {
             return (
