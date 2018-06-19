@@ -1,5 +1,5 @@
 import React from "react"
-import PropTypes from "proptypes"
+import PropTypes from "prop-types"
 import cx from "classnames";
 import toPath from "lodash.topath";
 import get from "lodash.get";

@@ -1,5 +1,5 @@
 import FieldMode from "./FieldMode";
-import PropTypes from "proptypes";
+import PropTypes from "prop-types"
 
 export default {
 

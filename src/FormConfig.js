@@ -1,5 +1,4 @@
 import React from "react"
-import PropTypes from "proptypes"
 import InputSchema from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";

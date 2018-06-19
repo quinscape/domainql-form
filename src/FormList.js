@@ -1,5 +1,5 @@
 import React from "react"
-import PropTypes from "proptypes"
+import PropTypes from "prop-types"
 import ListHelper from "./util/ListHelper";
 import FormConfig from "./FormConfig"
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
