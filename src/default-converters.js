@@ -126,7 +126,7 @@ const DEFAULT_CONVERTERS = {
             return String(scalar)
         },
         valueToScalar: function (value) {
-            return +value
+            return value
         }
     },
     "Timestamp" : {
@@ -136,7 +136,7 @@ const DEFAULT_CONVERTERS = {
             return String(scalar)
         },
         valueToScalar: function (value) {
-            return +value
+            return value
         }
     }
 };
