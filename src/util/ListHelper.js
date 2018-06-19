@@ -5,6 +5,8 @@ import withFormConfig from "../withFormConfig"
 import toPath from "lodash.topath"
 import get from "lodash.get"
 
+import Icon from "./Icon"
+
 import {
     isListType,
     unwrapNonNull
@@ -13,14 +15,6 @@ import {
 import { FieldArray } from "formik";
 
 
-function Icon(props)
-{
-    const { className } = props;
-
-    return (
-        <i className={ "fas " + className }/>
-    );
-}
 
 /**
  * List helper component used by <FormList/> and <FormSelector/>. Uses a
