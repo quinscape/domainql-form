@@ -19,6 +19,18 @@ function checkInteger(lower, upper, msg)
     }
 }
 
+function checkNumber(msg)
+{
+    return function (value) {
+        const num = +value;
+        if (isNaN(num))
+        {
+            return msg;
+        }
+        return null;
+    }
+}
+
 function checkRegexp(re, msg)
 {
     return function (value) {
@@ -101,6 +113,16 @@ const DEFAULT_CONVERTERS = {
     },
     "Int" : {
         validate: checkInteger(-2147483648, 2147483647, "Invalid Integer"),
+
+        scalarToValue: function (scalar) {
+            return String(scalar)
+        },
+        valueToScalar: function (value) {
+            return +value
+        }
+    },
+    "Float" : {
+        validate: checkNumber("Invalid Number"),
 
         scalarToValue: function (scalar) {
             return String(scalar)
