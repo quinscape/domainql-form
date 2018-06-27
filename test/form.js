@@ -52,7 +52,7 @@ describe("Form", function () {
         assert.deepEqual(formConfig.formikProps.values, {
             "description": "",
             "name": "",
-            "values": []
+            "values": null
         })
 
     });
@@ -72,8 +72,8 @@ describe("Form", function () {
         assert.deepEqual(
             formConfig.formikProps.errors,
             {
-                "name": "$FIELD required"
-                //"values" is non-null, too, but is a structural object that is provided empty by the conversion process
+                "name": "$FIELD required",
+                "values": "$FIELD required"
             }
         );
 
@@ -86,7 +86,8 @@ describe("Form", function () {
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
                 value={{
-                    name: "MYENUM"
+                    name: "MYENUM",
+                    values: ["AA","BB","CC"]
                 }}
             >
                 {
@@ -100,7 +101,11 @@ describe("Form", function () {
         assert.deepEqual(validConfig.formikProps.values, {
             "description": "",
             "name": "MYENUM",
-            "values": []
+            "values": [
+                "AA",
+                "BB",
+                "CC"
+            ]
         });
 
         assert.deepEqual(validConfig.formikProps.errors, {});

@@ -293,7 +293,7 @@ function convertValue(inputSchema, fieldType, value, toScalar)
     {
         if (!value)
         {
-            return toScalar ? null : {};
+            return null;
         }
 
         if (inputSchema.debug)
@@ -307,7 +307,7 @@ function convertValue(inputSchema, fieldType, value, toScalar)
     {
         if (!value)
         {
-            return toScalar ? null : [];
+            return null;
         }
 
         const array = new Array(value.length);

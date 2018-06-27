@@ -62,6 +62,8 @@ describe("FormSelector", function () {
                         unique: false
                     }
                 ],
+                foreignKeys: [],
+                uniqueConstraints: [],
                 primaryKey: {
                     fields: ["id"]
                 }
@@ -113,6 +115,7 @@ describe("FormSelector", function () {
         nameInputs2.instance().value = "modified";
         nameInputs2.simulate("change");
 
+        console.log(renderSpy.lastCall.args[0].formikProps.errors)
         assert(renderSpy.lastCall.args[0].formikProps.isValid);
         assert(renderSpy.lastCall.args[0].formikProps.values.fields[1].name === "modified");
 
@@ -133,7 +136,7 @@ describe("FormSelector", function () {
             "description": "",
             "fields": [
                 {
-                    "config": [],
+                    "config": null,
                     "description": "",
                     "maxLength": 36,
                     "name": "id",
@@ -143,7 +146,7 @@ describe("FormSelector", function () {
                     "unique": false
                 },
                 {
-                    "config": [],
+                    "config": null,
                     "description": "",
                     "maxLength": 100,
                     "name": "mod",   // changed

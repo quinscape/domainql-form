@@ -93,6 +93,9 @@ describe("FormList", function (){
                         required: true,
                         unique: false
                     }],
+                    config: [],
+                    foreignKeys: [],
+                    uniqueConstraints: [],
                     primaryKey: {
                         fields : ["id"]
                     }
@@ -303,16 +306,18 @@ describe("FormList", function (){
         secondMax.instance().value = "120";
         secondMax.simulate("change");
 
+        console.log(renderSpy.lastCall.args[0].formikProps.errors);
         assert(renderSpy.lastCall.args[0].formikProps.isValid);
 
         component.find("form").simulate("submit");
 
+        const submitted = submitSpy.lastCall.args[0];
 
-        assert.deepEqual(submitSpy.lastCall.args[0], {
+        assert.deepEqual(submitted, {
             "description": "",
             "fields": [
                 {
-                    "config": [],
+                    "config" : null,
                     "description": "",
                     "maxLength": 36,
                     "name": "xxx",  // changed
@@ -322,7 +327,7 @@ describe("FormList", function (){
                     "unique": false
                 },
                 {
-                    "config": [],
+                    "config" : null,
                     "description": "",
                     "maxLength": 120,   // changed
                     "name": "modified",   // changed
