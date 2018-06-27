@@ -246,7 +246,10 @@ function getValidationPlan(inputSchema, typeName)
         }
     }
 
-    //console.log("Validation plan for ", typeName, "is: ", plan);
+    if (inputSchema.debug)
+    {
+        console.log("Validation plan for ", typeName, "is: ", plan);
+    }
 
     inputSchema.validationPlan[typeName] = plan;
 
@@ -279,7 +282,10 @@ function convertValue(inputSchema, fieldType, value, toScalar)
             }
         }
 
-        //console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar" , "=> ", result, typeof result);
+        if (inputSchema.debug)
+        {
+            console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar", "=> ", result, typeof result, path);
+        }
 
         return result;
     }
@@ -288,6 +294,11 @@ function convertValue(inputSchema, fieldType, value, toScalar)
         if (!value)
         {
             return toScalar ? null : {};
+        }
+
+        if (inputSchema.debug)
+        {
+            console.log("Convert InputObject ", fieldType.name, path);
         }
 
         return convertInput(inputSchema, inputSchema.getType(fieldType.name), value, toScalar);
@@ -300,6 +311,11 @@ function convertValue(inputSchema, fieldType, value, toScalar)
         }
 
         const array = new Array(value.length);
+
+        if (inputSchema.debug)
+        {
+            console.log("Convert List of ", fieldType.ofType.name, path);
+        }
 
         for (let j = 0; j < value.length; j++)
         {
@@ -315,7 +331,6 @@ function convertValue(inputSchema, fieldType, value, toScalar)
     {
         throw new Error("Unhandled field type : " + JSON.stringify(fieldType));
     }
-
 }
 
 function convertInput(inputSchema, baseTypeDef, value, toScalar)
@@ -408,7 +423,7 @@ function executeValidationPlan(values, validationPlan)
 
 class InputSchema
 {
-    constructor(schema)
+    constructor(schema, debug = false)
     {
         const { types } = schema;
 
@@ -419,6 +434,7 @@ class InputSchema
 
         this.schema = schema;
         this.validationPlan = {};
+        this.debug = debug;
     }
 
     /**
@@ -497,9 +513,14 @@ class InputSchema
     {
         const validationPlan = getValidationPlan(this, type);
 
-        const errors = executeValidationPlan(values, validationPlan);
+        const errors = executeValidationPlan(values, validationPlan, 0) || NO_ERRORS;
 
-        return errors || NO_ERRORS;
+        if (this.debug)
+        {
+            console.log("Errors for ", values, "=>", errors);
+        }
+
+        return errors;
     }
 
 }
