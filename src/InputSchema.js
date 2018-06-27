@@ -490,18 +490,27 @@ class InputSchema
             throw new Error(typeName + " is not a known input type: " + JSON.stringify(baseTypeDef))
         }
 
+        if (!value)
+        {
+            throw new Error("Root object of type '" + typeName + "' cannot be falsy: " + value);
+        }
+
         return convertInput(this, baseTypeDef, value, false);
     }
 
-    fromValues(typeName, value)
+    fromValues(typeName, values)
     {
         const baseTypeDef = this.getType(typeName);
         if (!isInputType(baseTypeDef))
         {
             throw new Error(typeName + " is not a known input type: " + JSON.stringify(baseTypeDef))
         }
+        if (!values)
+        {
+            throw new Error("Form values cannot be falsy: " + values);
+        }
 
-        return convertInput(this, baseTypeDef, value, true);
+        return convertInput(this, baseTypeDef, values, true);
     }
 
     getTypes()

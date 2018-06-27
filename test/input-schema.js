@@ -107,6 +107,11 @@ describe("InputSchema", function () {
         // everything else is string
         assert( converted.fields[0].maxLength === 36);
 
+
+        assert.throws( () => inputSchema.toValues("DomainTypeInput", null), /Root object of type 'DomainTypeInput' cannot be falsy: null/);
+        assert.throws( () => inputSchema.fromValues("DomainTypeInput", null), /Form values cannot be falsy/);
+
     });
-    
+
+
 });
