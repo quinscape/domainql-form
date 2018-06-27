@@ -127,7 +127,7 @@ class FormSelector extends React.Component {
                                     renderToolbar(arrayHelpers)
                                 }
                                 <div className="row">
-                                    <div className="col-md-3">
+                                    <div className="col-md-4">
                                         {
                                             len > 0 &&
                                             <ul className="list-group">
@@ -181,7 +181,7 @@ class FormSelector extends React.Component {
                                             key={ selectedIndex }
                                             value={createLineContext(selectedIndex, path)}
                                         >
-                                            <div className="col-md-9">
+                                            <div className="col-md-8">
                                                 <div className="container-fluid">
                                                     {
                                                         typeof children === "function" ? children(selectedIndex, arrayHelpers) : children
