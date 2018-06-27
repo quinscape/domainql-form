@@ -230,7 +230,6 @@ describe("Form", function () {
 
                 validate={ values => {
 
-                    debugger;
                     if (values.name === values.description)
                     {
                         return {
