@@ -28,18 +28,18 @@ function pushErrors(errorList, value, name, form)
             {
                 const e = value[i];
 
-                pushErrors(errorList, e, name + "." + i)
+                pushErrors(errorList, e, name + "." + i, form)
             }
         }
         else
         {
-            for (let name in value)
+            for (let propName in value)
             {
-                if (value.hasOwnProperty(name))
+                if (value.hasOwnProperty(propName))
                 {
-                    const e = value[name];
+                    const e = value[propName];
 
-                    pushErrors(errorList, e, name + "." + name)
+                    pushErrors(errorList, e, name + "." + propName, form)
                 }
             }
         }
@@ -183,15 +183,24 @@ class GlobalErrors extends React.Component {
                     ref={ elem => this._listElem = elem }
                 >
                     {
-                        errorList.map( entry => (
-                            <li key={ entry.name }>
-                                <label htmlFor={ entry.fieldId } className="text-danger">
-                                    {
-                                        entry.errorMessage
-                                    }
-                                </label>
-                            </li>
-                        ))
+                        errorList.map( entry => {
+
+                            const { fieldId, name, errorMessage } = entry;
+
+                            return (
+                                <li key={ name }>
+                                    <label
+                                        className="text-danger"
+                                        htmlFor={ fieldId }
+                                        data-path={ fieldId ? null : name }
+                                    >
+                                        {
+                                            errorMessage
+                                        }
+                                    </label>
+                                </li>
+                            );
+                        })
                     }
                 </ul>
             </div>
