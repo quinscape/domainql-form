@@ -349,11 +349,11 @@ function convertInput(inputSchema, baseTypeDef, value, toScalar)
     return out;
 }
 
-function executeValidationPlan(values, validationPlan)
+function executeValidationPlan(values, validationPlan, start)
 {
-    if (validationPlan[0] === PLAN_SCALAR_LIST)
+    if (validationPlan[start] === PLAN_SCALAR_LIST)
     {
-        const result = validationPlan[1](values);
+        const result = validationPlan[start + 1](values);
 
         //console.log("Scalar List elem ", values, " => ", result);
 
@@ -362,7 +362,7 @@ function executeValidationPlan(values, validationPlan)
 
     let errors = null;
 
-    for (let i = 0; i < validationPlan.length; i+= 2)
+    for (let i = start; i < validationPlan.length; i+= 2)
     {
         const name = validationPlan[i];
         const fnOrArray = validationPlan[i + 1];
@@ -389,7 +389,7 @@ function executeValidationPlan(values, validationPlan)
 
                     for (let j = 0; j < fieldValue.length; j++)
                     {
-                        const err = executeValidationPlan(fieldValue[j], fnOrArray.slice(1));
+                        const err = executeValidationPlan(fieldValue[j], fnOrArray, 1);
                         if (err)
                         {
                             array = array || new Array(fieldValue.length);
@@ -408,7 +408,7 @@ function executeValidationPlan(values, validationPlan)
             {
                 if (fieldValue)
                 {
-                    const err = executeValidationPlan(fieldValue, fnOrArray.slice(1));
+                    const err = executeValidationPlan(fieldValue, fnOrArray, 1);
                     if (err)
                     {
                         errors = errors || {};
