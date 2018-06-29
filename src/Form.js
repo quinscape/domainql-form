@@ -207,6 +207,7 @@ class Form extends React.Component {
         isInitialValid: true
     };
 
+
     componentDidMount()
     {
         this._component.getFormikBag().validateForm();
@@ -214,6 +215,9 @@ class Form extends React.Component {
 
     onSubmit = (values, actions) => this._innerForm.onSubmit(values, actions);
     validate = (values) => this._innerForm.validate(values);
+
+    registerFormikComponent = c => this._component = c;
+    registerInnerForm = c => this._innerForm = c;
 
     render()
     {
@@ -224,7 +228,6 @@ class Form extends React.Component {
                 {
                     formConfig => {
 
-
                         const schema = getSchema(formConfig , this.props);
 
                         const initial = initialValues != null ? initialValues() : schema.toValues(type, value);
@@ -232,7 +235,7 @@ class Form extends React.Component {
 
                         return (
                             <Formik
-                                ref={c => this._component = c}
+                                ref={ this.registerFormikComponent }
                                 isInitialValid={ isInitialValid }
                                 initialValues={ initial }
                                 validate={ this.validate }
@@ -240,10 +243,10 @@ class Form extends React.Component {
                                 render={
                                     formikProps => (
                                         <InnerForm
-                                            {...this.props}
-                                            ref={ c => this._innerForm = c }
-                                            formConfig={formConfig}
-                                            formikProps={formikProps}
+                                            { ... this.props }
+                                            ref={ this.registerInnerForm }
+                                            formConfig={ formConfig }
+                                            formikProps={ formikProps }
                                         >
                                             {
                                                 children
