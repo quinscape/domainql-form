@@ -84,8 +84,8 @@ class TextArea extends React.Component {
     renderWithFieldContext = fieldContext => {
 
         const { rows, cols, inputClass, placeholder } = this.props;
-        const { qualifiedName, path } = fieldContext;
-        const { formikProps } = fieldContext.formConfig;
+        const { qualifiedName, path, formConfig } = fieldContext;
+        const { formikProps } = formConfig;
 
         const errorMessage = get(formikProps.errors, path);
         const fieldValue = get(formikProps.values, path);
