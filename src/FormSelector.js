@@ -80,6 +80,11 @@ class FormSelector extends React.Component {
          */
         horizontal: PropTypes.string,
 
+        /**
+         * Index of the field to select in the <FormSelector/> 
+         */
+        selectedIndex: PropTypes.number,
+
         ... FORM_CONFIG_PROP_TYPES
     };
 
@@ -95,14 +100,25 @@ class FormSelector extends React.Component {
         horizontal: true
     };
 
+    static getDerivedStateFromProps(nextProps, prevState)
+    {
+        const selectedFromProps = nextProps.selectedIndex;
+        if (!prevState || selectedFromProps !== prevState.selectedFromProps)
+        {
+            return {
+                selectedFromProps,
+                selectedIndex: selectedFromProps || 0
+            }
+        }
+        return null;
+    }
 
-    state = {
-        selectedIndex: 0
-    };
+    state = FormSelector.getDerivedStateFromProps(this.props);
 
     selectRow = index => this.setState({
         selectedIndex: index
     });
+
 
     render()
     {
@@ -122,7 +138,19 @@ class FormSelector extends React.Component {
                         const last = len - 1;
 
                         return (
-                            <div className="form-selector">
+                            <div
+                                className="form-selector"
+                                onClick={ ev => {
+                                    const target = ev.target;
+
+                                    if (target.tagName === "BUTTON" && target.className.indexOf("b-add") >= 0)
+                                    {
+                                        this.setState({
+                                            selectedIndex: len
+                                        });
+                                    }
+                                } }
+                            >
                                 {
                                     renderToolbar(arrayHelpers)
                                 }
