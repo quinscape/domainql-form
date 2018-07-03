@@ -27,6 +27,7 @@ export default function(Component, formProps)
                 <Form
                     { ... formProps}
                     onSubmit={ this.onSubmit }
+                    validate={ this.props.validate }
                     value={ value }
                 >
                 {
