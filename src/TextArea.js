@@ -84,7 +84,7 @@ class TextArea extends React.Component {
     renderWithFieldContext = fieldContext => {
 
         const { rows, cols, inputClass, placeholder } = this.props;
-        const { qualifiedName, path, formConfig } = fieldContext;
+        const { qualifiedName, path, formConfig, onChange, onBlur, autoFocus } = fieldContext;
         const { formikProps } = formConfig;
 
         const errorMessage = get(formikProps.errors, path);
@@ -108,8 +108,9 @@ class TextArea extends React.Component {
                     name={ qualifiedName }
                     value={ fieldValue }
                     placeholder={ placeholder }
-                    onChange={ formikProps.handleChange }
-                    onBlur={ formikProps.handleBlur }
+                    onChange={ onChange }
+                    onBlur={ onBlur }
+                    autoFocus={ autoFocus }
                 />
             </FormGroup>
         )

@@ -48,7 +48,7 @@ const DEFAULT_RENDERERS =
 
             render: ctx => {
 
-                const { mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName } = ctx;
+                const { mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
 
                 const { formikProps } = formConfig;
 
@@ -87,8 +87,8 @@ const DEFAULT_RENDERERS =
                                 type="checkbox"
                                 title={ title }
                                 checked={ fieldValue }
-                                onChange={ formikProps.handleChange }
-                                onBlur={ formikProps.handleBlur }
+                                onChange={ onChange }
+                                onBlur={ onBlur }
                                 disabled={ effectiveMode === FieldMode.DISABLED }
                             />
                             <label
@@ -132,7 +132,9 @@ const DEFAULT_RENDERERS =
                     fieldType,
                     title,
                     path,
-                    qualifiedName
+                    qualifiedName,
+                    onChange,
+                    onBlur
                 } = ctx;
 
                 const { formikProps } = formConfig;
@@ -163,8 +165,8 @@ const DEFAULT_RENDERERS =
                             title={title}
                             disabled={effectiveMode === FieldMode.DISABLED}
                             value={fieldValue}
-                            onChange={formikProps.handleChange}
-                            onBlur={formikProps.handleBlur}
+                            onChange={onChange}
+                            onBlur={onBlur}
                         >
                             {
                                 enumType.enumValues.map(enumValue =>
@@ -214,7 +216,10 @@ const DEFAULT_RENDERERS =
                     fieldType,
                     title,
                     path,
-                    qualifiedName
+                    qualifiedName,
+                    onChange,
+                    onBlur,
+                    autoFocus
                 } = ctx;
 
                 const { currency, currencyAddonRight, mode : modeFromOptions } = formConfig.options;
@@ -245,8 +250,9 @@ const DEFAULT_RENDERERS =
                             title={ title }
                             disabled={ effectiveMode === FieldMode.DISABLED }
                             value={ fieldValue }
-                            onChange={ formikProps.handleChange }
-                            onBlur={ formikProps.handleBlur }
+                            onChange={ onChange }
+                            onBlur={ onBlur }
+                            autoFocus={ autoFocus ? true : null }
                         />
                     );
 

@@ -84,7 +84,7 @@ class Select extends React.Component {
 
         if (!ev.isDefaultPrevented())
         {
-            return fieldContext.formConfig.formikProps.handleChange(ev);
+            return fieldContext.onChange(ev);
         }
     };
 
@@ -107,7 +107,7 @@ class Select extends React.Component {
         //console.log("render Select", fieldContext);
 
         const { values, inputClass, required } = this.props;
-        const { formConfig, path, qualifiedName } = fieldContext;
+        const { formConfig, path, qualifiedName, onBlur, autoFocus } = fieldContext;
 
         const { formikProps } = formConfig;
 
@@ -133,7 +133,8 @@ class Select extends React.Component {
                     name={ qualifiedName }
                     value={ fieldValue }
                     onChange={ ev => this.handleChange(fieldContext, ev) }
-                    onBlur={ formikProps.handleBlur }
+                    onBlur={ onBlur }
+                    autoFocus={ autoFocus }
                 >
                     {
                         !required && <option key="" value="">{ noneText }</option>

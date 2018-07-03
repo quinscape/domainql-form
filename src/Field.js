@@ -49,7 +49,22 @@ class Field extends React.Component {
         /**
          * Additional HTML classes for the label element.
          */
-        labelClass: PropTypes.string
+        labelClass: PropTypes.string,
+
+        /**
+         * Optional change handler to use instead of formikProps.handleChange
+         */
+        onChange: PropTypes.func,
+
+        /**
+         * Optional blur handler to use instead of formikProps.handleBlur
+         */
+        onBlur: PropTypes.func,
+
+        /**
+         * Pass-through autoFocus attribute for text inputs
+         */
+        autoFocus: PropTypes.bool
     };
 
     render()
@@ -65,9 +80,9 @@ class Field extends React.Component {
 
     renderWithFormConfig = formConfig => {
 
-        const { id, name, label, children } = this.props;
+        const { id, name, label, children, onChange, onBlur, autoFocus } = this.props;
 
-        const { type }  = formConfig;
+        const { type, formikProps }  = formConfig;
 
         let fieldId;
         let qualifiedName;
@@ -103,6 +118,9 @@ class Field extends React.Component {
             qualifiedName,
             path,
             label: effectiveLabel,
+            onChange: onChange || formikProps.handleChange,
+            onBlur: onBlur || formikProps.handleBlur,
+            autoFocus,
             ... this.props
         };
 
