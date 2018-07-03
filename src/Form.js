@@ -60,7 +60,7 @@ class InnerForm extends React.Component {
         formConfig.setFormContext(type, "", formikProps);
 
         // did the form config actually change since last time?
-        if (prevState && prevState.formConfig.equals(formConfig))
+        if (prevState.formConfig && prevState.formConfig.equals(formConfig))
         {
             // no -> no update
 
@@ -77,7 +77,9 @@ class InnerForm extends React.Component {
         };
     }
 
-    state = InnerForm.getDerivedStateFromProps(this.props);
+    state = {
+        formConfig: null
+    };
 
     // called from outer form
     // noinspection JSUnusedGlobalSymbols
@@ -85,9 +87,18 @@ class InnerForm extends React.Component {
 
         const { formConfig } = this.state;
 
-        const { schema, type } = formConfig;
+        const { schema, type, formikProps : { status } } = formConfig;
+
 
         const converted = schema.fromValues( type, values);
+
+        if ( status)
+        {
+            actions = {
+                ... actions,
+                status
+            };
+        }
 
         try
         {
@@ -119,10 +130,51 @@ class InnerForm extends React.Component {
         return errors;
     };
 
+    handleButtonStatus = ev => {
+
+        const { target } = ev;
+
+        const { onClick } = this.props;
+
+        //console.log("Form onClick, target =", target);
+
+        if (
+            (
+                target.tagName === "BUTTON" ||
+                target.tagName === "INPUT"
+            ) &&
+            target.getAttribute("type") === "submit"
+        )
+        {
+            const name = target.getAttribute("name");
+            {
+                if (name)
+                {
+                    const { formConfig } = this.state;
+                    const { formikProps } = formConfig;
+
+                    const { status } = formikProps;
+
+                    if (!status || status.button !== name )
+                    {
+                        formikProps.setStatus({
+                            ... status,
+                            button: name
+                        })
+                    }
+                }
+            }
+        }
+
+        if (typeof onClick === "function")
+        {
+            onClick(ev);
+        }
+    };
 
     render()
     {
-        const { children } = this.props;
+        const { children, onClick } = this.props;
 
         const { formConfig } = this.state;
         const { formikProps } = formConfig;
@@ -137,6 +189,7 @@ class InnerForm extends React.Component {
                 }
                 onSubmit={ formikProps.handleSubmit }
                 onReset={ formikProps.handleReset }
+                onClick={ formConfig.options.buttonStatus ? this.handleButtonStatus : onClick }
             >
                 <FormConfig.Provider value={ formConfig }>
                     {
@@ -197,6 +250,11 @@ class Form extends React.Component {
          * need to invoke InputSchema.fromValues(type, values) manually on the received values object.
          */
         validate: PropTypes.func,
+
+        /**
+         * Optional onClick handler for the form element.
+         */
+        onClick: PropTypes.func,
 
         ... FORM_CONFIG_PROP_TYPES
         

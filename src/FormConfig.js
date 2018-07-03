@@ -11,7 +11,8 @@ export const DEFAULT_OPTIONS = {
     mode: FieldMode.NORMAL,
     currency: "EUR",
     currencyAddonRight: true,
-    lookupLabel: GlobalConfig.lookupLabel
+    lookupLabel: GlobalConfig.lookupLabel,
+    buttonStatus: true
 };
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
