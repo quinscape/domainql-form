@@ -81,21 +81,21 @@ class GlobalErrors extends React.Component {
     {
         //console.log("GlobalErrors.getDerivedStateFromProps", {nextProps, prevState});
 
-        const current = prevState ? prevState.errors : null;
-        const { errors : next } = nextProps.formConfig.formikProps;
+        const current = prevState.errors;
+        const { errors : nextErrors } = nextProps.formConfig.formikProps;
 
-        if (!next || (prevState && current === next) )
+        if (!nextErrors || (current === nextErrors) )
         {
             return null;
         }
 
         //console.log("Linearize errors", next);
 
-        const errorList = GlobalErrors.linearizeErrors( next, null);
+        const errorList = GlobalErrors.linearizeErrors( nextErrors, null);
 
         return {
             errorList,
-            errors : next
+            errors : nextErrors
         }
 
     }
@@ -155,7 +155,7 @@ class GlobalErrors extends React.Component {
         return errorList;
     }
 
-    state = GlobalErrors.getDerivedStateFromProps(this.props);
+    state = {};
 
     render()
     {
