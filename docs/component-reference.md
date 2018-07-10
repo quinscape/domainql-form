@@ -10,6 +10,7 @@ Form description
 ------|------|-------------
 initialValues | func | Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object. Might also be invalid (See isInitialValid)
 isInitialValid | bool | true if the initial value is valid
+onClick | func | Optional onClick handler for the form element.
 **onSubmit** (required) | func | Submit handler handling the final typed GraphQL result
 schema | instance of InputSchema or object | schema to use for this form
 **type** (required) | string | form base type
@@ -77,12 +78,15 @@ field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form C
 
  Name | Type | Description 
 ------|------|-------------
+autoFocus | bool | Pass-through autoFocus attribute for text inputs
 helpText | string | Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
 inputClass | string | Additional HTML classes for the input element.
 label | string | Label for the field.
 labelClass | string | Additional HTML classes for the label element.
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
+onBlur | func | Optional blur handler to use instead of formikProps.handleBlur
+onChange | func | Optional change handler to use instead of formikProps.handleChange
 placeholder | string | Placeholder text to render for text inputs.
 title | string | Title attribute
 ### FieldMode
@@ -134,7 +138,7 @@ onChange | func | Local change handler. can call ev.preventDefault() to cancel c
 placeholder | string | Placeholder text to render for the empty text area.
 required | bool | If true, the user must select one of the given values, if false, the user will also be given an empty option.
 title | string | Title attribute
-**values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option.
+**values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option. The values can be either a string or an object with `name` and `value` property.
 ### &lt;Select/&gt; example
 
 ```js
@@ -143,6 +147,7 @@ title | string | Title attribute
     value={ foo }
     horizontal={ true }
     onSubmit={ (foo, actions) => {
+
         // ... your submit code, 
         // foo.name will be the current selection
     } }
@@ -199,6 +204,7 @@ newObject | func | optional factory method to produce new values. If no newObjec
 removeCheck | string | Text of the remove object confirmation (default is "Remove Object?")
 renderRowToolbar | func | render additional elements into the per row toolbars
 renderToolbar | func | render additional elements into the list toolbar
+selectedIndex | number | Index of the field to select in the <FormSelector/>
 **selector** (required) | string or func | Field to select one object from the list of objects by. Can also be a function that renders a representation of a given object.
 … | config props | See "Form Config Props" below
 # Form Config Components
@@ -246,6 +252,7 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 
  Name | Type | Description 
 ------|------|-------------
+buttonStatus | custom | If true (the default), make button with name attributes set formikProps.status.button with that name.
 currency | custom | Currency ISO code for Currency fields
 currencyAddonRight | custom | True if the currency addon is on the right side of the input component.
 horizontal | custom | True to use "horizontal" bootstrap form groups
