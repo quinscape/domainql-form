@@ -6,7 +6,10 @@ import debounce from "lodash.debounce"
 import isEqual from "lodash.isequal"
 
 
-
+/**
+ * A component that renders no output but causes a debounced auto-submit of the form whenever its content changes.
+ * 
+ */
 class AutoSubmit extends React.Component {
 
     static propTypes = {
