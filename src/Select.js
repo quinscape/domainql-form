@@ -173,4 +173,4 @@ class Select extends React.Component {
     };
 }
 
-export default withFormConfig(Select)
+export default Select
