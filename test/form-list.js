@@ -128,7 +128,7 @@ describe("FormList", function (){
 
     const component = mountListOfScalars();
 
-    after(() => component.unmount());
+    after(done => setImmediate( () => { component.unmount(); done() }));
 
     it("renders as list of scalar inputs", function() {
 
@@ -155,7 +155,7 @@ describe("FormList", function (){
         );
     });
 
-    it("can optionally add new objects", function () {
+    it("can optionally add new objects", function (done) {
 
 
         const addButton = component.find(".form-list .b-add");
@@ -175,12 +175,17 @@ describe("FormList", function (){
         // list without newObject prop
         const noAddList = mountListOfScalars({newObject : null});
         // has no add button
-        assert(noAddList.find(".form-list .b-add").length === 0)
+        assert(noAddList.find(".form-list .b-add").length === 0);
 
-        noAddList.unmount();
+        setImmediate(
+            () => {
+                noAddList.unmount();
+                done();
+            }
+        );
     });
 
-    it("can optionally remove objects", function () {
+    it("can optionally remove objects", function (done) {
 
         const removeButtons = component.find(".form-list .b-remove");
         assert(removeButtons.length === 4);
@@ -197,21 +202,30 @@ describe("FormList", function (){
 
         const noRemoveList = mountListOfScalars({canRemove : false});
         assert(noRemoveList.find(".form-list .b-remove").length === 0);
-        noRemoveList.unmount();
+        setImmediate(
+            () => {
+                noRemoveList.unmount();
 
-        const limitedList = mountListOfScalars({minObjects : 2});
-        // all elements could be removed if enough elements are present
-        assert(limitedList.find(".form-list .b-remove").length === 3);
+                const limitedList = mountListOfScalars({minObjects : 2});
+                // all elements could be removed if enough elements are present
+                assert(limitedList.find(".form-list .b-remove").length === 3);
 
-        confirmed( () => limitedList.find(".form-list .b-remove").at(0).simulate("click"));
+                confirmed( () => limitedList.find(".form-list .b-remove").at(0).simulate("click"));
 
-        // otherwise no elements can be removed
-        assert(limitedList.find(".form-list .b-remove").length === 0);
-        limitedList.unmount();
+                setImmediate(
+                    () => {
+                        // otherwise no elements can be removed
+                        assert(limitedList.find(".form-list .b-remove").length === 0);
+                        limitedList.unmount();
+                        done();
+                    }
+                );
+            }
+        );
 
     });
 
-    it("can optionally sort objects", function () {
+    it("can optionally sort objects", function (done) {
 
 
         const upButtons = component.find(".form-list .b-up");
@@ -233,33 +247,43 @@ describe("FormList", function (){
 
         downButtons.at(0).simulate("click");
 
-        const rows = component.find(".form-list .form-row input[type='text']");
-        assert.deepEqual(
-            rows.map(
-                r => r.instance().value
-            ),
-            ["BB", "A", "C"]
-        );
+        setImmediate(
+            () => {
 
-        component.find(".form-list .b-up").at(2).simulate("click");
+                const rows = component.find(".form-list .form-row input[type='text']");
+                assert.deepEqual(
+                    rows.map(
+                        r => r.instance().value
+                    ),
+                    ["BB", "A", "C"]
+                );
 
-        const rows2 = component.find(".form-list .form-row input[type='text']");
-        assert.deepEqual(
-            rows2.map(
-                r => r.instance().value
-            ),
-            ["BB", "C", "A"]
-        );
+                component.find(".form-list .b-up").at(2).simulate("click");
 
-        const noSortList = mountListOfScalars({canSort : false});
-        assert(noSortList.find(".form-list .b-up").length === 0);
-        assert(noSortList.find(".form-list .b-down").length === 0);
+                setImmediate(
+                    () => {
+                        const rows2 = component.find(".form-list .form-row input[type='text']");
+                        assert.deepEqual(
+                            rows2.map(
+                                r => r.instance().value
+                            ),
+                            ["BB", "C", "A"]
+                        );
 
-        noSortList.unmount();
+                        const noSortList = mountListOfScalars({canSort : false});
+                        assert(noSortList.find(".form-list .b-up").length === 0);
+                        assert(noSortList.find(".form-list .b-down").length === 0);
 
+                        noSortList.unmount();
+                        done();
+
+                    }
+                )
+            }
+        )
     });
 
-    it("renders as list of complex objects", function () {
+    it("renders as list of complex objects", function (done) {
 
         const component = mountComplexList();
 
@@ -290,65 +314,83 @@ describe("FormList", function (){
         first.instance().value = "";
         first.simulate("change");
 
-        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[0].name === "$FIELD required");
 
-        const secondMax = component.find(".form-list .form-row input.f-maxLength").at(1);
+        setImmediate(
+            () => {
 
-        secondMax.instance().value = "1a";
-        secondMax.simulate("change");
+                assert(renderSpy.lastCall.args[0].formikProps.errors.fields[0].name === "$FIELD required");
 
-        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[0].name === "$FIELD required");
-        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[1].maxLength === "Invalid Integer");
+                const secondMax = component.find(".form-list .form-row input.f-maxLength").at(1);
 
-        first.instance().value = "xxx";
-        first.simulate("change");
+                secondMax.instance().value = "1a";
+                secondMax.simulate("change");
 
-        secondMax.instance().value = "120";
-        secondMax.simulate("change");
+                setImmediate(
+                    () => {
+                        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[0].name === "$FIELD required");
+                        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[1].maxLength === "Invalid Integer");
 
-        console.log(renderSpy.lastCall.args[0].formikProps.errors);
-        assert(renderSpy.lastCall.args[0].formikProps.isValid);
+                        first.instance().value = "xxx";
+                        first.simulate("change");
 
-        component.find("form").simulate("submit");
+                        secondMax.instance().value = "120";
+                        secondMax.simulate("change");
 
-        const submitted = submitSpy.lastCall.args[0];
+                        setImmediate(
+                            () => {
 
-        assert.deepEqual(submitted, {
-            "description": "",
-            "fields": [
-                {
-                    "config" : null,
-                    "description": "",
-                    "maxLength": 36,
-                    "name": "xxx",  // changed
-                    "required": true,
-                    "sqlType": "",
-                    "type": "UUID",
-                    "unique": false
-                },
-                {
-                    "config" : null,
-                    "description": "",
-                    "maxLength": 120,   // changed
-                    "name": "modified",   // changed
-                    "required": true,
-                    "sqlType": "",
-                    "type": "STRING",
-                    "unique": false
-                }
-            ],
-            "foreignKeys": [],
-            "name": "MyType",
-            "primaryKey": {
-                "fields": [
-                    "id"
-                ]
-            },
-            "uniqueConstraints": []
-        });
+                                console.log(renderSpy.lastCall.args[0].formikProps.errors);
+                                assert(renderSpy.lastCall.args[0].formikProps.isValid);
 
-        component.unmount();
+                                component.find("form").simulate("submit");
 
+                                setImmediate(
+                                    () => {
+                                        const submitted = submitSpy.lastCall.args[0];
+
+                                        assert.deepEqual(submitted, {
+                                            "description": "",
+                                            "fields": [
+                                                {
+                                                    "config" : null,
+                                                    "description": "",
+                                                    "maxLength": 36,
+                                                    "name": "xxx",  // changed
+                                                    "required": true,
+                                                    "sqlType": "",
+                                                    "type": "UUID",
+                                                    "unique": false
+                                                },
+                                                {
+                                                    "config" : null,
+                                                    "description": "",
+                                                    "maxLength": 120,   // changed
+                                                    "name": "modified",   // changed
+                                                    "required": true,
+                                                    "sqlType": "",
+                                                    "type": "STRING",
+                                                    "unique": false
+                                                }
+                                            ],
+                                            "foreignKeys": [],
+                                            "name": "MyType",
+                                            "primaryKey": {
+                                                "fields": [
+                                                    "id"
+                                                ]
+                                            },
+                                            "uniqueConstraints": []
+                                        });
+
+                                        component.unmount();
+                                        done();
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+        );
     })
-
 });

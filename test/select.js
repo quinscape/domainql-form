@@ -14,7 +14,7 @@ import GlobalConfig from "../src/GlobalConfig";
 
 describe("Select", function (){
 
-    it("renders as select element", function() {
+    it("renders as select element", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -75,10 +75,17 @@ describe("Select", function (){
         //console.log(renderSpy.callCount);
         component.find("form").simulate("submit");
 
+        setImmediate(
+            () => {
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.name === "CCC");
+                assert(submitSpy.called);
+                const values = submitSpy.lastCall.args[0];
+                assert(values.name === "CCC");
+
+                done();
+            }
+        )
+
 
     });
 
@@ -169,7 +176,7 @@ describe("Select", function (){
         component2.unmount();
     });
 
-    it("supports name/value object", function() {
+    it("supports name/value object", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -244,10 +251,17 @@ describe("Select", function (){
         //console.log(renderSpy.callCount);
         component.find("form").simulate("submit");
 
+        setImmediate(
+            () => {
+                assert(submitSpy.called);
+                const values = submitSpy.lastCall.args[0];
+                assert(values.name === "CCC");
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.name === "CCC");
+                done();
+            }
+        )
+
+
 
     });
 

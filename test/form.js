@@ -213,7 +213,7 @@ describe("Form", function () {
 
     });
 
-    it("validates locally", function () {
+    it("validates locally", function (done) {
 
 
         const submitSpy = sinon.spy();
@@ -274,14 +274,21 @@ describe("Form", function () {
         input.instance().value = "MyField";
         input.simulate('change');
 
-        const formConfig2 = renderSpy.lastCall.args[0];
-        assert(formConfig2.formikProps.values.name === "MyField");
-        assert(formConfig2.formikProps.values.description === "MyField");
-        assert(formConfig2.formikProps.errors.name === "NAME=DESC");
-        assert(formConfig2.formikProps.errors.description === "DESC=NAME");
+        setImmediate(
+            () => {
+                const formConfig2 = renderSpy.lastCall.args[0];
+                assert(formConfig2.formikProps.values.name === "MyField");
+                assert(formConfig2.formikProps.values.description === "MyField");
+                assert(formConfig2.formikProps.errors.name === "NAME=DESC");
+                assert(formConfig2.formikProps.errors.description === "DESC=NAME");
 
 
-        component.unmount();
+                component.unmount();
+                done();
+
+            }
+        );
+
     });
 
     // field validation and submission tested in field.js, text-area.js, select.js etc

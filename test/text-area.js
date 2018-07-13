@@ -12,7 +12,7 @@ import TextArea from "../src/TextArea";
 
 describe("TextArea", function (){
 
-    it("renders as textarea element", function() {
+    it("renders as textarea element", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -68,12 +68,18 @@ describe("TextArea", function (){
         //console.log(renderSpy.callCount);
         component.find("form").simulate("submit");
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.description === "YYY");
+        setImmediate(
+            () => {
+
+                assert(submitSpy.called);
+                const values = submitSpy.lastCall.args[0];
+                assert(values.description === "YYY");
 
 
-        component.unmount();
+                component.unmount();
+                done();
+            }
+        )
 
     });
 

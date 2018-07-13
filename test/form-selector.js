@@ -95,7 +95,7 @@ describe("FormSelector", function () {
 
     after(() => component.unmount());
 
-    it("renders one of many complex fields", function () {
+    it("renders one of many complex fields", function (done) {
 
         const nameInputs = component.find(".form-selector input.f-name");
 
@@ -115,57 +115,70 @@ describe("FormSelector", function () {
         nameInputs2.instance().value = "modified";
         nameInputs2.simulate("change");
 
-        console.log(renderSpy.lastCall.args[0].formikProps.errors)
-        assert(renderSpy.lastCall.args[0].formikProps.isValid);
-        assert(renderSpy.lastCall.args[0].formikProps.values.fields[1].name === "modified");
+        setImmediate(
+            () => {
+
+                console.log(renderSpy.lastCall.args[0].formikProps.errors)
+                assert(renderSpy.lastCall.args[0].formikProps.isValid);
+                assert(renderSpy.lastCall.args[0].formikProps.values.fields[1].name === "modified");
 
 
-        nameInputs2.instance().value = "";
-        nameInputs2.simulate("change");
+                nameInputs2.instance().value = "";
+                nameInputs2.simulate("change");
 
-        assert(!renderSpy.lastCall.args[0].formikProps.isValid);
-        assert(renderSpy.lastCall.args[0].formikProps.values.fields[1].name === "");
-        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[1].name === "$FIELD required");
+                setImmediate(
+                    () => {
+                        assert(!renderSpy.lastCall.args[0].formikProps.isValid);
+                        assert(renderSpy.lastCall.args[0].formikProps.values.fields[1].name === "");
+                        assert(renderSpy.lastCall.args[0].formikProps.errors.fields[1].name === "$FIELD required");
 
-        nameInputs2.instance().value = "mod";
-        nameInputs2.simulate("change");
+                        nameInputs2.instance().value = "mod";
+                        nameInputs2.simulate("change");
+                        component.find("form").simulate("submit");
+                        setImmediate(
+                            () => {
 
-        component.find("form").simulate("submit");
+                                assert.deepEqual(submitSpy.lastCall.args[0], {
+                                    "description": "",
+                                    "fields": [
+                                        {
+                                            "config": null,
+                                            "description": "",
+                                            "maxLength": 36,
+                                            "name": "id",
+                                            "required": true,
+                                            "sqlType": "",
+                                            "type": "UUID",
+                                            "unique": false
+                                        },
+                                        {
+                                            "config": null,
+                                            "description": "",
+                                            "maxLength": 100,
+                                            "name": "mod",   // changed
+                                            "required": true,
+                                            "sqlType": "",
+                                            "type": "STRING",
+                                            "unique": false
+                                        }
+                                    ],
+                                    "foreignKeys": [],
+                                    "name": "MyType",
+                                    "primaryKey": {
+                                        "fields": [
+                                            "id"
+                                        ]
+                                    },
+                                    "uniqueConstraints": []
+                                });
 
-        assert.deepEqual(submitSpy.lastCall.args[0], {
-            "description": "",
-            "fields": [
-                {
-                    "config": null,
-                    "description": "",
-                    "maxLength": 36,
-                    "name": "id",
-                    "required": true,
-                    "sqlType": "",
-                    "type": "UUID",
-                    "unique": false
-                },
-                {
-                    "config": null,
-                    "description": "",
-                    "maxLength": 100,
-                    "name": "mod",   // changed
-                    "required": true,
-                    "sqlType": "",
-                    "type": "STRING",
-                    "unique": false
-                }
-            ],
-            "foreignKeys": [],
-            "name": "MyType",
-            "primaryKey": {
-                "fields": [
-                    "id"
-                ]
-            },
-            "uniqueConstraints": []
-        });
-
+                                done();
+                            }
+                        )
+                    }
+                )
+            }
+        );
 
     })
 

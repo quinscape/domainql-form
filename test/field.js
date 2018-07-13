@@ -15,7 +15,7 @@ import GlobalConfig from "../src/GlobalConfig";
 
 describe("Field", function (){
 
-    it("renders as text input", function() {
+    it("renders as text input", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -23,7 +23,7 @@ describe("Field", function (){
         const component = mount(
             <Form
                 schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                onSubmit={submitSpy }
                 type={ "EnumTypeInput" }
                 value={{
                     name: "MyEnum",
@@ -48,23 +48,32 @@ describe("Field", function (){
         input.simulate('change');
 
 
-        const formConfig = renderSpy.lastCall.args[0];
+        setImmediate(
+            () => {
+                const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.formikProps.values.name === "AnotherEnum");
+                assert(formConfig.formikProps.values.name === "AnotherEnum");
 
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
+                let form = component.find("form");
 
+                console.log("submit", form.simulate("submit"));
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.name === "AnotherEnum");
+                setImmediate(
+                    () => {
+                        assert(submitSpy.called);
+                        const values = submitSpy.lastCall.args[0];
+                        assert(values.name === "AnotherEnum");
 
-        component.unmount();
+                        component.unmount();
+                        done();
+                    }
+                );
+            }
+        );
 
     });
 
-    it("renders as checkbox", function() {
+    it("renders as checkbox", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -119,16 +128,22 @@ describe("Field", function (){
         //console.log(renderSpy.callCount);
         component.find("form").simulate("submit");
 
+        setImmediate(
+            () => {
+                assert(submitSpy.called);
+                const values = submitSpy.lastCall.args[0];
+                assert(values.required === false);
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.required === false);
+                component.unmount();
+                done();
+            }
+        );
 
-        component.unmount();
+
 
     });
 
-    it("renders as enum select", function() {
+    it("renders as enum select", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -183,16 +198,21 @@ describe("Field", function (){
         //console.log(renderSpy.callCount);
         component.find("form").simulate("submit");
 
+        setImmediate(
+            () => {
+                assert(submitSpy.called);
+                const values = submitSpy.lastCall.args[0];
+                assert(values.type === "INTEGER");
 
-        assert(submitSpy.called);
-        const values = submitSpy.lastCall.args[0];
-        assert(values.type === "INTEGER");
+                component.unmount();
+                done();
+            }
+        );
 
-        component.unmount();
 
     });
 
-    it("validates according to field type", function() {
+    it("validates according to field type", function(done) {
 
         const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
@@ -240,16 +260,22 @@ describe("Field", function (){
         select.simulate('change');
 
 
-        const formConfig = renderSpy.lastCall.args[0];
+        setImmediate(
+            () => {
+                const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.formikProps.values.maxLength === "1a");
-        assert(formConfig.formikProps.errors.maxLength === "Invalid Integer");
+                assert(formConfig.formikProps.values.maxLength === "1a");
+                assert(formConfig.formikProps.errors.maxLength === "Invalid Integer");
 
-        component.unmount();
+                component.unmount();
+                done();
+            }
+        );
+
 
     });
 
-    it("provides a field context to render function children", function() {
+    it("provides a field context to render function children", function(done) {
 
         GlobalConfig.registerLabelLookup((formConfig, name) =>
         {
@@ -323,10 +349,16 @@ describe("Field", function (){
 
         component.find("button").simulate("click");
 
-        const fieldContext2 = renderSpy.lastCall.args[0];
+        setImmediate(
+            () => {
+                const fieldContext2 = renderSpy.lastCall.args[0];
 
-        assert(fieldContext2.formConfig.formikProps.values.name === "From Button");
+                assert(fieldContext2.formConfig.formikProps.values.name === "From Button");
 
-        component.unmount();
+                component.unmount();
+                done();
+            }
+        );
+
     })
 });
