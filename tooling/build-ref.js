@@ -16,6 +16,8 @@ const COMPONENTS = [
             "./snippets/Select.md",
             "../src/FormList.js",
             "../src/FormSelector.js",
+            "../src/GlobalErrors.js",
+            "../src/AutoSubmit.js",
         ]
     },
     {
