@@ -54,6 +54,11 @@ function pushErrors(errorList, value, name, form)
     }
 }
 
+/**
+ * Renders a global list of current errors or nothing.
+ *
+ * The error labels are cross-linked with the input fields by name attribute after mount.
+ */
 class GlobalErrors extends React.Component {
 
 
