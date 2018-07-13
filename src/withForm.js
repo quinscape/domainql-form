@@ -18,16 +18,14 @@ export default function(Component, formProps)
     {
         static displayName = "withForm(" + getDisplayName(Component) + ")";
 
-        onSubmit = (value, actions) => this._component.props.onSubmit(value, actions);
-
         render()
         {
-            const { value } = this.props;
+            const { value, validate, onSubmit } = this.props;
             return (
                 <Form
                     { ... formProps}
-                    onSubmit={ this.onSubmit }
-                    validate={ this.props.validate }
+                    validate={ validate }
+                    onSubmit={ onSubmit }
                     value={ value }
                 >
                 {
