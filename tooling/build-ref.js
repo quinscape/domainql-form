@@ -18,6 +18,7 @@ const COMPONENTS = [
             "../src/FormSelector.js",
             "../src/GlobalErrors.js",
             "../src/AutoSubmit.js",
+            "./snippets/HighOrderComponents.md"
         ]
     },
     {
