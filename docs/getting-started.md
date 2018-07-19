@@ -15,78 +15,9 @@ timestamp.
 First you need a GraphQL setup from either the domainql library or another GraphQL implementation. Then you need to 
 execute an introspection query that tells domainql-form what types there are and what fields they have. 
 
-### Example Introspection Query
-```graphql
-query IntrospectionQuery
-{
-    __schema {
-        types {
-            kind
-            name
-            description
-            fields(includeDeprecated: true) {
-                name
-                description
-                args {
-                    ...InputValue
-                }
-                type {
-                    ...TypeRef
-                }
-                isDeprecated
-                deprecationReason
-            }
-            inputFields {
-                ...InputValue
-            }
-            interfaces {
-                ...TypeRef
-            }
-            enumValues(includeDeprecated: true) {
-                name
-                description
-                isDeprecated
-                deprecationReason
-            }
-            possibleTypes {
-                ...TypeRef
-            }
-        }
-    }
-}
-
-
-fragment InputValue on __InputValue {
-    name
-    description
-    type { ...TypeRef }
-    defaultValue
-}
-
-fragment TypeRef on __Type {
-    kind
-    name
-    ofType {
-        kind
-        name
-        ofType {
-            kind
-            name
-            ofType {
-                kind
-                name
-            }
-        }
-    }
-}
-
-```
-
-If you work with domainql, you can use the INITIAL_QUERIES feature to
-preload the schema from the Webpack entrypoint.
-
-Ths has the advantage of the data being available from the very beginning of
-view initialization, synchronously.
+If you use DomainQL, it contains a class *de.quinscape.domainql.schema.SchemaDataProvider*
+which will automatically push the right schema data as `schema` prop in the initial data
+block / DomainQL `PRELOADED_QUERIES`
 
 ### Using FormConfigProvider
  
