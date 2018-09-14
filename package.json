@@ -1,6 +1,6 @@
 {
     "name": "domainql-form",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Formik based form helpers for GraphQL",
     "main": "lib/index.js",
     "author": "Sven Helmberger",
