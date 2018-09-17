@@ -4,10 +4,11 @@ import PropTypes from "prop-types"
 import FieldMode from "./FieldMode"
 import FormGroup from "./FormGroup"
 import GlobalConfig from "./GlobalConfig"
-import withFormConfig from "./withFormConfig"
 import Field from "./Field"
 import get from "lodash.get";
 import cx from "classnames";
+
+import { resolveStaticRenderer } from "./GlobalConfig"
 
 /**
  * Allows selection from a list of string values for a target field.
@@ -116,58 +117,67 @@ class Select extends React.Component {
 
         const noneText = GlobalConfig.none();
 
+        const effectiveMode = fieldContext.mode || formConfig.options.mode;
+
+        const isReadOnly = effectiveMode === FieldMode.READ_ONLY;
+
 
         return (
             <FormGroup
                 { ... fieldContext }
                 errorMessage={ errorMessage }
             >
-                <select
-                    className={
-                        cx(
-                            inputClass,
-                            "form-control",
-                            errorMessage && "is-invalid"
+                {
+                    isReadOnly ?
+                        resolveStaticRenderer(fieldContext.fieldType)(fieldValue) : (
+                            <select
+                                className={
+                                    cx(
+                                        inputClass,
+                                        "form-control",
+                                        errorMessage && "is-invalid"
+                                    )
+                                }
+                                name={qualifiedName}
+                                value={fieldValue}
+                                disabled={effectiveMode === FieldMode.DISABLED}
+                                onChange={ev => this.handleChange(fieldContext, ev)}
+                                onBlur={onBlur}
+                                autoFocus={autoFocus}
+                            >
+                                {
+                                    !required && <option key="" value="">{noneText}</option>
+                                }
+                                {
+                                    values.map(v => {
+
+                                        let name, value;
+                                        if (typeof v === "string")
+                                        {
+                                            name = v;
+                                            value = v;
+                                        }
+                                        else
+                                        {
+                                            name = v.name;
+                                            value = v.value;
+                                        }
+
+                                        return (
+                                            <option
+                                                key={value}
+                                                value={value}
+                                            >
+                                                {
+                                                    name
+                                                }
+                                            </option>
+                                        );
+                                    })
+                                }
+                            </select>
                         )
-                    }
-                    name={ qualifiedName }
-                    value={ fieldValue }
-                    onChange={ ev => this.handleChange(fieldContext, ev) }
-                    onBlur={ onBlur }
-                    autoFocus={ autoFocus }
-                >
-                    {
-                        !required && <option key="" value="">{ noneText }</option>
-                    }
-                    {
-                        values.map(v => {
-
-                            let name, value;
-                            if (typeof v === "string")
-                            {
-                                name = v;
-                                value = v;
-                            }
-                            else
-                            {
-                                name = v.name;
-                                value = v.value;
-                            }
-
-
-                            return (
-                                <option
-                                    key={value}
-                                    value={value}
-                                >
-                                    {
-                                        name
-                                    }
-                                </option>
-                            );
-                        })
-                    }
-                </select>
+                }
             </FormGroup>
         )
     };

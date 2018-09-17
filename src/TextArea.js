@@ -7,6 +7,8 @@ import Field from "./Field"
 import get from "lodash.get";
 import cx from "classnames";
 
+import { resolveStaticRenderer } from "./GlobalConfig"
+
 
 /**
  * Edits a string GraphQL field with a text area element.
@@ -70,9 +72,9 @@ class TextArea extends React.Component {
     {
         return (
             <Field
-                { ...this.props }
-                rows={ null }
-                cols={ null }
+                {...this.props}
+                rows={null}
+                cols={null}
             >
                 {
                     this.renderWithFieldContext
@@ -83,35 +85,45 @@ class TextArea extends React.Component {
 
     renderWithFieldContext = fieldContext => {
 
-        const { rows, cols, inputClass, placeholder } = this.props;
-        const { qualifiedName, path, formConfig, onChange, onBlur, autoFocus } = fieldContext;
-        const { formikProps } = formConfig;
+        const {rows, cols, inputClass, placeholder} = this.props;
+        const {qualifiedName, path, formConfig, onChange, onBlur, autoFocus} = fieldContext;
+        const {formikProps} = formConfig;
 
         const errorMessage = get(formikProps.errors, path);
         const fieldValue = get(formikProps.values, path);
 
+        const effectiveMode = fieldContext.mode || formConfig.options.mode;
+
+        const isReadOnly = effectiveMode === FieldMode.READ_ONLY;
+
         return (
             <FormGroup
-                { ... fieldContext }
-                errorMessage={ errorMessage }
+                {...fieldContext}
+                errorMessage={errorMessage}
             >
-                <textarea
-                    className={
-                        cx(
-                            inputClass,
-                            "form-control",
-                            errorMessage && "is-invalid"
-                        )
-                    }
-                    rows={ rows }
-                    cols={ cols }
-                    name={ qualifiedName }
-                    value={ fieldValue }
-                    placeholder={ placeholder }
-                    onChange={ onChange }
-                    onBlur={ onBlur }
-                    autoFocus={ autoFocus }
-                />
+                {
+                    isReadOnly ?
+                        resolveStaticRenderer(fieldContext.fieldType)(fieldValue) : (
+                        <textarea
+                            className={
+                                cx(
+                                    inputClass,
+                                    "form-control",
+                                    errorMessage && "is-invalid"
+                                )
+                            }
+                            rows={rows}
+                            cols={cols}
+                            name={qualifiedName}
+                            value={fieldValue}
+                            placeholder={placeholder}
+                            onChange={onChange}
+                            onBlur={onBlur}
+                            autoFocus={autoFocus}
+                            disabled={effectiveMode === FieldMode.DISABLED}
+                        />
+                    )
+                }
             </FormGroup>
         )
     };
