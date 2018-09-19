@@ -11,6 +11,7 @@ import Form from "../src/Form";
 import TextArea from "../src/TextArea";
 import Select from "../src/Select";
 import GlobalConfig from "../src/GlobalConfig";
+import FieldMode from "../src/FieldMode";
 
 describe("Select", function (){
 
@@ -263,6 +264,144 @@ describe("Select", function (){
 
 
 
+    });
+
+    it("inherits DISABLED from parent context", function(done) {
+
+        const submitSpy = sinon.spy();
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const component = mount(
+            <Form
+                schema={ new InputSchema(rawSchema) }
+                onSubmit={ submitSpy }
+                type={ "DomainFieldInput" }
+                mode={ FieldMode.DISABLED }
+                value={{
+                    name: "AAA",
+                    description: "XXX",
+                    type: "STRING",
+                    required: true,
+                    maxLength: -1
+                }}
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select name="name" values={                                 [
+                                {
+                                    name: "Option A",
+                                    value: "AAA"
+                                },
+                                {
+                                    name: "Option B",
+                                    value: "BBB"
+                                },
+                                {
+                                    name: "Option C",
+                                    value: "CCC"
+                                }
+                            ]
+                            } required={ true }/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        const select = component.find("select");
+
+        assert(component.text().indexOf("AAA") < 0);
+        assert(select.instance().value === "AAA");
+        assert(select.instance().disabled);
+
+        setImmediate( () => {
+            component.unmount();
+            done()
+        });
+    });
+
+    it("inherits READ_ONLY from parent context", function(done) {
+
+        const submitSpy = sinon.spy();
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const component = mount(
+            <Form
+                schema={ new InputSchema(rawSchema) }
+                onSubmit={ submitSpy }
+                type={ "DomainFieldInput" }
+                mode={ FieldMode.READ_ONLY }
+                value={{
+                    name: "AAA",
+                    description: "XXX",
+                    type: "STRING",
+                    required: true,
+                    maxLength: -1
+                }}
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select name="name" values={                                 [
+                                {
+                                    name: "Option A",
+                                    value: "AAA"
+                                },
+                                {
+                                    name: "Option B",
+                                    value: "BBB"
+                                },
+                                {
+                                    name: "Option C",
+                                    value: "CCC"
+                                }
+                            ]
+                            } required={ true }/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        const select = component.find("select");
+
+        assert(select.length === 0);
+        assert(component.text().indexOf("AAA") > 0);
+        setImmediate( () => {
+            component.unmount();
+            done()
+        });
     });
 
 });
