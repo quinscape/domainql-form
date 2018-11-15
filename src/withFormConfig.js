@@ -8,7 +8,7 @@ import getDisplayName from "./util/getDisplayName";
  * over just using FormConfig.Provider being that the formConfig prop is also accessible in lifecycle methods and event
  * handlers.
  *
- * @param {ReactElement} Component
+ * @param {React.Element} Component
  * @return {function} Component that will automatically receive a "formConfig" prop
  */
 export default function(Component)

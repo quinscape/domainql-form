@@ -7,7 +7,7 @@ import getDisplayName from "./util/getDisplayName";
  * Convenience HOC that render a domainql-form around the wrapped component, providing
  * it with the form config as props
  *
- * @param {ReactElement} Component      component to enhance
+ * @param {React.Element} Component      component to enhance
  * @param {object} formProps            props for the <Form/> 
  *
  * @return {function} Component that will automatically receive a "formConfig" prop

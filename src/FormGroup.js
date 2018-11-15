@@ -20,9 +20,9 @@ class FormGroup extends React.Component
         formGroupClass: PropTypes.string,
 
         /**
-         * Error message to render for this form group.
+         * Error messages to render for this form group.
          */
-        errorMessage: PropTypes.string
+        errorMessages: PropTypes.array
     };
 
     static defaultProps = {
@@ -37,7 +37,7 @@ class FormGroup extends React.Component
             label,
             helpText,
             labelClass,
-            errorMessage,
+            errorMessages,
             children
         } = this.props;
 
@@ -64,14 +64,16 @@ class FormGroup extends React.Component
 
         let helpBlock = false;
 
+        const haveErrors = errorMessages.length > 0;
 
-        const formText = errorMessage || helpText;
+
+        const formText = haveErrors ? errorMessages : helpText && [helpText];
 
         if (formText)
         {
             helpBlock = (
-                <p className={ cx("form-group", errorMessage ? "invalid-feedback" : "text-muted") }>
-                    { formText }
+                <p className={ cx("form-group", haveErrors ? "invalid-feedback" : "text-muted") }>
+                    { formText.map( (txt, idx) => <span key={ idx }> { txt } </span>) }
                 </p>
             )
         }
@@ -81,7 +83,7 @@ class FormGroup extends React.Component
                 cx(
                     "form-group",
                     horizontal ? "form-row" : null,
-                    errorMessage && "has-error"
+                    haveErrors && "has-error"
                 )
             }>
 

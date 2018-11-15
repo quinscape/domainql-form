@@ -2,12 +2,12 @@ import React from "react"
 import toPath from "lodash.topath"
 
 import GlobalConfig from "./GlobalConfig"
-import FormConfig from "./FormConfig"
 
 import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
-
+import withFormConfig from "./withFormConfig";
+import InputSchema from "./InputSchema";
 
 /**
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
@@ -52,12 +52,12 @@ class Field extends React.Component {
         labelClass: PropTypes.string,
 
         /**
-         * Optional change handler to use instead of formikProps.handleChange
+         * Optional change handler to use
          */
         onChange: PropTypes.func,
 
         /**
-         * Optional blur handler to use instead of formikProps.handleBlur
+         * Optional blur handler to use
          */
         onBlur: PropTypes.func,
 
@@ -67,62 +67,90 @@ class Field extends React.Component {
         autoFocus: PropTypes.bool
     };
 
-    render()
+    static getDerivedStateFromProps(nextProps, prevState)
     {
-        return (
-            <FormConfig.Consumer>
-                {
-                    this.renderWithFormConfig
-                }
-            </FormConfig.Consumer>
+        const { id, name, label, formConfig, autoFocus } = nextProps;
+
+        // do we have a field type already and did the form config and id and name not change from last time?
+        if (
+            prevState.fieldContext &&
+            prevState.id === id &&
+            prevState.name === name &&
+
+            prevState.label === label
+
+            // XXX: none of the functionality here should be sensitive to form config changes. Uncomment if this is wrong
+            /*&& prevState.formConfig.equals(formConfig)*/
         )
-    }
+        {
+            // yes -> no update
+            //console.log("NO UPDATE");
+            return null;
+        }
 
-    renderWithFormConfig = formConfig => {
-
-        const { id, name, label, children, onChange, onBlur, autoFocus } = this.props;
-
-        const { type, formikProps }  = formConfig;
+        const qualifiedName = formConfig.getPath(name);
+        const path = toPath(qualifiedName);
 
         let fieldId;
-        let qualifiedName;
-        let path;
-        let fieldType;
         let effectiveLabel;
 
         if (name && name.length)
         {
-            qualifiedName = formConfig.getPath(name);
-            path = toPath(qualifiedName);
             const lastSegment = path[path.length - 1];
-
             fieldId = id || "field-" + type + "-" + lastSegment;
-
-
-            fieldType = formConfig.schema.resolveType(type, path);
             effectiveLabel = typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
         }
         else
         {
             fieldId = id;
-            qualifiedName = null;
-            path = null;
-            fieldType = null;
             effectiveLabel = label || "";
         }
 
-        const fieldContext = {
-            formConfig,
-            fieldId,
-            fieldType,
-            qualifiedName,
-            path,
-            label: effectiveLabel,
-            onChange: onChange || formikProps.handleChange,
-            onBlur: onBlur || formikProps.handleBlur,
-            autoFocus,
-            ... this.props
+        // update field state
+        return {
+            fieldContext : {
+                formConfig,
+                fieldId,
+                fieldType: formConfig.schema.resolveType(type, path),
+                qualifiedName,
+                path,
+                label: effectiveLabel,
+                onChange: prevState.onChange,
+                onBlur: prevState.onBlur,
+                autoFocus,
+            }
         };
+    }
+
+    onChange = ev => {
+
+        const { target: { name, value } } = ev;
+
+        const { formConfig } = this.props;
+        const { fieldContext : { fieldType } } = this.state;
+
+        formConfig.handleChange(fieldType, name, value);
+    };
+
+    onBlur = ev => {
+        const { target: { name, value } } = ev;
+
+        const { formConfig } = this.props;
+        const { fieldContext : { fieldType } } = this.state;
+
+        formConfig.handleBlur(fieldType, name, value);
+
+    };
+
+    state = {
+        onChange: this.onChange,
+        onBlur: this.onBlur,
+        fieldContext: null
+    };
+
+    render()
+    {
+        const { fieldContext } = this.state;
 
         if (typeof children === "function")
         {
@@ -134,7 +162,6 @@ class Field extends React.Component {
             return renderFn(fieldContext);
         }
     };
-
 }
 
-export default Field
+export default withFormConfig(Field)

@@ -10,6 +10,7 @@
         "lodash.debounce": "^4.0.8",
         "lodash.get": "^4.4.2",
         "lodash.isequal": "^4.5.0",
+        "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
         "prop-types": "^15.6.1"
     },
@@ -30,6 +31,8 @@
         "enzyme-adapter-react-16": "^1.1.1",
         "formik": "^1.0.0-beta.2",
         "jsdom": "^11.11.0",
+        "mobx": "^5.5.0",
+        "mobx-utils": "^5.0.4",
         "mocha": "^5.1.1",
         "power-assert": "^1.5.0",
         "react": "^16.4.0",
@@ -44,6 +47,8 @@
         "build-docs": "babel-node tooling/build-ref.js"
     },
     "peerDependencies": {
+        "mobx": "^5.5.0",
+        "mobx-utils": "^5.0.4",
         "prop-types": "^15.6.1",
         "react": "^16.6.3"
     }

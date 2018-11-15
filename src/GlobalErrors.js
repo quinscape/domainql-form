@@ -2,6 +2,15 @@ import React from "react"
 import PropTypes from "prop-types"
 import withFormConfig from "./withFormConfig";
 
+
+/**
+ * Searches for an HTML with the given name attribute and returns the id attribute of that HTML element or null if there
+ * is no such element.
+ * 
+ * @param {HTMLFormElement} form      form element
+ * @param {String} name               field name / path
+ * @return {*}
+ */
 function getFieldId(form, name)
 {
     if (!form)
@@ -13,47 +22,6 @@ function getFieldId(form, name)
     return elem && elem.getAttribute("id");
 }
 
-function pushErrors(errorList, value, name, form)
-{
-    if (!value)
-    {
-        return;
-    }
-
-    if (value && typeof value === "object")
-    {
-        if (Array.isArray(value))
-        {
-            for (let i = 0; i < value.length; i++)
-            {
-                const e = value[i];
-
-                pushErrors(errorList, e, name + "." + i, form)
-            }
-        }
-        else
-        {
-            for (let propName in value)
-            {
-                if (value.hasOwnProperty(propName))
-                {
-                    const e = value[propName];
-
-                    pushErrors(errorList, e, name + "." + propName, form)
-                }
-            }
-        }
-    }
-    else
-    {
-        errorList.push({
-            name,
-            errorMessage: value,
-            fieldId: getFieldId(form, name)
-        })
-    }
-}
-
 /**
  * Renders a global list of current errors or nothing.
  *
@@ -61,8 +29,11 @@ function pushErrors(errorList, value, name, form)
  */
 class GlobalErrors extends React.Component {
 
+    state = {
+        instance: this
+    };
 
-    static propTypes={
+    static propTypes = {
         /**
          * Text to use as heading (empty = no heading).
          */
@@ -76,64 +47,53 @@ class GlobalErrors extends React.Component {
          */
         heading: PropTypes.string
     };
-    static defaultProps={
+
+    static defaultProps = {
         headingText: "Errors",
         text: null,
         heading: "h3"
     };
+
 
     static getDerivedStateFromProps(nextProps, prevState)
     {
         //console.log("GlobalErrors.getDerivedStateFromProps", {nextProps, prevState});
 
         const current = prevState.errors;
-        const { errors : nextErrors } = nextProps.formConfig.formikProps;
+        const {errors: nextErrors} = nextProps.formConfig;
 
-        if (!nextErrors || (current === nextErrors) )
+        if (!nextErrors || (current === nextErrors))
         {
             return null;
         }
 
         //console.log("Linearize errors", next);
 
-        const errorList = GlobalErrors.linearizeErrors( nextErrors, null);
+        const errorIdList = GlobalErrors.findFieldIds(nextErrors, prevState.instance._listElem);
 
         return {
-            errorList,
-            errors : nextErrors
+            errorIdList,
+            errors: nextErrors
         }
 
     }
 
     componentDidMount()
     {
-        const { errors } = this.props.formConfig.formikProps;
+        const { errors } = this.props.formConfig;
+
+        // if we have initial errors
         if (errors)
         {
-            const errorList = GlobalErrors.linearizeErrors(errors, this._listElem);
+            // we need to update extra once to update the target field ids of our error list
+            const errorList = GlobalErrors.findFieldIds(errors, this._listElem);
             this.setState({
                 errorList
             });
         }
     }
 
-    componentDidUpdate(prevProps, prevState)
-    {
-        const { errors : prevErrors } = prevProps.formConfig.formikProps;
-        const { errors } = this.props.formConfig.formikProps;
-
-        if( prevErrors !== errors )
-        {
-            const errorList = GlobalErrors.linearizeErrors(errors, this._listElem);
-
-            this.setState({
-                errorList,
-                errors
-            });
-        }
-    }
-
-    static linearizeErrors(errors, component)
+    static findFieldIds(errors, component)
     {
         let form = null;
         if (component)
@@ -145,72 +105,77 @@ class GlobalErrors extends React.Component {
             }
         }
 
-        const errorList = [];
+        const length = errors.length;
+        const errorIdList = new Array(length);
 
-        for (let name in errors)
+        for (let i = 0; i < length; i++)
         {
-            if (errors.hasOwnProperty(name))
-            {
-                const value = errors[name];
+            const { path, message } = errors[i];
 
-                pushErrors(errorList, value, name, form);
+            errorIdList[i] = {
+                fieldId: getFieldId(form, path),
+                path,
+                message
             }
         }
 
-        return errorList;
+        return errorIdList;
     }
 
-    state = {};
 
     render()
     {
         const { heading, headingText, text } = this.props;
-        const { errorList } = this.state;
+        const { errorIdList } = this.state;
 
-        //console.log({errorList});
+        //console.log({ errorIdList });
+
+        const errors = [];
+
+        errorIdList.forEach(entry => {
+            const { fieldId, name, errorMessages } = entry;
+
+            errors.push.apply(errors, errorMessages.map( (err, idx) =>  (
+                <li key={ name + idx }>
+                    <label
+                        className="text-danger"
+                        htmlFor={ fieldId }
+                        data-path={ fieldId ? null : name }
+                    >
+                        {
+                            errorMessages
+                        }
+                    </label>
+                </li>
+            )));
+        });
 
         return (
             <div className="global-errors" style={{
-                display: !errorList.length ? "none" : null
+                display: !errorIdList.length ? "none" : null
             }}>
                 {
-                    headingText && React.createElement( heading, null, headingText)
+                    headingText && React.createElement(heading, null, headingText)
                 }
                 {
                     text &&
                     <p>
-                    {
-                        text
-                    }
+                        {
+                            text
+                        }
                     </p>
                 }
                 <ul
                     ref={ elem => this._listElem = elem }
                 >
                     {
-                        errorList.map( entry => {
-
-                            const { fieldId, name, errorMessage } = entry;
-
-                            return (
-                                <li key={ name }>
-                                    <label
-                                        className="text-danger"
-                                        htmlFor={ fieldId }
-                                        data-path={ fieldId ? null : name }
-                                    >
-                                        {
-                                            errorMessage
-                                        }
-                                    </label>
-                                </li>
-                            );
-                        })
+                        errors
                     }
                 </ul>
             </div>
         );
     }
 }
+
 
 export default withFormConfig(GlobalErrors)

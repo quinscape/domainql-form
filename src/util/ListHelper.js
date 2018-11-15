@@ -12,8 +12,7 @@ import {
     unwrapNonNull
 } from "../InputSchema"
 
-import { FieldArray } from "formik";
-
+//import { FieldArray } from "formik";
 
 
 /**
@@ -65,10 +64,11 @@ class ListHelper extends React.Component {
             formConfig.schema
         );
 
+
         lineConfig.setFormContext(
             formConfig.type,
             path + "." + index,
-            formConfig.formikProps
+            formConfig.value
         );
 
         return lineConfig;
@@ -139,25 +139,20 @@ class ListHelper extends React.Component {
             }
         }
 
-        const array = get(formConfig.formikProps.values, path);
+        const array = get(formConfig.value, path);
 
         return (
-            <FieldArray
-                name={ name }
-                render={
-                    arrayHelpers =>
-                        children(
-                            {
-                                array,
-                                path,
-                                arrayHelpers,
-                                renderRowToolbar: this.renderRowToolbar,
-                                renderToolbar: this.renderToolbar,
-                                createLineContext: this.createLineContext
-                            }
-                        )
+            children(
+                {
+                    array,
+                    path,
+                    // XXX: implement?
+                    arrayHelpers: { _ : "helpers not implemented" },
+                    renderRowToolbar: this.renderRowToolbar,
+                    renderToolbar: this.renderToolbar,
+                    createLineContext: this.createLineContext
                 }
-            />
+            )
         );
     };
 }

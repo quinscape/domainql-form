@@ -1,5 +1,6 @@
 import React from "react"
 import PropTypes from "prop-types"
+import { comparer } from "mobx"
 import withFormConfig from "./withFormConfig";
 
 import debounce from "lodash.debounce"
@@ -42,10 +43,10 @@ class AutoSubmit extends React.Component {
         {
             const { formConfig : oldConfig, instance } = prevState;
 
-            const { values : prevValues } = oldConfig.formikProps;
-            const { values } = formConfig.formikProps;
+            const { value : prevValue } = oldConfig;
+            const { value } = formConfig;
 
-            if (!isEqual(prevValues, values))           
+            if (!comparer.structural(prevValue, value))
             {
                 //console.log("triggerSubmit");
                 instance.triggerSubmit();
@@ -65,7 +66,7 @@ class AutoSubmit extends React.Component {
         instance: this
     };
 
-    triggerSubmit = debounce( () => this.props.formConfig.formikProps.submitForm(), this.props.timeout);
+    triggerSubmit = debounce( () => this.props.formConfig.submitForm(), this.props.timeout);
 
     render()
     {
