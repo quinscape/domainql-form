@@ -1,14 +1,13 @@
 import React from "react"
 import cx from "classnames"
-import assign from "object-assign"
-
-import { Formik } from "formik"
+import { createViewModel } from "mobx-utils"
 
 import PropTypes from "prop-types"
 import FormConfig from "./FormConfig";
 import InputSchema from "./InputSchema";
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
+import withFormConfig from "./withFormConfig";
 
 function getSchema(formConfig, props)
 {
@@ -22,185 +21,6 @@ function getSchema(formConfig, props)
     }
 
     return schema;
-}
-
-
-/**
- * "Inner" form component.
- *
- * Indirection created to have the two coalesced contexts as props.
- *
- */
-class InnerForm extends React.Component {
-
-    static getDerivedStateFromProps(nextProps, prevState)
-    {
-        const { type, formikProps, formConfig: parentConfig } = nextProps;
-
-        const schema = getSchema(parentConfig, nextProps);
-
-        let formConfig;
-        if (parentConfig)
-        {
-            formConfig = new FormConfig(
-                FormConfig.mergeOptions(
-                    parentConfig.options,
-                    nextProps
-                ),
-                schema
-            );
-        }
-        else
-        {
-            formConfig = new FormConfig(
-                nextProps,
-                schema
-            );
-        }
-        formConfig.setFormContext(type, "", formikProps);
-
-        // did the form config actually change since last time?
-        if (prevState.formConfig && prevState.formConfig.equals(formConfig))
-        {
-            // no -> no update
-
-            //console.log("NO UPDATE");
-
-            return null;
-        }
-
-        //console.log("NEW formConfig", formConfig, parentConfig);
-
-        // update form config in local state
-        return {
-            formConfig
-        };
-    }
-
-    state = {
-        formConfig: null
-    };
-
-    // called from outer form
-    // noinspection JSUnusedGlobalSymbols
-    onSubmit = (values, actions) => {
-
-        const { formConfig } = this.state;
-
-        const { schema, type, formikProps : { status } } = formConfig;
-
-
-        const converted = schema.fromValues( type, values);
-
-        if ( status)
-        {
-            actions = {
-                ... actions,
-                status
-            };
-        }
-
-        try
-        {
-            return this.props.onSubmit(converted, actions);
-        }
-        catch(e)
-        {
-            console.error("Error in onSubmit", e);
-        }
-    };
-
-    // called from outer form
-    // noinspection JSUnusedGlobalSymbols
-    validate = (values) => {
-
-        const { formConfig } = this.state;
-
-        const { validate } = this.props;
-
-        const { schema, type } = formConfig;
-
-        const errors = schema.validate( type, values);
-
-        if (validate)
-        {
-            const localErrors = validate(values);
-            return assign({}, errors, localErrors);
-        }
-        return errors;
-    };
-
-    handleButtonStatus = ev => {
-
-        const { target } = ev;
-
-        const { onClick } = this.props;
-
-        //console.log("Form onClick, target =", target);
-
-        if (
-            (
-                target.tagName === "BUTTON" ||
-                target.tagName === "INPUT"
-            ) &&
-            target.getAttribute("type") === "submit"
-        )
-        {
-            const name = target.getAttribute("name");
-            {
-                if (name)
-                {
-                    const { formConfig } = this.state;
-                    const { formikProps } = formConfig;
-
-                    const { status } = formikProps;
-
-                    if (!status || status.button !== name )
-                    {
-                        formikProps.setStatus({
-                            ... status,
-                            button: name
-                        })
-                    }
-                }
-            }
-        }
-
-        if (typeof onClick === "function")
-        {
-            onClick(ev);
-        }
-    };
-
-    render()
-    {
-        const { children, onClick } = this.props;
-
-        const { formConfig } = this.state;
-        const { formikProps } = formConfig;
-
-        return (
-            <form
-                className={
-                    cx(
-                        "form",
-                        formikProps.submitCount > 0 && "was-validated"
-                    )
-                }
-                onSubmit={ formikProps.handleSubmit }
-                onReset={ formikProps.handleReset }
-                onClick={ formConfig.options.buttonStatus ? this.handleButtonStatus : onClick }
-            >
-                <FormConfig.Provider value={ formConfig }>
-                    {
-                        typeof children === "function" ? children(formConfig) : children
-                    }
-                </FormConfig.Provider>
-            </form>
-        );
-    }
-    
-
 }
 
 /**
@@ -261,76 +81,177 @@ class Form extends React.Component {
     };
 
     static defaultProps = {
-        // whether the initial state of the form is considered valid (passed to formik)
-        isInitialValid: true
+    };
+
+    handleSubmit = ev => {
+
+        ev.preventDefault();
+
+        const { onSubmit } = this.props;
+        const { formConfig } = this.state;
+
+        if (onSubmit)
+        {
+            onSubmit(formConfig)
+        }
+        else
+        {
+            formConfig.model.submit();
+        }
+    };
+
+    handleReset = ev => {
+
+        ev.preventDefault();
+
+        const { onReset } = this.props;
+        const { formConfig } = this.state;
+
+
+        if (onReset)
+        {
+            onReset(formConfig)
+        }
+        else
+        {
+            formConfig.model.reset();
+        }
+
+    };
+
+    static getDerivedStateFromProps(nextProps, prevState)
+    {
+        const { value, type, formConfig: parentConfig } = nextProps;
+
+        const schema = getSchema(parentConfig, nextProps);
+
+        let formConfig;
+        if (parentConfig)
+        {
+            formConfig = new FormConfig(
+                FormConfig.mergeOptions(
+                    parentConfig.options,
+                    nextProps
+                ),
+                schema
+            );
+        }
+        else
+        {
+            formConfig = new FormConfig(
+                nextProps,
+                schema
+            );
+        }
+
+        // did the form config actually change since last time?
+        if (prevState.formConfig && prevState.formConfig.equals(formConfig))
+        {
+            // no -> no update
+
+            //console.log("NO UPDATE");
+
+            return null;
+        }
+
+        //console.log("NEW formConfig", formConfig, parentConfig);
+
+        formConfig.setFormContext(type, "", createViewModel(value), prevState.instance);
+
+        // update form config in local state
+        return {
+            formConfig
+        };
+    }
+
+    state = {
+        instance: this,
+        formConfig: null
+    };
+
+    // called from outer form
+    // noinspection JSUnusedGlobalSymbols
+    validate = (values) => {
+
+        const { formConfig } = this.state;
+
+        const { validate } = this.props;
+
+        const { schema, type } = formConfig;
+
+        const errors = schema.validate( type, values);
+
+        if (validate)
+        {
+            const localErrors = validate(values);
+            return Object.assign({}, errors, localErrors);
+        }
+        return errors;
+    };
+
+    handleOnClick = ev => {
+
+        const { target } = ev;
+
+        const { onClick } = this.props;
+
+        //console.log("Form onClick, target =", target);
+
+        if (
+            (
+                target.tagName === "BUTTON" ||
+                target.tagName === "INPUT"
+            ) &&
+            target.getAttribute("type") === "submit"
+        )
+        {
+            const name = target.getAttribute("name");
+            {
+                if (name)
+                {
+                    const { formConfig } = this.state;
+
+                    // XXX: direct, mutable update (should be ok)
+                    formConfig.button = name;
+                }
+            }
+        }
+
+        if (typeof onClick === "function")
+        {
+            onClick(ev);
+        }
     };
 
 
-    componentDidMount()
-    {
-        this._component.getFormikBag().validateForm();
-    }
-
-    onSubmit = (values, actions) => this._innerForm.onSubmit(values, actions);
-    validate = (values) => this._innerForm.validate(values);
-
-    registerFormikComponent = c => this._component = c;
-    registerInnerForm = c => this._innerForm = c;
-
     render()
     {
-        const {value, type, initialValues, isInitialValid, children } = this.props;
+        const { children } = this.props;
+
+        const { formConfig } = this.state;
+
+        //console.log("RENDER OUTER", formConfig, initial);
 
         return (
-            <FormConfig.Consumer>
-                {
-                    formConfig => {
-
-                        const schema = getSchema(formConfig , this.props);
-
-                        const initial = initialValues != null ? initialValues() : schema.toValues(type, value);
-                        //console.log("RENDER OUTER", formConfig, initial);
-
-                        return (
-                            <Formik
-                                ref={ this.registerFormikComponent }
-                                isInitialValid={ isInitialValid }
-                                initialValues={ initial }
-                                validate={ this.validate }
-                                onSubmit={ this.onSubmit }
-                                render={
-                                    formikProps => (
-                                        <InnerForm
-                                            { ... this.props }
-                                            ref={ this.registerInnerForm }
-                                            formConfig={ formConfig }
-                                            formikProps={ formikProps }
-                                        >
-                                            {
-                                                children
-                                            }
-                                        </InnerForm>
-                                    )
-                                }
-                            />
-                        );
-                    }
+            <form
+                className={
+                    cx(
+                        "form",
+                        false && "was-validated"
+                    )
                 }
-            </FormConfig.Consumer>
+                onSubmit={ this.handleSubmit }
+                onReset={ this.handleReset }
+                onClick={ this.handleOnClick }
+            >
+                <FormConfig.Provider value={ formConfig }>
+                    {
+                        typeof children === "function" ? children(formConfig) : children
+                    }
+                </FormConfig.Provider>
+            </form>
         );
     }
 }
 
-/**
- * Globally change the currency  default
- *
- * @param currency              currency symbol
- * @param currencyAddonRight    displayed on the right?
- */
-// export function setCurrencyDefaults(currency, currencyAddonRight)
-// {
-//     GQLForm.defaultProps.currency = currency;
-//     GQLForm.defaultProps.currencyAddonRight = currencyAddonRight;
-// }
-
-export default Form
+export default withFormConfig(Form)

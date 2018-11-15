@@ -110,10 +110,9 @@ class Select extends React.Component {
         const { values, inputClass, required } = this.props;
         const { formConfig, path, qualifiedName, onBlur, autoFocus } = fieldContext;
 
-        const { formikProps } = formConfig;
 
-        const errorMessage = get(formikProps.errors, path);
-        const fieldValue = get(formikProps.values, path);
+        const errorMessages = formConfig.getErrors(path);
+        const fieldValue = formConfig.getValue(path, errorMessages);
 
         const noneText = GlobalConfig.none();
 
@@ -121,11 +120,10 @@ class Select extends React.Component {
 
         const isReadOnly = effectiveMode === FieldMode.READ_ONLY;
 
-
         return (
             <FormGroup
                 { ... fieldContext }
-                errorMessage={ errorMessage }
+                errorMessages={ errorMessages }
             >
                 {
                     isReadOnly ?
@@ -135,7 +133,7 @@ class Select extends React.Component {
                                     cx(
                                         inputClass,
                                         "form-control",
-                                        errorMessage && "is-invalid"
+                                        errorMessages.length > 0 && "is-invalid"
                                     )
                                 }
                                 name={qualifiedName}
@@ -160,7 +158,7 @@ class Select extends React.Component {
                                         else
                                         {
                                             name = v.name;
-                                            value = v.value;
+                                            value = v.root;
                                         }
 
                                         return (

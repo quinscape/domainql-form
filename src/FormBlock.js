@@ -29,11 +29,11 @@ class FormBlock extends React.Component {
             ),
             parentConfig.schema
         );
-        
+
         formConfig.setFormContext(
             parentConfig.type,
             nextProps.basePath || parentConfig.basePath,
-            parentConfig.formikProps
+            parentConfig.root
         );
 
         // did the form config actually change since last time?

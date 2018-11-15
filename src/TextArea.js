@@ -87,10 +87,9 @@ class TextArea extends React.Component {
 
         const {rows, cols, inputClass, placeholder} = this.props;
         const {qualifiedName, path, formConfig, onChange, onBlur, autoFocus} = fieldContext;
-        const {formikProps} = formConfig;
 
-        const errorMessage = get(formikProps.errors, path);
-        const fieldValue = get(formikProps.values, path);
+        const errorMessages = formConfig.getErrors(path);
+        const fieldValue = formConfig.getValue(path, errorMessages);
 
         const effectiveMode = fieldContext.mode || formConfig.options.mode;
 
@@ -99,7 +98,7 @@ class TextArea extends React.Component {
         return (
             <FormGroup
                 {...fieldContext}
-                errorMessage={errorMessage}
+                errorMessages={errorMessages}
             >
                 {
                     isReadOnly ?
@@ -109,7 +108,7 @@ class TextArea extends React.Component {
                                 cx(
                                     inputClass,
                                     "form-control",
-                                    errorMessage && "is-invalid"
+                                    errorMessages.length > 0 && "is-invalid"
                                 )
                             }
                             rows={rows}

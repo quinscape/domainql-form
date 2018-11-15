@@ -11,6 +11,7 @@ let staticRenderers;
 
 let noneText = "---";
 
+
 /**
  * Checks if the given rule matches the given current fields. If a field exists in the rule it must be equal
  * to the current field value

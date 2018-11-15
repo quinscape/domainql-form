@@ -50,9 +50,9 @@ const DEFAULT_RENDERERS =
 
                 const { mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
 
-                const { formikProps } = formConfig;
+                const { value } = formConfig;
 
-                const fieldValue = get(formikProps.values, path);
+                const fieldValue = get(value, path);
 
                 const effectiveMode = mode || formConfig.options.mode;
 
@@ -124,10 +124,8 @@ const DEFAULT_RENDERERS =
 
                 const {
                     fieldId,
-                    name,
                     mode,
                     inputClass,
-                    placeholder,
                     formConfig,
                     fieldType,
                     title,
@@ -137,14 +135,10 @@ const DEFAULT_RENDERERS =
                     onBlur
                 } = ctx;
 
-                const { formikProps } = formConfig;
-
-
                 const effectiveMode = mode || formConfig.options.mode;
 
-                const errorMessage = get(formikProps.errors, path);
-
-                const fieldValue = get(formikProps.values, path);
+                const errorMessages = formConfig.getErrors(path);
+                const fieldValue = formConfig.getValue(path, errorMessages);
 
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
@@ -161,7 +155,7 @@ const DEFAULT_RENDERERS =
                         <select
                             id={fieldId}
                             name={qualifiedName}
-                            className={cx(inputClass, "form-control", errorMessage && "is-invalid")}
+                            className={cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid")}
                             title={title}
                             disabled={effectiveMode === FieldMode.DISABLED}
                             value={fieldValue}
@@ -185,7 +179,7 @@ const DEFAULT_RENDERERS =
                 return (
                     <FormGroup
                         { ... ctx }
-                        errorMessage={ errorMessage }
+                        errorMessages={ errorMessages }
                     >
                         {
                             fieldElement
@@ -225,12 +219,9 @@ const DEFAULT_RENDERERS =
                 const { currency, currencyAddonRight, mode : modeFromOptions } = formConfig.options;
                 const effectiveMode = mode || modeFromOptions;
 
-                const { formikProps } = formConfig;
+                const errorMessages = formConfig.getErrors(path);
+                const fieldValue = formConfig.getValue(path, errorMessages);
 
-
-                const errorMessage = get(formikProps.errors, path);
-
-                const fieldValue = get(formikProps.values, path);
                 //console.log({formikProps, fieldValue});
 
                 let fieldElement;
@@ -244,7 +235,7 @@ const DEFAULT_RENDERERS =
                         <input
                             id={ fieldId }
                             name={ qualifiedName }
-                            className={ cx(inputClass, "form-control", errorMessage && "is-invalid") }
+                            className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
                             type="text"
                             placeholder={ placeholder }
                             title={ title }
@@ -299,7 +290,7 @@ const DEFAULT_RENDERERS =
                 return (
                     <FormGroup
                         { ... ctx }
-                        errorMessage={ errorMessage }
+                        errorMessages={ errorMessages }
                     >
                         {
                             fieldElement
