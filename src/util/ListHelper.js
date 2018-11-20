@@ -68,7 +68,7 @@ class ListHelper extends React.Component {
         lineConfig.setFormContext(
             formConfig.type,
             path + "." + index,
-            formConfig.value
+            formConfig.root
         );
 
         return lineConfig;
@@ -139,7 +139,7 @@ class ListHelper extends React.Component {
             }
         }
 
-        const array = get(formConfig.value, path);
+        const array = get(formConfig.root, path);
 
         return (
             children(

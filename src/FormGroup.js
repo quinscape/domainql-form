@@ -44,16 +44,16 @@ class FormGroup extends React.Component
         const { horizontal, labelColumnClass, wrapperColumnClass } = formConfig.options;
 
         const labelElement = label ? (
-            <label
-                className={
-                    cx(
-                        horizontal ? labelColumnClass : null,
-                        horizontal ? "col-form-label" : null,
-                        labelClass
-                    )
-                }
-                htmlFor={fieldId}
-            >
+                           <label
+            className={
+                cx(
+                    horizontal ? labelColumnClass : null,
+                horizontal ? "col-form-label" : null,
+                labelClass
+        )
+        }
+            htmlFor={fieldId}
+                >
                 {label}
             </label>) : (
                 horizontal &&

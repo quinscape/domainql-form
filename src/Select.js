@@ -158,7 +158,7 @@ class Select extends React.Component {
                                         else
                                         {
                                             name = v.name;
-                                            value = v.value;
+                                            value = v.root;
                                         }
 
                                         return (

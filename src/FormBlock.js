@@ -33,7 +33,7 @@ class FormBlock extends React.Component {
         formConfig.setFormContext(
             parentConfig.type,
             nextProps.basePath || parentConfig.basePath,
-            parentConfig.value
+            parentConfig.root
         );
 
         // did the form config actually change since last time?

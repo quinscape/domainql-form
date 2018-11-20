@@ -76,7 +76,6 @@ class Field extends React.Component {
             prevState.fieldContext &&
             prevState.id === id &&
             prevState.name === name &&
-
             prevState.label === label
 
             // XXX: none of the functionality here should be sensitive to form config changes. Uncomment if this is wrong
@@ -93,11 +92,12 @@ class Field extends React.Component {
 
         let fieldId;
         let effectiveLabel;
+        const fieldType = formConfig.schema.resolveType(formConfig.type, path);
 
         if (name && name.length)
         {
             const lastSegment = path[path.length - 1];
-            fieldId = id || "field-" + type + "-" + lastSegment;
+            fieldId = id || "field-" + fieldType + "-" + lastSegment;
             effectiveLabel = typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
         }
         else
@@ -111,7 +111,7 @@ class Field extends React.Component {
             fieldContext : {
                 formConfig,
                 fieldId,
-                fieldType: formConfig.schema.resolveType(type, path),
+                fieldType: fieldType,
                 qualifiedName,
                 path,
                 label: effectiveLabel,

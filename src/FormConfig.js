@@ -104,7 +104,7 @@ class FormConfig
     {
         this.type = type;
         this.basePath = basePath;
-        this.value = value;
+        this.root = value;
         this.formInstance = formInstance ;
 
         this.errors = [];
@@ -113,10 +113,10 @@ class FormConfig
     copy()
     {
         const copy = new FormConfig(this.options, this.schema);
-        copy.setFormContext(this.type, this.basePath, this.value);
+        copy.setFormContext(this.type, this.basePath, this.root);
         copy.button = this.button;
         copy.errors = this.errors;
-        copy.value = this.value;
+        copy.root = this.root;
         copy.formInstance = this.formInstance;
         return copy;
     }
@@ -181,9 +181,7 @@ class FormConfig
                 this.type !== other.type ||
                 this.basePath !== other.basePath ||
                 this.errors !== other.errors ||
-
-                // XXX: compare value observable with === ?
-                this.value !== other.value
+                this.root !== other.root
             )
             {
                 return false;
@@ -204,7 +202,7 @@ class FormConfig
             }
             return true;
         }
-        return false;
+        return false;               
     }
 
     getErrors(path)
@@ -238,7 +236,7 @@ class FormConfig
         }
         else
         {
-            return get(this.value, path);
+            return get(this.root, path);
         }
     }
 
@@ -298,7 +296,7 @@ class FormConfig
 
         if (!errorsForField)
         {
-            set(this.value, name, converted);
+            set(this.root, name, converted);
         }
 
         if (changedErrors)
