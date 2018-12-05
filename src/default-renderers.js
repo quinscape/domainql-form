@@ -8,6 +8,7 @@ import { resolveStaticRenderer } from "./GlobalConfig"
 import get from "lodash.get"
 
 import FormGroup from "./FormGroup"
+import unwrapType from "./util/unwrapType";
 
 
 function renderStatic(fieldType, inputClass, fieldValue)
@@ -18,11 +19,11 @@ function renderStatic(fieldType, inputClass, fieldValue)
 
     return (
         <p className={
-                cx(
-                    inputClass,
-                    "form-control-plaintext"
-                )
-            }
+            cx(
+                inputClass,
+                "form-control-plaintext"
+            )
+        }
         >
             {
                 staticRenderer(
@@ -36,6 +37,7 @@ function renderStatic(fieldType, inputClass, fieldValue)
     );
 }
 
+
 /**
  * Default rule set.
  */
@@ -48,11 +50,9 @@ const DEFAULT_RENDERERS =
 
             render: ctx => {
 
-                const { mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
+                const { fieldType, mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
 
-                const { value } = formConfig;
-
-                const fieldValue = get(value, path);
+                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path));
 
                 const effectiveMode = mode || formConfig.options.mode;
 
@@ -104,7 +104,7 @@ const DEFAULT_RENDERERS =
 
                 return (
                     <FormGroup
-                        { ... ctx }
+                        { ...ctx }
                         label=""
                     >
                         {
@@ -138,7 +138,7 @@ const DEFAULT_RENDERERS =
                 const effectiveMode = mode || formConfig.options.mode;
 
                 const errorMessages = formConfig.getErrors(path);
-                const fieldValue = formConfig.getValue(path, errorMessages);
+                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
@@ -153,14 +153,14 @@ const DEFAULT_RENDERERS =
 
                     fieldElement = (
                         <select
-                            id={fieldId}
-                            name={qualifiedName}
-                            className={cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid")}
-                            title={title}
-                            disabled={effectiveMode === FieldMode.DISABLED}
-                            value={fieldValue}
-                            onChange={onChange}
-                            onBlur={onBlur}
+                            id={ fieldId }
+                            name={ qualifiedName }
+                            className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
+                            title={ title }
+                            disabled={ effectiveMode === FieldMode.DISABLED }
+                            value={ fieldValue }
+                            onChange={ onChange }
+                            onBlur={ onBlur }
                         >
                             {
                                 enumType.enumValues.map(enumValue =>
@@ -178,7 +178,7 @@ const DEFAULT_RENDERERS =
 
                 return (
                     <FormGroup
-                        { ... ctx }
+                        { ...ctx }
                         errorMessages={ errorMessages }
                     >
                         {
@@ -202,7 +202,6 @@ const DEFAULT_RENDERERS =
 
                 const {
                     fieldId,
-                    name,
                     mode,
                     inputClass,
                     placeholder,
@@ -216,13 +215,13 @@ const DEFAULT_RENDERERS =
                     autoFocus
                 } = ctx;
 
-                const { currency, currencyAddonRight, mode : modeFromOptions } = formConfig.options;
+                const { currency, currencyAddonRight, mode: modeFromOptions } = formConfig.options;
                 const effectiveMode = mode || modeFromOptions;
 
-                const errorMessages = formConfig.getErrors(path);
-                const fieldValue = formConfig.getValue(path, errorMessages);
+                const errorMessages = formConfig.getErrors(qualifiedName);
+                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
-                //console.log({formikProps, fieldValue});
+                //console.log("RENDER FIELD",{ ctx, fieldValue });
 
                 let fieldElement;
                 if (effectiveMode === FieldMode.READ_ONLY)
@@ -257,12 +256,12 @@ const DEFAULT_RENDERERS =
                                         fieldElement
                                     }
                                     <span className="input-group-append">
-                                        <span className="input-group-text">
-                                        {
-                                            currency
-                                        }
-                                        </span>
-                                    </span>
+                                                                          <span className="input-group-text">
+                            {
+                                currency
+                            }
+                                                                                          </span>
+                                                                                          </span>
                                 </div>
                             );
                         }
@@ -271,13 +270,13 @@ const DEFAULT_RENDERERS =
 
                             fieldElement = (
                                 <div className="input-group mb-3">
-                                <span className="input-group-prepend">
-                                    <span className="input-group-text">
-                                    {
-                                        currency
-                                    }
-                                    </span>
-                                </span>
+                                                          <span className="input-group-prepend">
+                                                                          <span className="input-group-text">
+                            {
+                                currency
+                            }
+                                                                                          </span>
+                                                                                          </span>
                                     {
                                         fieldElement
                                     }
@@ -289,7 +288,7 @@ const DEFAULT_RENDERERS =
 
                 return (
                     <FormGroup
-                        { ... ctx }
+                        { ...ctx }
                         errorMessages={ errorMessages }
                     >
                         {

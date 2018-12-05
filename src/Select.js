@@ -9,6 +9,8 @@ import get from "lodash.get";
 import cx from "classnames";
 
 import { resolveStaticRenderer } from "./GlobalConfig"
+import InputSchema from "./InputSchema";
+import unwrapType from "./util/unwrapType";
 
 /**
  * Allows selection from a list of string values for a target field.
@@ -108,11 +110,11 @@ class Select extends React.Component {
         //console.log("render Select", fieldContext);
 
         const { values, inputClass, required } = this.props;
-        const { formConfig, path, qualifiedName, onBlur, autoFocus } = fieldContext;
+        const { fieldType, formConfig, path, qualifiedName, onBlur, autoFocus } = fieldContext;
 
 
         const errorMessages = formConfig.getErrors(path);
-        const fieldValue = formConfig.getValue(path, errorMessages);
+        const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
         const noneText = GlobalConfig.none();
 

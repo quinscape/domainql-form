@@ -110,12 +110,12 @@ class GlobalErrors extends React.Component {
 
         for (let i = 0; i < length; i++)
         {
-            const { path, message } = errors[i];
+            const { path, errorMessages } = errors[i];
 
             errorIdList[i] = {
                 fieldId: getFieldId(form, path),
                 path,
-                message
+                errorMessages
             }
         }
 
@@ -133,21 +133,27 @@ class GlobalErrors extends React.Component {
         const errors = [];
 
         errorIdList.forEach(entry => {
-            const { fieldId, name, errorMessages } = entry;
+            const { fieldId, path, errorMessages } = entry;
 
-            errors.push.apply(errors, errorMessages.map( (err, idx) =>  (
-                <li key={ name + idx }>
-                    <label
-                        className="text-danger"
-                        htmlFor={ fieldId }
-                        data-path={ fieldId ? null : name }
-                    >
-                        {
-                            errorMessages
-                        }
-                    </label>
-                </li>
-            )));
+            // the first error is the preserved user input
+            for (let i = 1; i < errorMessages.length; i++)
+            {
+                const err = errorMessages[i];
+                errors.push(
+                    <li key={ path + i }>
+                        <label
+                            className="text-danger"
+                            htmlFor={ fieldId }
+                            data-path={ fieldId ? null : path }
+                        >
+                            {
+                                err
+                            }
+                        </label>
+                    </li>
+                );
+            }
+
         });
 
         return (

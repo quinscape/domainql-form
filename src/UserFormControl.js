@@ -53,11 +53,10 @@ class UserFormControl extends React.Component {
     {
         const { control, changeControl } = this.props;
 
+        //console.log("RENDER UserFormControl", { control, changeControl })
+
         return (
             <div className="form-inline">
-                <span className="text-info mr-sm-2">
-                    CONTROL:
-                </span>
                 <label>
                     mode
                     <select

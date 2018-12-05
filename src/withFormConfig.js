@@ -15,7 +15,8 @@ export default function(Component)
 {
     return class extends React.Component
     {
-        static displayName = "withFormConfig(" + getDisplayName(Component) + ")";
+        // just copy the display name of the innner component
+        static displayName = getDisplayName(Component);
 
         render()
         {

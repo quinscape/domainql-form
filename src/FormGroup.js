@@ -1,6 +1,6 @@
-import React from "react";
+import React from "react"
 import PropTypes from "prop-types"
-import cx from "classnames";
+import cx from "classnames"
 
 
 /**
@@ -43,6 +43,8 @@ class FormGroup extends React.Component
 
         const { horizontal, labelColumnClass, wrapperColumnClass } = formConfig.options;
 
+        //console.log("RENDER FormGroup", { horizontal, labelColumnClass, wrapperColumnClass });
+
         const labelElement = label ? (
                            <label
             className={
@@ -67,7 +69,7 @@ class FormGroup extends React.Component
         const haveErrors = errorMessages.length > 0;
 
 
-        const formText = haveErrors ? errorMessages : helpText && [helpText];
+        const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];
 
         if (formText)
         {

@@ -1,24 +1,52 @@
-export AutoSubmit from "./AutoSubmit"
-export CustomGroup from "./CustomGroup"
-export Field from "./Field"
-export FieldMode from "./FieldMode"
-export Form from "./Form"
-export FormBlock from "./FormBlock"
-export FormGroup from "./FormGroup"
-export FormList from "./FormList"
-export FormSelector from "./FormSelector"
-export GlobalConfig from "./GlobalConfig"
-export GlobalErrors from "./GlobalErrors"
-export InputSchema from "./InputSchema"
-export Select from "./Select"
-export TextArea from "./TextArea"
-export StaticText from "./StaticText"
-export UserFormControl from "./UserFormControl"
-export withForm from "./withForm"
-export withFormConfig from "./withFormConfig"
-export WireFormat from "./WireFormat"
+import AutoSubmit from "./AutoSubmit"
+import CustomGroup from "./CustomGroup"
+import Field from "./Field"
+import FieldMode from "./FieldMode"
+import Form from "./Form"
+import FormBlock from "./FormBlock"
+import FormConfigProvider from "./FormConfigProvider"
+import FormGroup from "./FormGroup"
+import FormList from "./FormList"
+import FormSelector from "./FormSelector"
+import GlobalConfig from "./GlobalConfig"
+import GlobalErrors from "./GlobalErrors"
+import InputSchema from "./InputSchema"
+import Select from "./Select"
+import TextArea from "./TextArea"
+import StaticText from "./StaticText"
+import UserFormControl from "./UserFormControl"
+import withForm from "./withForm"
+import withFormConfig from "./withFormConfig"
+import WireFormat from "./WireFormat"
+import Icon from "./util/Icon"
+import ListHelper from "./util/ListHelper"
+import getDisplayName from "./util/getDisplayName"
+import { DEFAULT_OPTIONS } from "./FormConfig"
 
-
-export Icon from "./util/Icon"
-export getDisplayName from "./util/getDisplayName"
-export ListHelper from "./util/ListHelper"
+// noinspection JSUnusedGlobalSymbols
+export {
+    AutoSubmit,
+    CustomGroup,
+    Field,
+    FieldMode,
+    Form,
+    FormBlock,
+    FormConfigProvider,
+    FormGroup,
+    FormList,
+    FormSelector,
+    GlobalConfig,
+    GlobalErrors,
+    InputSchema,
+    Select,
+    TextArea,
+    StaticText,
+    UserFormControl,
+    withForm,
+    withFormConfig,
+    WireFormat,
+    Icon,
+    getDisplayName,
+    ListHelper,
+    DEFAULT_OPTIONS
+}

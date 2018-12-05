@@ -26,7 +26,9 @@ let converter;
 
 export function resetConverter()
 {
-    converter = DEFAULT_CONVERTERS;
+    converter = {
+        ... DEFAULT_CONVERTERS
+    };
 }
 
 /**
@@ -135,7 +137,7 @@ function handlerFn(typeName, handlerName)
     }
     else if (!entry)
     {
-        throw new Error("Unknown scalar '" + typeName + "'");
+        throw new Error("Unknown scalar " + JSON.stringify(typeName));
     }
 
     const fn = entry[handlerName];
@@ -248,7 +250,7 @@ function getValidationPlan(inputSchema, typeName)
 
     if (inputSchema.debug)
     {
-        console.log("Validation plan for ", typeName, "is: ", plan);
+//        console.log("Validation plan for ", typeName, "is: ", plan);
     }
 
     inputSchema.validationPlan[typeName] = plan;
@@ -284,7 +286,7 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-            console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar", "=> ", result, typeof result, path);
+//            console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar", "=> ", result, typeof result, path);
         }
 
         return result;
@@ -298,7 +300,7 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-            console.log("Convert InputObject ", fieldType.name, path);
+//            console.log("Convert InputObject ", fieldType.name, path);
         }
 
         return convertInput(inputSchema, inputSchema.getType(fieldType.name), value, toScalar);
@@ -314,7 +316,7 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-            console.log("Convert List of ", fieldType.ofType.name, path);
+//            console.log("Convert List of ", fieldType.ofType.name, path);
         }
 
         for (let j = 0; j < value.length; j++)
@@ -473,7 +475,8 @@ class InputSchema
     static scalarToValue(scalarType, value)
     {
         const fn = handlerFn(scalarType, "scalarToValue");
-        return fn ? fn(value) : value
+        const result = (fn ? fn(value) : value);
+        return result || ""
     }
 
     static valueToScalar(scalarType, value)
@@ -526,7 +529,7 @@ class InputSchema
 
         if (this.debug)
         {
-            console.log("Errors for ", values, "=>", errors);
+//            console.log("Errors for ", values, "=>", errors);
         }
 
         return errors;

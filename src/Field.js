@@ -7,7 +7,8 @@ import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
 import withFormConfig from "./withFormConfig";
-import InputSchema from "./InputSchema";
+
+import { observer } from "mobx-react"
 
 /**
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
@@ -97,7 +98,7 @@ class Field extends React.Component {
         if (name && name.length)
         {
             const lastSegment = path[path.length - 1];
-            fieldId = id || "field-" + fieldType + "-" + lastSegment;
+            fieldId = id || "field-" + formConfig.type + "-" + qualifiedName;
             effectiveLabel = typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
         }
         else
@@ -111,7 +112,7 @@ class Field extends React.Component {
             fieldContext : {
                 formConfig,
                 fieldId,
-                fieldType: fieldType,
+                fieldType,
                 qualifiedName,
                 path,
                 label: effectiveLabel,
@@ -152,6 +153,8 @@ class Field extends React.Component {
     {
         const { fieldContext } = this.state;
 
+        //console.log("RENDER FIELD", fieldContext);
+
         if (typeof children === "function")
         {
             return children(fieldContext);
@@ -164,4 +167,8 @@ class Field extends React.Component {
     };
 }
 
-export default withFormConfig(Field)
+export default withFormConfig(
+    observer(
+        Field
+    )
+)

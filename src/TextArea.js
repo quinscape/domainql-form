@@ -8,6 +8,8 @@ import get from "lodash.get";
 import cx from "classnames";
 
 import { resolveStaticRenderer } from "./GlobalConfig"
+import InputSchema from "./InputSchema";
+import unwrapType from "./util/unwrapType";
 
 
 /**
@@ -86,10 +88,10 @@ class TextArea extends React.Component {
     renderWithFieldContext = fieldContext => {
 
         const {rows, cols, inputClass, placeholder} = this.props;
-        const {qualifiedName, path, formConfig, onChange, onBlur, autoFocus} = fieldContext;
+        const { fieldType, qualifiedName, path, formConfig, onChange, onBlur, autoFocus} = fieldContext;
 
         const errorMessages = formConfig.getErrors(path);
-        const fieldValue = formConfig.getValue(path, errorMessages);
+        const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
         const effectiveMode = fieldContext.mode || formConfig.options.mode;
 

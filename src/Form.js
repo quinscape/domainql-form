@@ -33,7 +33,7 @@ class Form extends React.Component {
         /**
          * Submit handler handling the final typed GraphQL result
          */
-        onSubmit: PropTypes.func.isRequired,
+        onSubmit: PropTypes.func,
 
         /**
          * schema to use for this form
@@ -80,12 +80,9 @@ class Form extends React.Component {
         
     };
 
-    static defaultProps = {
-    };
-
     handleSubmit = ev => {
 
-        ev.preventDefault();
+        ev && ev.preventDefault();
 
         const { onSubmit } = this.props;
         const { formConfig } = this.state;
@@ -96,7 +93,7 @@ class Form extends React.Component {
         }
         else
         {
-            formConfig.model.submit();
+            formConfig.root.submit();
         }
     };
 
@@ -121,6 +118,8 @@ class Form extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState)
     {
+//        console.log("getDerivedStateFromProps", nextProps, prevState);
+
         const { value, type, formConfig: parentConfig } = nextProps;
 
         const schema = getSchema(parentConfig, nextProps);
@@ -154,9 +153,15 @@ class Form extends React.Component {
             return null;
         }
 
-        //console.log("NEW formConfig", formConfig, parentConfig);
+        //console.log("NEW formConfig", formConfig, parentConfig, value);
 
-        formConfig.setFormContext(type, "", createViewModel(value), prevState.instance);
+        const viewModel = prevState.formConfig ? prevState.formConfig.root : createViewModel(value);
+
+        formConfig.setFormContext(type, "", viewModel, prevState.instance);
+        if (prevState.formConfig)
+        {
+            formConfig.errors = prevState.formConfig.errors;
+        }
 
         // update form config in local state
         return {
@@ -189,48 +194,14 @@ class Form extends React.Component {
         return errors;
     };
 
-    handleOnClick = ev => {
-
-        const { target } = ev;
-
-        const { onClick } = this.props;
-
-        //console.log("Form onClick, target =", target);
-
-        if (
-            (
-                target.tagName === "BUTTON" ||
-                target.tagName === "INPUT"
-            ) &&
-            target.getAttribute("type") === "submit"
-        )
-        {
-            const name = target.getAttribute("name");
-            {
-                if (name)
-                {
-                    const { formConfig } = this.state;
-
-                    // XXX: direct, mutable update (should be ok)
-                    formConfig.button = name;
-                }
-            }
-        }
-
-        if (typeof onClick === "function")
-        {
-            onClick(ev);
-        }
-    };
-
 
     render()
     {
-        const { children } = this.props;
+        const { children, onClick } = this.props;
 
         const { formConfig } = this.state;
 
-        //console.log("RENDER OUTER", formConfig, initial);
+//        console.log("RENDER FORM", formConfig);
 
         return (
             <form
@@ -242,7 +213,7 @@ class Form extends React.Component {
                 }
                 onSubmit={ this.handleSubmit }
                 onReset={ this.handleReset }
-                onClick={ this.handleOnClick }
+                onClick={ onClick }
             >
                 <FormConfig.Provider value={ formConfig }>
                     {

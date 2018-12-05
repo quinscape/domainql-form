@@ -1,7 +1,10 @@
 import React from "react"
 
 import Form from "./Form";
+import FormConfig from "./FormConfig";
 import getDisplayName from "./util/getDisplayName";
+
+import { observer } from "mobx-react"
 
 /**
  * Convenience HOC that render a domainql-form around the wrapped component, providing
@@ -16,17 +19,21 @@ export default function(Component, formProps)
 {
     return class extends React.Component
     {
-        static displayName = "withForm(" + getDisplayName(Component) + ")";
+        static displayName = getDisplayName(Component);
 
         render()
         {
             const { value, validate, onSubmit } = this.props;
+
+            const options = FormConfig.mergeOptions({}, this.props);
+
             return (
                 <Form
                     { ... formProps}
                     validate={ validate }
                     onSubmit={ onSubmit }
                     value={ value }
+                    { ... options }
                 >
                 {
                     this.renderWithFormConfig

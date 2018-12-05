@@ -15,7 +15,9 @@
         "lodash.isequal": "^4.5.0",
         "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
-        "prop-types": "^15.6.1"
+        "prop-types": "^15.6.1",
+        "react": "^16.6.3",
+        "react-dom": "^16.6.3"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -38,10 +40,9 @@
         "mobx": "^5.5.0",
         "mobx-utils": "^5.0.4",
         "mocha": "^5.1.1",
+        "mobx-react": "^5.2.8",
         "power-assert": "^1.5.0",
-        "react": "^16.4.0",
         "react-docgen": "^2.20.1",
-        "react-dom": "^16.4.0",
         "sinon": "^5.0.10"
     },
     "scripts": {
@@ -52,6 +53,7 @@
     },
     "peerDependencies": {
         "mobx": "^5.5.0",
+        "mobx-react": "^5.2.8",
         "mobx-utils": "^5.0.4",
         "prop-types": "^15.6.1",
         "react": "^16.6.3"

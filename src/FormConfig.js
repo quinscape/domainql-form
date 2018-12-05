@@ -7,6 +7,8 @@ import keys from "./util/keys";
 import get from "lodash.get"
 import set from "lodash.set"
 
+import { runInAction } from "mobx"
+
 export const DEFAULT_OPTIONS = {
     horizontal: true,
     labelColumnClass: "col-md-5",
@@ -18,11 +20,13 @@ export const DEFAULT_OPTIONS = {
 };
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
+import unwrapType from "./util/unwrapType";
 
 const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
 
 const context = React.createContext(null);
 
+const EMPTY = [];
 
 /**
  @typedef Error
@@ -102,6 +106,8 @@ class FormConfig
      */
     setFormContext(type = "", basePath = "", value = null, formInstance = null)
     {
+        //console.log("setFormContext", { type, basePath, value, formInstance} );
+
         this.type = type;
         this.basePath = basePath;
         this.root = value;
@@ -217,6 +223,13 @@ class FormConfig
                 return error.errorMessages;
             }
         }
+
+        return EMPTY;
+    }
+
+    hasErrors()
+    {
+        return this.errors.length > 0;
     }
 
 
@@ -236,83 +249,106 @@ class FormConfig
         }
         else
         {
-            return get(this.root, path);
+            const value = get(this.root, path);
+            //console.log("getValue", this.root, path, " = ", value);
+            return value;
         }
     }
 
     handleChange(fieldType, name, value)
     {
-
-        // COLLECT
-        let errorsForField;
-
-        const error = InputSchema.validate(fieldType, value);
-        let converted;
-        if (error)
+        try
         {
-            errorsForField = [ value, error ];
-        }
-        else
-        {
-            converted = InputSchema.valueToScalar(fieldType, value)
-        }
+//            console.log("handleChange", { fieldType, name, value});
 
+            const unwrapped = unwrapType(fieldType);
 
-        // UPDATE
+            // COLLECT
+            let errorsForField;
 
-        const { errors : currentErrors } = this;
-
-        let changedErrors;
-        const index =  findError(currentErrors, name);
-        if (index < 0)
-        {
-            if (errorsForField)
+            const error = InputSchema.validate(unwrapped.name, value);
+            let converted;
+            if (error)
             {
-                // ADD ERRORS
-                changedErrors = currentErrors.concat({
-                    path: name,
-                    errorMessages: errorsForField
-                });
+                errorsForField = [ value, error ];
             }
-        }
-        else
-        {
-            if (errorsForField)
+            else
             {
-                // UPDATE ERRORS
-                changedErrors = currentErrors.slice();
-                changedErrors[index] = {
-                    path: name,
-                    errorMessages: errorsForField
+                converted = InputSchema.valueToScalar(unwrapped.name, value)
+            }
+
+            // UPDATE
+
+            const { errors : currentErrors } = this;
+
+            let changedErrors;
+            const index =  findError(currentErrors, name);
+            if (index < 0)
+            {
+                if (errorsForField)
+                {
+                    // ADD ERRORS
+                    changedErrors = currentErrors.concat({
+                        path: name,
+                        errorMessages: errorsForField
+                    });
                 }
             }
             else
             {
-                // REMOVE ERRORS
-                changedErrors = currentErrors.slice(index, 1);
+                if (errorsForField)
+                {
+                    // UPDATE ERRORS
+                    changedErrors = currentErrors.slice();
+                    changedErrors[index] = {
+                        path: name,
+                        errorMessages: errorsForField
+                    }
+                }
+                else
+                {
+                    // REMOVE ERRORS
+                    changedErrors = currentErrors.slice();
+                    changedErrors.splice(index, 1);
+                }
+            }
+
+
+            if (!errorsForField)
+            {
+                //console.log("SET FIELD VALUE", this.root, name, converted);
+
+                runInAction( () => set(this.root, name, converted));
+            }
+
+            if (changedErrors)
+            {
+//                console.log("CHANGED ERRORS", changedErrors);
+
+                const newFormConfig = this.copy();
+                newFormConfig.errors = changedErrors;
+                
+                this.formInstance.setState({
+                    formConfig: newFormConfig
+                })
             }
         }
-
-
-        if (!errorsForField)
+        catch(e)
         {
-            set(this.root, name, converted);
-        }
-
-        if (changedErrors)
-        {
-            const newFormConfig = this.copy();
-            newFormConfig.errors = changedErrors;
-            formInstance.setState({
-                formConfig: newFormConfig
-            })
+            console.error("HANDLE-CHANGE ERROR", e);
         }
 
     };
 
-    handleBlur = ev => {
-        const { target : { name }} = ev;
-        console.log("BLUR", name)
+    handleBlur = (fieldType, name, value) => {
+        try
+        {
+            //console.log("BLUR", name)
+        }
+        catch(e)
+        {
+            console.error("HANDLE-BLUR ERROR", e);
+        }
     };
 
     /**
