@@ -151,6 +151,7 @@ class Field extends React.Component {
 
     render()
     {
+        const { children } = this.props;
         const { fieldContext } = this.state;
 
         //console.log("RENDER FIELD", fieldContext);
