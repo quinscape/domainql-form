@@ -11,7 +11,7 @@ function checkInteger(lower, upper, msg)
 {
     return function (value) {
         const num = +value;
-        if (isNaN(num) || !INTEGER_RE.test(value) || num < lower || num > upper)
+        if (isNaN(num) || value === "" || !INTEGER_RE.test(value) || num < lower || num > upper)
         {
             return msg;
         }
@@ -50,7 +50,15 @@ const CURRENCY_LIMIT_HIGH = Number.MAX_SAFE_INTEGER / CURRENCY_MULTIPLIER;
 const DEFAULT_CONVERTERS = {
     "String" : false,
     // formik uses boolean values
-    "Boolean" : false,
+    "Boolean" : {
+        validate: checkRegexp(BOOLEAN_RE, "Invalid boolean"),
+        scalarToValue: function (scalar) {
+            return String(scalar)
+        },
+        valueToScalar: function (value) {
+            return value === "true";
+        }
+    },
     "Currency" : {
         validate: function (value) {
 
