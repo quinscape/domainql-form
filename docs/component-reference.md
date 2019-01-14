@@ -94,12 +94,15 @@ title | string | Title attribute
 FieldMode is a Javascript enum that controls the render mode of all fields
 it is a string with one of these values
 
- * NORMAL - normal input field
- * DISABLED - disabled input field
- * READ_ONLY - render input field as static field
+ * NORMAL - normal form field
+ * DISABLED - disabled form field
+ * READ_ONLY - render a readOnly form field where applicable, otherwise disable
+ * PLAIN_TEXT - render field value as static field
+ * INVISIBLE - skip rendering the form field and its form-group 
  
 The field mode can be given as prop to &lt;Field/&gt; but can also
 be inherited from &lt;Form/&gt; or &lt;FormBlock/&gt;.
+
 ## &lt;TextArea/&gt;
 
 Edits a string GraphQL field with a text area element.
