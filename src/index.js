@@ -6,8 +6,6 @@ import Form from "./Form"
 import FormBlock from "./FormBlock"
 import FormConfigProvider from "./FormConfigProvider"
 import FormGroup from "./FormGroup"
-import FormList from "./FormList"
-import FormSelector from "./FormSelector"
 import GlobalConfig from "./GlobalConfig"
 import GlobalErrors from "./GlobalErrors"
 import InputSchema from "./InputSchema"
@@ -33,8 +31,6 @@ export {
     FormBlock,
     FormConfigProvider,
     FormGroup,
-    FormList,
-    FormSelector,
     GlobalConfig,
     GlobalErrors,
     InputSchema,
