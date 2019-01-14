@@ -1,21 +1,33 @@
 import React from "react"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText } from "react-testing-library"
 
 import assert from "power-assert"
 
-import rawSchema from "./schema.json"
+import getSchema from "./util/getSchema"
+import dumpUsage from "./util/dumpUsage"
 import InputSchema from "../src/InputSchema";
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Form from "../src/Form";
 import TextArea from "../src/TextArea";
 import FieldMode from "../src/FieldMode";
+import { observable } from "mobx";
+import userEvent from "user-event";
+
+import itParam from "mocha-param"
+import cartesian from "cartesian";
+import ModeLocation from "./util/ModeLocation";
+import Field from "./field";
 
 describe("TextArea", function (){
 
-    it("renders as textarea element", function(done) {
+    // automatically unmount and cleanup DOM after the tests are finished.
+    afterEach( cleanup );
 
-        const submitSpy = sinon.spy();
+    after( dumpUsage) ;
+
+    it("renders as textarea element", function() {
+
         const renderSpy = sinon.spy();
 
         /*
@@ -31,18 +43,19 @@ describe("TextArea", function (){
         }
          */
 
-        const component = mount(
+        const formRoot = observable({
+            name: "MyField",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+
+        const { container, getByLabelText } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                value={ formRoot }
             >
                 {
                     ctx => {
@@ -56,37 +69,37 @@ describe("TextArea", function (){
             </Form>
         );
 
-        const select = component.find("textarea");
-        assert(select.instance().value === "XXX");
-        select.instance().value = "YYY";
-        select.simulate('change');
+
+
+        const textArea = getByLabelText("description");
+
+        assert(!textArea.disabled);
+        assert(!textArea.readOnly);
+
+        assert(textArea.value === "XXX");
+
+        userEvent.type(textArea, "YYY")
 
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.formikProps.values.description === "YYY");
+        assert(formConfig.root.description === "YYY");
 
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
+        fireEvent.submit(
+            container.querySelector("form")
+        );
 
-        setImmediate(
-            () => {
-
-                assert(submitSpy.called);
-                const values = submitSpy.lastCall.args[0];
-                assert(values.description === "YYY");
-
-
-                component.unmount();
-                done();
-            }
-        )
+        assert(formRoot.description === "YYY")
 
     });
 
-    it("inherits DISABLED from parent context", function(done) {
+    itParam(
+        "inherits mode from parent context (${value})",
+        cartesian([
+            [FieldMode.NORMAL, FieldMode.DISABLED, FieldMode.READ_ONLY, FieldMode.PLAIN_TEXT, FieldMode.INVISIBLE],
+            [ModeLocation.ON_FIELD, ModeLocation.INHERITED]
+        ]), function([ mode, loc ]) {
 
-        const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
 
         /*
@@ -102,102 +115,62 @@ describe("TextArea", function (){
         }
          */
 
-        const component = mount(
+        const formRoot = observable({
+            name: "MyField",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                mode={ FieldMode.DISABLED }
-                value={{
-                    name: "MyField",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                mode={ loc === ModeLocation.INHERITED ? mode : null }
+                value={ formRoot }
             >
                 {
                     ctx => {
 
                         renderSpy(ctx);
                         return (
-                            <TextArea name="description"/>
+                            <TextArea
+                                mode={ loc === ModeLocation.ON_FIELD ? mode : null }
+                                name="description"
+                            />
                         );
                     }
                 }
             </Form>
         );
 
-        const select = component.find("textarea");
-        assert(select.instance().disabled);
-        assert(select.instance().value === "XXX");
+        const textArea = queryByLabelText(container, "description");
 
 
-        setImmediate(
-            () => {
-                component.unmount();
-                done();
-            }
-        )
-
-    });
-
-    it("inherits READ_ONLY from parent context", function(done) {
-
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
-
-        /*
-        input DomainFieldInput {
-            name: String!
-            description: String
-            type: FieldType!
-            required: Boolean!
-            maxLength: Int!
-            sqlType: String
-            config: [ConfigValueInput]
-            unique: Boolean
+        switch (mode)
+        {
+            case FieldMode.DISABLED:
+                assert(textArea.value === "XXX");
+                assert(textArea.disabled);
+                assert(!textArea.readOnly);
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.READ_ONLY:
+                assert(textArea.value === "XXX");
+                assert(!textArea.disabled);
+                assert(textArea.readOnly);
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.PLAIN_TEXT:
+                assert(textArea.tagName === "SPAN");
+                assert(textArea.innerHTML === "XXX");
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.INVISIBLE:
+                assert(!textArea);
+                assert(container.querySelectorAll(".form-group").length === 0)
+                break;
         }
-         */
-
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                mode={ FieldMode.READ_ONLY }
-                value={{
-                    name: "MyField",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
-
-                        renderSpy(ctx);
-                        return (
-                            <TextArea name="description"/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-        const textArea = component.find("textarea");
-
-        assert(textArea.length === 0);
-        assert(component.text().indexOf("XXX") >= 0);
-
-        setImmediate(
-            () => {
-                component.unmount();
-                done();
-            }
-        )
-
     });
 
 });

@@ -9,7 +9,9 @@ let renderers;
 let labelLookup = null;
 let staticRenderers;
 
-let noneText = "---";
+export const DEFAULT_NONE_TEXT = "---";
+
+let noneText = DEFAULT_NONE_TEXT;
 
 
 /**

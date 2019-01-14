@@ -67,6 +67,7 @@ class UserFormControl extends React.Component {
                         <option>{ FieldMode.NORMAL }</option>
                         <option>{ FieldMode.DISABLED }</option>
                         <option>{ FieldMode.READ_ONLY }</option>
+                        <option>{ FieldMode.PLAIN_TEXT }</option>
                     </select>
                 </label>
                 <label>

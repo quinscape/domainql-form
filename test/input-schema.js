@@ -1,15 +1,20 @@
-import rawSchema from "./schema.json"
+import getSchema from "./util/getSchema"
 import InputSchema from "../src/InputSchema";
 
 import assert from "power-assert"
 
 import ADDRESS_OBJECT_TYPED from "./address.json"
 import ADDRESS_OBJECT_VALUES from "./address-values.json"
+import dumpUsage from "./util/dumpUsage";
 
 describe("InputSchema", function () {
+
+    after(dumpUsage);
+
     it("converts complex values to formik values", function () {
 
-        const inputSchema = new InputSchema(rawSchema);
+        const inputSchema = getSchema();
+
 
         const converted = inputSchema.toValues("DomainTypeInput", ADDRESS_OBJECT_TYPED);
 
@@ -32,7 +37,7 @@ describe("InputSchema", function () {
 
     it("does type-based formik values validation", function () {
 
-        const inputSchema = new InputSchema(rawSchema);
+        const inputSchema = getSchema();
 
         {
             const errors = inputSchema.validate("DomainTypeInput", {});
@@ -88,7 +93,7 @@ describe("InputSchema", function () {
     
     it("converts formik values back to typed values", function () {
 
-        const inputSchema = new InputSchema(rawSchema);
+        const inputSchema = getSchema();
 
         const converted = inputSchema.fromValues("DomainTypeInput", ADDRESS_OBJECT_VALUES);
 

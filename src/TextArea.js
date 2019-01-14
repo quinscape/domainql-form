@@ -74,9 +74,9 @@ class TextArea extends React.Component {
     {
         return (
             <Field
-                {...this.props}
-                rows={null}
-                cols={null}
+                { ...this.props }
+                rows={ null }
+                cols={ null }
             >
                 {
                     this.renderWithFieldContext
@@ -87,25 +87,33 @@ class TextArea extends React.Component {
 
     renderWithFieldContext = fieldContext => {
 
-        const {rows, cols, inputClass, placeholder} = this.props;
-        const { fieldType, qualifiedName, path, formConfig, onChange, onBlur, autoFocus} = fieldContext;
+        const { rows, cols, inputClass, placeholder } = this.props;
+        const { fieldId, fieldType, mode, qualifiedName, path, formConfig, onChange, onBlur, autoFocus } = fieldContext;
 
         const errorMessages = formConfig.getErrors(path);
         const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
-        const effectiveMode = fieldContext.mode || formConfig.options.mode;
 
-        const isReadOnly = effectiveMode === FieldMode.READ_ONLY;
+        const isPlainText = mode === FieldMode.PLAIN_TEXT;
 
         return (
             <FormGroup
-                {...fieldContext}
-                errorMessages={errorMessages}
+                { ...fieldContext }
+                errorMessages={ errorMessages }
             >
                 {
-                    isReadOnly ?
-                        resolveStaticRenderer(fieldContext.fieldType)(fieldValue) : (
+                    isPlainText ? (
+                        <span
+                            id={ fieldId }
+                            className="form-control-plaintext"
+                        >
+                            {
+                                resolveStaticRenderer(fieldContext.fieldType)(fieldValue) 
+                            }
+                        </span>
+                    ) : (
                         <textarea
+                            id={ fieldId }
                             className={
                                 cx(
                                     inputClass,
@@ -113,15 +121,16 @@ class TextArea extends React.Component {
                                     errorMessages.length > 0 && "is-invalid"
                                 )
                             }
-                            rows={rows}
-                            cols={cols}
-                            name={qualifiedName}
-                            value={fieldValue}
-                            placeholder={placeholder}
-                            onChange={onChange}
-                            onBlur={onBlur}
-                            autoFocus={autoFocus}
-                            disabled={effectiveMode === FieldMode.DISABLED}
+                            rows={ rows }
+                            cols={ cols }
+                            name={ qualifiedName }
+                            value={ fieldValue }
+                            placeholder={ placeholder }
+                            onChange={ onChange }
+                            onBlur={ onBlur }
+                            autoFocus={ autoFocus }
+                            disabled={ mode === FieldMode.DISABLED }
+                            readOnly={ mode === FieldMode.READ_ONLY }
                         />
                     )
                 }

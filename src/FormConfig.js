@@ -13,6 +13,7 @@ export const DEFAULT_OPTIONS = {
     horizontal: true,
     labelColumnClass: "col-md-5",
     wrapperColumnClass: "col-md-7",
+    useReadOnlyAttribute: false,
     mode: FieldMode.NORMAL,
     currency: "EUR",
     currencyAddonRight: true,
@@ -129,15 +130,15 @@ class FormConfig
     
     getPath(name)
     {
-        const nameIsDot = name === ".";
+        const isDot = name === ".";
         const { basePath } = this;
         if (basePath)
         {
-            return nameIsDot ? basePath : basePath + "." + name;
+            return isDot ? basePath : basePath + "." + name;
         }
         else
         {
-            if (nameIsDot)
+            if (isDot)
             {
                 throw new Error("'.' is only a valid name with a non-empty base-path (e.g. inside a FormList)");
             }
@@ -227,6 +228,20 @@ class FormConfig
         return EMPTY;
     }
 
+    listAllErrors()
+    {
+
+        const { errors } = this;
+        const { length } = errors;
+
+        const out = new Array(length);
+        for (let i = 0; i < length; i++)
+        {
+            out[i] = errors[i];
+        }
+        return out;
+    }
+
     hasErrors()
     {
         return this.errors.length > 0;
@@ -266,7 +281,8 @@ class FormConfig
             // COLLECT
             let errorsForField;
 
-            const error = InputSchema.validate(unwrapped.name, value);
+            const isScalar = unwrapped.kind === "SCALAR";
+            const error = isScalar ? InputSchema.validate(unwrapped.name, value) : null;
             let converted;
             if (error)
             {
@@ -274,7 +290,7 @@ class FormConfig
             }
             else
             {
-                converted = InputSchema.valueToScalar(unwrapped.name, value)
+                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
             }
 
             // UPDATE

@@ -11,7 +11,7 @@ Form description
 initialValues | func | Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object. Might also be invalid (See isInitialValid)
 isInitialValid | bool | true if the initial value is valid
 onClick | func | Optional onClick handler for the form element.
-**onSubmit** (required) | func | Submit handler handling the final typed GraphQL result
+onSubmit | func | Submit handler handling the final typed GraphQL result
 schema | instance of InputSchema or object | schema to use for this form
 **type** (required) | string | form base type
 validate | func | Optional validate function. Note that the values object received here is *not* typed, i.e. it contains the raw formik string/boolean values. If you need all values to be converted to a typed GraphQL object, you need to invoke InputSchema.fromValues(type, values) manually on the received values object.
@@ -85,8 +85,8 @@ label | string | Label for the field.
 labelClass | string | Additional HTML classes for the label element.
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
-onBlur | func | Optional blur handler to use instead of formikProps.handleBlur
-onChange | func | Optional change handler to use instead of formikProps.handleChange
+onBlur | func | Optional blur handler to use
+onChange | func | Optional change handler to use
 placeholder | string | Placeholder text to render for text inputs.
 title | string | Title attribute
 ### FieldMode
@@ -164,49 +164,6 @@ title | string | Title attribute
     
 </Form>
 ```
-## &lt;FormList/&gt;
-
-Helper to render a list of inputs. Both a list of scalar values as well as a list of complex input objects is supported.
-
-### Props
-
- Name | Type | Description 
-------|------|-------------
-addLabel | string | Label to put on the add button (default is "Add")
-canRemove | bool | If true (the default), the user can remove objects as long as there are more than "minObjects" objects. If false the user can never remove objects.
-canSort | bool | If true (the default), the user can sort the list of objects with up and down buttons for each object.
-emptyText | string | Text to render if no rows are rendered.
-horizontal | string | Horizontal mode (default is true)
-minObjects | number | Mininum number of objects in the list. (default is 0)
-**name** (required) | string | Name/path of the list field for this &lt;FormList/&gt;
-newObject | func | optional factory method to produce new values. If no newObject prop is given, the user cannot add objects to the list.
-removeCheck | string | Text of the remove object confirmation (default is "Remove Object?")
-renderRowToolbar | func | render additional elements into the per row toolbars
-renderToolbar | func | render additional elements into the list toolbar
-… | config props | See "Form Config Props" below
-## &lt;FormSelector/&gt;
-
-Helper to edit a list of complex input objects, similar to &lt;FormList/&gt;, it only edits one element at a time and
-lets the user select from a list of elements.
-
-### Props
-
- Name | Type | Description 
-------|------|-------------
-addLabel | string | Label to put on the add button (default is "Add")
-canRemove | bool | If true (the default), the user can remove objects as long as there are more than "minObjects" objects. If false the user can never remove objects.
-canSort | bool | If true (the default), the user can sort the list of objects with up and down buttons for each object.
-emptyText | string | Text to render if no rows are rendered.
-horizontal | string | Horizontal mode (default is true)
-minObjects | number | Mininum number of objects in the list. (default is 0)
-**name** (required) | string | Name/path of the list field for this <FormSelector/>
-newObject | func | optional factory method to produce new values. If no newObject prop is given, the user cannot add objects to the list.
-removeCheck | string | Text of the remove object confirmation (default is "Remove Object?")
-renderRowToolbar | func | render additional elements into the per row toolbars
-renderToolbar | func | render additional elements into the list toolbar
-selectedIndex | number | Index of the field to select in the <FormSelector/>
-**selector** (required) | string or func | Field to select one object from the list of objects by. Can also be a function that renders a representation of a given object.
-… | config props | See "Form Config Props" below
 ## &lt;GlobalErrors/&gt;
 
 Renders a global list of current errors or nothing.
@@ -355,13 +312,13 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 
  Name | Type | Description 
 ------|------|-------------
-buttonStatus | custom | If true (the default), make button with name attributes set formikProps.status.button with that name.
 currency | custom | Currency ISO code for Currency fields
 currencyAddonRight | custom | True if the currency addon is on the right side of the input component.
 horizontal | custom | True to use "horizontal" bootstrap form groups
 labelColumnClass | custom | Additional label column class to use if in horizontal mode.
 lookupLabel | custom | Optional function to look up a form field label based on formConfig and field name / path.
 mode | custom | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
+useReadOnlyAttribute | custom | True if disabled fields should be disabled by setting the readonly flag instead of
 wrapperColumnClass | custom | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
 
@@ -405,5 +362,5 @@ Read [Form Customization](./customization.md) for an usage example and make sure
 
  Name | Type | Description 
 ------|------|-------------
-errorMessage | string | Error message to render for this form group.
+errorMessages | array | Error messages to render for this form group.
 formGroupClass | string | Marker class for the form group, (default is "form-group")

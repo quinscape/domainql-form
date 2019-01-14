@@ -1,7 +1,7 @@
 import BigNumber from "bignumber.js"
 import parseNumber, { clean } from "./util/parse-number"
 
-const BOOLEAN_RE = /^true|false$/;
+const BOOLEAN_RE = /^true|false|on|off$/;
 
 const DATE_RE = /^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$/;
 
@@ -47,16 +47,17 @@ export const CURRENCY_MULTIPLIER = 10000;
 const CURRENCY_LIMIT_LOW = Number.MIN_SAFE_INTEGER / CURRENCY_MULTIPLIER;
 const CURRENCY_LIMIT_HIGH = Number.MAX_SAFE_INTEGER / CURRENCY_MULTIPLIER;
 
+const checkBoolean = checkRegexp(BOOLEAN_RE, "Invalid boolean");
 const DEFAULT_CONVERTERS = {
     "String" : false,
     // formik uses boolean values
     "Boolean" : {
-        validate: checkRegexp(BOOLEAN_RE, "Invalid boolean"),
+        validate: v => typeof v !== "boolean" ? "Invalid boolean" : null,
         scalarToValue: function (scalar) {
-            return String(scalar)
+            return scalar;
         },
         valueToScalar: function (value) {
-            return value === "true";
+            return value;
         }
     },
     "Currency" : {

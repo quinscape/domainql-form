@@ -1,23 +1,34 @@
 import React from "react"
+import { cleanup, fireEvent, render, wait, prettyDOM, getByLabelText, queryByLabelText } from "react-testing-library"
 
 import assert from "power-assert"
 
-import rawSchema from "./schema.json"
+import getSchema from "./util/getSchema"
 import InputSchema from "../src/InputSchema";
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Form from "../src/Form";
-import TextArea from "../src/TextArea";
 import Select from "../src/Select";
-import GlobalConfig from "../src/GlobalConfig";
+import GlobalConfig, { DEFAULT_NONE_TEXT } from "../src/GlobalConfig";
 import FieldMode from "../src/FieldMode";
+import { observable } from "mobx";
+
+import itParam from "mocha-param"
+import cartesian from "cartesian";
+import ModeLocation from "./util/ModeLocation";
+import Field from "./field";
+import userEvent from "user-event";
+import dumpUsage from "./util/dumpUsage";
 
 describe("Select", function (){
 
-    it("renders as select element", function(done) {
+    // automatically unmount and cleanup DOM after the tests are finished.
+    afterEach( cleanup );
 
-        const submitSpy = sinon.spy();
+    after( dumpUsage) ;
+
+    it("renders as select element", function() {
+
         const renderSpy = sinon.spy();
 
         /*
@@ -33,18 +44,18 @@ describe("Select", function (){
         }
          */
 
-        const component = mount(
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container, getByLabelText } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                value={ formRoot }
             >
                 {
                     ctx => {
@@ -58,41 +69,37 @@ describe("Select", function (){
             </Form>
         );
 
-        const select = component.find("select");
-        assert(select.instance().value === "AAA");
-        select.instance().value = "CCC";
-        select.simulate('change');
+        const select = getByLabelText("name");
 
+        assert(select.value === "AAA");
 
-        const options = component.find("option").map( n => n.text());
+        fireEvent.change(select, {
+            target: {
+                value : "CCC"
+            }
+        });
+
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  n => n.innerHTML);
 
         assert.deepEqual(options, ["AAA","BBB","CCC"]);
         
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.formikProps.values.name === "CCC");
+        assert(formConfig.root.name === "CCC");
 
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
+        fireEvent.submit(
+            container.querySelector("form")
+        );
 
-        setImmediate(
-            () => {
-
-                assert(submitSpy.called);
-                const values = submitSpy.lastCall.args[0];
-                assert(values.name === "CCC");
-
-                done();
-            }
-        )
-
+        assert(formRoot.name === "CCC");
 
     });
 
     it("offers an empty selection if not required", function() {
 
-        const submitSpy = sinon.spy();
+        after(() => GlobalConfig.registerNoneText(DEFAULT_NONE_TEXT));
+
         const renderSpy = sinon.spy();
 
         /*
@@ -108,19 +115,18 @@ describe("Select", function (){
         }
          */
 
-
-        const component = mount(
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                value={ formRoot }
             >
                 {
                     ctx => {
@@ -134,52 +140,22 @@ describe("Select", function (){
             </Form>
         );
 
+        const select = getByLabelText(container, "name");
 
-        const options = component.find("option").map( n => n.text());
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  n => n.innerHTML);
 
         assert.deepEqual(options, ["---", "AAA","BBB","CCC"]);
 
-        component.unmount();
-
-        GlobalConfig.registerNoneText("NONE");
-
-
-        const component2 = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
-
-                        renderSpy(ctx);
-                        return (
-                            <Select name="name" values={ ["AAA","BBB","CCC"]}/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-
-        const options2 = component2.find("option").map( n => n.text());
-
-        assert.deepEqual(options2, ["NONE", "AAA","BBB","CCC"]);
-
-        component2.unmount();
     });
 
-    it("supports name/value object", function(done) {
 
-        const submitSpy = sinon.spy();
+    it("takes the name of empty option from global config", function() {
+
+        after(() => GlobalConfig.registerNoneText(DEFAULT_NONE_TEXT));
+
+
+        GlobalConfig.registerNoneText("NONE");
+        
         const renderSpy = sinon.spy();
 
         /*
@@ -195,213 +171,224 @@ describe("Select", function (){
         }
          */
 
-        const component = mount(
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
+                schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                value={ formRoot }
             >
                 {
                     ctx => {
 
                         renderSpy(ctx);
                         return (
-                            <Select name="name" values={                                 [
-                                {
-                                    name: "Option A",
-                                    value: "AAA"
-                                },
-                                {
-                                    name: "Option B",
-                                    value: "BBB"
-                                },
-                                {
-                                    name: "Option C",
-                                    value: "CCC"
-                                }
-                            ]
-                            } required={ true }/>
+                            <Select name="name" values={ ["AAA","BBB","CCC"]}/>
                         );
                     }
                 }
             </Form>
         );
 
-        const select = component.find("select");
-        assert(select.instance().value === "AAA");
-        select.instance().value = "CCC";
-        select.simulate('change');
+        const select = getByLabelText(container, "name");
+
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  n => n.innerHTML);
+
+        assert.deepEqual(options, ["NONE", "AAA","BBB","CCC"]);
+
+    });
 
 
-        const options = component.find("option").map( n => n.text());
+
+
+    it("supports name/value object", function() {
+
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                value={ formRoot }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select name="name" values={
+                                [
+                                    {
+                                        name: "Option A",
+                                        value: "AAA"
+                                    },
+                                    {
+                                        name: "Option B",
+                                        value: "BBB"
+                                    },
+                                    {
+                                        name: "Option C",
+                                        value: "CCC"
+                                    }
+                                ]
+                            } required={true}/>
+                        );
+                    }
+                }
+            </Form>
+        );
+        //console.log(prettyDOM(container))
+        
+        const select = getByLabelText(container, "name");
+        assert(select.value === "AAA");
+        assert(!select.disabled);
+
+
+        fireEvent.change(select, {
+            target: {
+                value : "CCC"
+            }
+        });
+
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  n => n.innerHTML);
 
         assert.deepEqual(options, ["Option A","Option B","Option C"]);
 
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.formikProps.values.name === "CCC");
+        assert(formConfig.root.name === "CCC");
 
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
 
-        setImmediate(
-            () => {
-                assert(submitSpy.called);
-                const values = submitSpy.lastCall.args[0];
-                assert(values.name === "CCC");
+        fireEvent.submit(
+            container.querySelector("form")
+        );
 
-                done();
+        assert(formRoot.name === "CCC");
+    });
+
+    itParam(
+        "inherits mode from parent context(${value})",
+        cartesian([
+            [FieldMode.NORMAL, FieldMode.DISABLED, FieldMode.READ_ONLY, FieldMode.PLAIN_TEXT, FieldMode.INVISIBLE],
+            [ModeLocation.ON_FIELD, ModeLocation.INHERITED]
+        ]), function([ mode, loc ]) {
+
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                mode={ loc === ModeLocation.INHERITED ? mode : null }
+                value={ formRoot }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select
+                                name="name"
+                                values={
+                                    [
+                                        {
+                                            name: "Option A",
+                                            value: "AAA"
+                                        },
+                                        {
+                                            name: "Option B",
+                                            value: "BBB"
+                                        },
+                                        {
+                                            name: "Option C",
+                                            value: "CCC"
+                                        }
+                                    ]
+                                }
+                                mode={ loc === ModeLocation.ON_FIELD ? mode : null }
+                                required={ true }/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        const select = queryByLabelText(container, "name");
+
+            switch (mode)
+            {
+                case FieldMode.NORMAL:
+                    assert(select.value === "AAA");
+                    assert(!select.disabled);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.DISABLED:
+                case FieldMode.READ_ONLY:
+                    assert(select.value === "AAA");
+                    assert(select.disabled);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.PLAIN_TEXT:
+                    // select is rendered as span.form-control-plaintext
+                    assert(select.tagName === "SPAN");
+                    assert(select.className.indexOf("form-control-plaintext") >= 0);
+                    assert(select.innerHTML === "Option A");
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.INVISIBLE:
+                    assert(!select);
+                    assert(container.querySelectorAll(".form-group").length === 0)
+                    break;
             }
-        )
 
 
-
-    });
-
-    it("inherits DISABLED from parent context", function(done) {
-
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
-
-        /*
-        input DomainFieldInput {
-            name: String!
-            description: String
-            type: FieldType!
-            required: Boolean!
-            maxLength: Int!
-            sqlType: String
-            config: [ConfigValueInput]
-            unique: Boolean
-        }
-         */
-
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                mode={ FieldMode.DISABLED }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
-
-                        renderSpy(ctx);
-                        return (
-                            <Select name="name" values={                                 [
-                                {
-                                    name: "Option A",
-                                    value: "AAA"
-                                },
-                                {
-                                    name: "Option B",
-                                    value: "BBB"
-                                },
-                                {
-                                    name: "Option C",
-                                    value: "CCC"
-                                }
-                            ]
-                            } required={ true }/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-        const select = component.find("select");
-
-        assert(component.text().indexOf("AAA") < 0);
-        assert(select.instance().value === "AAA");
-        assert(select.instance().disabled);
-
-        setImmediate( () => {
-            component.unmount();
-            done()
-        });
-    });
-
-    it("inherits READ_ONLY from parent context", function(done) {
-
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
-
-        /*
-        input DomainFieldInput {
-            name: String!
-            description: String
-            type: FieldType!
-            required: Boolean!
-            maxLength: Int!
-            sqlType: String
-            config: [ConfigValueInput]
-            unique: Boolean
-        }
-         */
-
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                mode={ FieldMode.READ_ONLY }
-                value={{
-                    name: "AAA",
-                    description: "XXX",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
-
-                        renderSpy(ctx);
-                        return (
-                            <Select name="name" values={                                 [
-                                {
-                                    name: "Option A",
-                                    value: "AAA"
-                                },
-                                {
-                                    name: "Option B",
-                                    value: "BBB"
-                                },
-                                {
-                                    name: "Option C",
-                                    value: "CCC"
-                                }
-                            ]
-                            } required={ true }/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-        const select = component.find("select");
-
-        assert(select.length === 0);
-        assert(component.text().indexOf("AAA") > 0);
-        setImmediate( () => {
-            component.unmount();
-            done()
-        });
     });
 
 });

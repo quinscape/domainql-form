@@ -12,6 +12,27 @@ import { resolveStaticRenderer } from "./GlobalConfig"
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
 
+
+function findLabelForValue(values, value)
+{
+    for (let i = 0; i < values.length; i++)
+    {
+        const v = values[i];
+        if (typeof v === "string" && v === value)
+        {
+            return v;
+        }
+        else if (v.value === value)
+        {
+
+            return v.name;
+        }
+    }
+
+    return GlobalConfig.none();
+}
+
+
 /**
  * Allows selection from a list of string values for a target field.
  */
@@ -73,12 +94,12 @@ class Select extends React.Component {
     };
 
     static defaultProps = {
-        required:  false
+        required: false
     };
 
     handleChange = (fieldContext, ev) => {
 
-        const { onChange } = this.props;
+        const {onChange} = this.props;
 
         if (onChange)
         {
@@ -91,12 +112,13 @@ class Select extends React.Component {
         }
     };
 
+
     render()
     {
         return (
             <Field
-                { ...this.props }
-                values={ null }
+                {...this.props}
+                values={null}
             >
 
                 {
@@ -106,81 +128,89 @@ class Select extends React.Component {
         )
     }
 
+
     renderWithFieldContext = fieldContext => {
         //console.log("render Select", fieldContext);
 
-        const { values, inputClass, required } = this.props;
-        const { fieldType, formConfig, path, qualifiedName, onBlur, autoFocus } = fieldContext;
-
+        const {values, inputClass, required} = this.props;
+        const {fieldId, fieldType, mode, formConfig, path, qualifiedName, onBlur, autoFocus} = fieldContext;
 
         const errorMessages = formConfig.getErrors(path);
-        const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
+        const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
         const noneText = GlobalConfig.none();
 
-        const effectiveMode = fieldContext.mode || formConfig.options.mode;
-
-        const isReadOnly = effectiveMode === FieldMode.READ_ONLY;
+        const isPlainText = mode === FieldMode.PLAIN_TEXT;
 
         return (
             <FormGroup
-                { ... fieldContext }
-                errorMessages={ errorMessages }
+                {...fieldContext}
+                errorMessages={errorMessages}
             >
                 {
-                    isReadOnly ?
-                        resolveStaticRenderer(fieldContext.fieldType)(fieldValue) : (
-                            <select
-                                className={
-                                    cx(
-                                        inputClass,
-                                        "form-control",
-                                        errorMessages.length > 0 && "is-invalid"
-                                    )
-                                }
-                                name={qualifiedName}
-                                value={fieldValue}
-                                disabled={effectiveMode === FieldMode.DISABLED}
-                                onChange={ev => this.handleChange(fieldContext, ev)}
-                                onBlur={onBlur}
-                                autoFocus={autoFocus}
-                            >
-                                {
-                                    !required && <option key="" value="">{noneText}</option>
-                                }
-                                {
-                                    values.map(v => {
+                    isPlainText ? (
+                        <span
+                            id={ fieldId }
+                            className="form-control-plaintext"
+                        >
+                            {
+                                findLabelForValue(values, fieldValue)
+                            }
+                        </span>
+                    ) : (
+                        <select
+                            id={fieldId}
+                            className={
+                                cx(
+                                    inputClass,
+                                    "form-control",
+                                    errorMessages.length > 0 && "is-invalid"
+                                )
+                            }
+                            name={qualifiedName}
+                            value={fieldValue}
+                            disabled={mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
+                            onChange={ev => this.handleChange(fieldContext, ev)}
+                            onBlur={onBlur}
+                            autoFocus={autoFocus}
+                        >
+                            {
+                                !required && <option key="" value="">{noneText}</option>
+                            }
+                            {
+                                values.map(v => {
 
-                                        let name, value;
-                                        if (typeof v === "string")
-                                        {
-                                            name = v;
-                                            value = v;
-                                        }
-                                        else
-                                        {
-                                            name = v.name;
-                                            value = v.root;
-                                        }
+                                    let name, value;
+                                    if (typeof v === "string")
+                                    {
+                                        name = v;
+                                        value = v;
+                                    }
+                                    else
+                                    {
+                                        name = v.name;
+                                        value = v.value;
+                                    }
 
-                                        return (
-                                            <option
-                                                key={value}
-                                                value={value}
-                                            >
-                                                {
-                                                    name
-                                                }
-                                            </option>
-                                        );
-                                    })
-                                }
-                            </select>
-                        )
+                                    return (
+                                        <option
+                                            key={value}
+                                            value={value}
+                                        >
+                                            {
+                                                name
+                                            }
+                                        </option>
+                                    );
+                                })
+                            }
+                        </select>
+                    )
                 }
             </FormGroup>
         )
     };
 }
+
 
 export default Select

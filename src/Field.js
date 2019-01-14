@@ -16,6 +16,7 @@ import { observer } from "mobx-react"
  */
 class Field extends React.Component {
 
+
     static propTypes = {
         /**
          * Name / path for this field (e.g. "name", but also "foos.0.name")
@@ -70,21 +71,27 @@ class Field extends React.Component {
 
     static getDerivedStateFromProps(nextProps, prevState)
     {
-        const { id, name, label, formConfig, autoFocus } = nextProps;
+        const { id, name, label, formConfig, autoFocus, mode, placeHolder, inputClass, labelClass } = nextProps;
+
+
+        const effectiveMode = mode || formConfig.options.mode;
 
         // do we have a field type already and did the form config and id and name not change from last time?
-        if (
-            prevState.fieldContext &&
-            prevState.id === id &&
-            prevState.name === name &&
-            prevState.label === label
+        const { fieldContext } = prevState;
 
-            // XXX: none of the functionality here should be sensitive to form config changes. Uncomment if this is wrong
-            /*&& prevState.formConfig.equals(formConfig)*/
+        if (
+            fieldContext  &&
+            fieldContext.id === id &&
+            fieldContext.name === name &&
+            fieldContext.mode === effectiveMode &&
+            fieldContext.label === label &&
+            fieldContext.placeHolder === placeHolder &&
+            fieldContext.inputClass === inputClass &&
+            prevState.fieldContext.labelClass === labelClass
         )
         {
             // yes -> no update
-            //console.log("NO UPDATE");
+            //console.log("NO FIELD-CONTEXT UPDATE");
             return null;
         }
 
@@ -103,8 +110,10 @@ class Field extends React.Component {
         }
         else
         {
-            fieldId = id;
-            effectiveLabel = label || "";
+            // XXX: solve issue
+            throw new Error("It does happen after all");
+            // fieldId = id;
+            // effectiveLabel = label || "";
         }
 
         // update field state
@@ -119,16 +128,26 @@ class Field extends React.Component {
                 onChange: prevState.onChange,
                 onBlur: prevState.onBlur,
                 autoFocus,
+                mode: effectiveMode,
+                placeHolder,
+                inputClass,
+                labelClass
             }
         };
     }
 
     onChange = ev => {
 
-        const { target: { name, value } } = ev;
+        const { target } = ev;
 
         const { formConfig } = this.props;
         const { fieldContext : { fieldType } } = this.state;
+
+        const { name } = target;
+
+        const value = target.type === "checkbox" ? target.checked : target.value;
+
+        //console.log("onChange", fieldType, name, value);
 
         formConfig.handleChange(fieldType, name, value);
     };

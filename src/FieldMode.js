@@ -1,13 +1,17 @@
 import Enum from "./util/enum"
 
-// extend Enum prototype to add disabledIf/readOnlyIf
+const FIELD_MODE_VALUES = {
+    NORMAL : true,
+    DISABLED : true,
+    READ_ONLY : true,
+    PLAIN_TEXT : true,
+    INVISIBLE : true
+};
+
+// extend Enum prototype to add disabledIf/readOnlyIf/plainTextIf/invisibleIf
 function FieldModeEnum()
 {
-    Enum.call(this, {
-        NORMAL : true,
-        DISABLED : true,
-        READ_ONLY : true
-    });
+    Enum.call(this, FIELD_MODE_VALUES);
 }
 
 FieldModeEnum.prototype = Object.create(Enum.prototype);
@@ -27,9 +31,19 @@ FieldModeEnum.prototype.disabledIf = function (cond, otherwise = null) {
     return cond ? FieldMode.DISABLED : otherwise;
 };
 
+FieldModeEnum.prototype.plainTextIf = function (cond, otherwise = null) {
+
+    return cond ? FieldMode.PLAIN_TEXT : otherwise;
+};
+
 FieldModeEnum.prototype.readOnlyIf = function (cond, otherwise = null) {
 
     return cond ? FieldMode.READ_ONLY : otherwise;
+};
+
+FieldModeEnum.prototype.invisibleIf = function (cond, otherwise = null) {
+
+    return cond ? FieldMode.INVISIBLE : otherwise;
 };
 
 /**

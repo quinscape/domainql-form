@@ -14,8 +14,9 @@ const COMPONENTS = [
             "../src/TextArea.js",
             "../src/Select.js",
             "./snippets/Select.md",
-            "../src/FormList.js",
-            "../src/FormSelector.js",
+            // XXX: components don't work now
+            // "../src/FormList.js",
+            // "../src/FormSelector.js",
             "../src/GlobalErrors.js",
             "../src/AutoSubmit.js",
             "./snippets/HighOrderComponents.md"

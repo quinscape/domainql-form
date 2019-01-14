@@ -1,82 +1,301 @@
 import React from "react"
 
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "react-testing-library"
+
 import assert from "power-assert"
 
-import rawSchema from "./schema.json"
-import InputSchema from "../src/InputSchema";
+import getSchema from "./util/getSchema"
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Form from "../src/Form";
 import Field from "../src/Field";
-import FormConfig, { DEFAULT_OPTIONS } from "../src/FormConfig";
-import FormConfigProvider from "../src/FormConfigProvider";
+
+import { observable, runInAction } from "mobx";
+import viewModelToJs from "./util/viewModelToJs";
+import userEvent from "user-event";
 import GlobalConfig from "../src/GlobalConfig";
+import { DEFAULT_OPTIONS } from "../src/FormConfig";
 
-describe("Field", function (){
+import itParam from "mocha-param"
+import FieldMode from "../src/FieldMode";
+import cartesian from "cartesian";
+import ModeLocation from "./util/ModeLocation";
+import dumpUsage from "./util/dumpUsage";
 
-    it("renders as text input", function(done) {
+describe("Field", function () {
 
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
+    // automatically unmount and cleanup DOM after the tests are finished.
+    afterEach(cleanup);
 
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={submitSpy }
-                type={ "EnumTypeInput" }
-                value={{
-                    name: "MyEnum",
-                    values: ["A", "B", "C"],
-                }}
-            >
-                {
-                    ctx => {
+    after( dumpUsage) ;
 
-                        renderSpy(ctx);
-                        return (
-                            <Field name="name"/>
-                        );
+    itParam(
+        "renders as text input (${value})",
+        cartesian([
+            [FieldMode.NORMAL, FieldMode.DISABLED, FieldMode.READ_ONLY, FieldMode.PLAIN_TEXT, FieldMode.INVISIBLE],
+            [ModeLocation.ON_FIELD, ModeLocation.INHERITED]
+        ]), function ([mode, loc]) {
+
+            const renderSpy = sinon.spy();
+
+            const formRoot = observable({
+                name: "MyEnum",
+                values: ["A", "B", "C"],
+            });
+
+            const { container } = render(
+                <Form
+                    schema={getSchema()}
+                    type={"EnumTypeInput"}
+                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    value={
+                        formRoot
                     }
-                }
-            </Form>
-        );
+                >
+                    {
+                        ctx => {
 
-        const input = component.find("input[type='text']");
-
-        input.instance().value = "AnotherEnum";
-        input.simulate('change');
-
-
-        setImmediate(
-            () => {
-                const formConfig = renderSpy.lastCall.args[0];
-
-                assert(formConfig.formikProps.values.name === "AnotherEnum");
-
-                let form = component.find("form");
-
-                console.log("submit", form.simulate("submit"));
-
-                setImmediate(
-                    () => {
-                        assert(submitSpy.called);
-                        const values = submitSpy.lastCall.args[0];
-                        assert(values.name === "AnotherEnum");
-
-                        component.unmount();
-                        done();
+                            renderSpy(ctx);
+                            return (
+                                <Field
+                                    mode={loc === ModeLocation.ON_FIELD ? mode : null}
+                                    name="name"
+                                />
+                            );
+                        }
                     }
-                );
+                </Form>
+            );
+
+            //console.log(loc, mode, prettyDOM(container));
+
+            const input = queryByLabelText(container, "name");
+            switch (mode)
+            {
+                case FieldMode.NORMAL:
+                    userEvent.type(input, "AnotherEnum");
+
+                    const formConfig = renderSpy.lastCall.args[0];
+                    assert(formConfig.root.name === "AnotherEnum");
+
+                    fireEvent.submit(
+                        container.querySelector("form")
+                    );
+
+                    assert(formRoot.name === "AnotherEnum");
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.DISABLED:
+
+                    assert(input.disabled);
+                    assert(!input.readOnly);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.READ_ONLY:
+                    assert(!input.disabled);
+                    assert(input.readOnly);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.PLAIN_TEXT:
+                    assert(input.tagName === "SPAN");
+                    assert(input.className.indexOf("form-control-plaintext") >= 0);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.INVISIBLE:
+                    assert(!input);
+                    assert(container.querySelectorAll(".form-group").length === 0)
+                    break;
             }
-        );
 
-    });
+        });
 
-    it("renders as checkbox", function(done) {
+    itParam(
+        "renders as checkbox (${value})",
+        cartesian([
+            [FieldMode.NORMAL, FieldMode.DISABLED, FieldMode.READ_ONLY, FieldMode.PLAIN_TEXT, FieldMode.INVISIBLE],
+            [ModeLocation.ON_FIELD, ModeLocation.INHERITED]
+        ]), function ([mode, loc]) {
 
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
+            /*
+            input DomainFieldInput {
+                name: String!
+                description: String
+                type: FieldType!
+                required: Boolean!
+                maxLength: Int!
+                sqlType: String
+                config: [ConfigValueInput]
+                unique: Boolean
+            }
+             */
+
+            const renderSpy = sinon.spy();
+
+            const formRoot = observable({
+                name: "MyField",
+                type: "STRING",
+                required: true,
+                maxLength: -1
+            });
+            const {container} = render(
+                <Form
+                    schema={getSchema()}
+                    type={"DomainFieldInput"}
+                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    value={
+                        formRoot
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <Field
+                                    mode={loc === ModeLocation.ON_FIELD ? mode : null}
+                                    name="required"
+                                />
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            const checkbox = queryByLabelText(container, "required");
+
+            switch (mode)
+            {
+                case FieldMode.NORMAL:
+                    assert(checkbox.checked === true);
+                    fireEvent.click(checkbox);
+
+                    assert(checkbox.checked === false);
+
+                    fireEvent.submit(
+                        container.querySelector("form")
+                    );
+
+                    assert(formRoot.required === false);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+
+                    break;
+                case FieldMode.DISABLED:
+                case FieldMode.READ_ONLY:
+                    assert(checkbox.disabled);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.PLAIN_TEXT:
+                    assert(checkbox.tagName === "SPAN");
+                    assert(checkbox.className.indexOf("form-control-plaintext") >= 0);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.INVISIBLE:
+                    assert(!checkbox);
+                    assert(container.querySelectorAll(".form-group").length === 0)
+                    break;
+            }
+
+        });
+
+    itParam(
+        "renders as enum select (${value})",
+        cartesian([
+            [FieldMode.NORMAL, FieldMode.DISABLED, FieldMode.READ_ONLY, FieldMode.PLAIN_TEXT],
+            [ModeLocation.ON_FIELD, ModeLocation.INHERITED]
+        ]), function ([mode, loc]) {
+
+            /*
+            input DomainFieldInput {
+                name: String!
+                description: String
+                type: FieldType!
+                required: Boolean!
+                maxLength: Int!
+                sqlType: String
+                config: [ConfigValueInput]
+                unique: Boolean
+            }
+             */
+
+            const formRoot = observable({
+                name: "MyField",
+                type: "STRING",
+                required: true,
+                maxLength: -1
+            });
+
+            const renderSpy = sinon.spy();
+
+            const {container} = render(
+                <Form
+                    schema={getSchema()}
+                    type={"DomainFieldInput"}
+                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    value={
+                        formRoot
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <Field
+                                    mode={loc === ModeLocation.ON_FIELD ? mode : null}
+                                    name="type"
+                                />
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            const select = queryByLabelText(container, "type");
+
+            //console.log(prettyDOM(container))
+
+            switch (mode)
+            {
+                case FieldMode.NORMAL:
+                    assert(select.value === "STRING");
+
+                    fireEvent.change(select, {
+                        target: {
+                            value: "INTEGER"
+                        }
+                    });
+
+                    assert(select.value === "INTEGER");
+
+                    fireEvent.submit(
+                        container.querySelector("form")
+                    );
+
+                    assert(formRoot.type === "INTEGER");
+
+                    assert(container.querySelectorAll(".form-group").length === 1)
+
+                    break;
+                case FieldMode.DISABLED:
+                case FieldMode.READ_ONLY:
+                    assert(select.value === "STRING");
+                    assert(select.disabled);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.PLAIN_TEXT:
+                    assert(select.tagName === "SPAN");
+                    assert(select.className.indexOf("form-control-plaintext") >= 0);
+                    assert(container.querySelectorAll(".form-group").length === 1)
+                    break;
+                case FieldMode.INVISIBLE:
+                    assert(!select);
+                    assert(container.querySelectorAll(".form-group").length === 0)
+                    break;
+            }
+
+        });
+
+    it("validates according to field type", function () {
 
         /*
         input DomainFieldInput {
@@ -91,156 +310,20 @@ describe("Field", function (){
         }
          */
 
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
+        const formRoot = observable({
+            name: "MyField",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
 
-                        renderSpy(ctx);
-                        return (
-                            <Field name="required"/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-        const checkbox = component.find("input[type='checkbox']");
-        assert(checkbox.instance().checked === true);
-        checkbox.instance().checked = false;
-        checkbox.simulate('change');
-
-
-        const formConfig = renderSpy.lastCall.args[0];
-
-        assert(formConfig.formikProps.values.required === false);
-
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
-
-        setImmediate(
-            () => {
-                assert(submitSpy.called);
-                const values = submitSpy.lastCall.args[0];
-                assert(values.required === false);
-
-                component.unmount();
-                done();
-            }
-        );
-
-
-
-    });
-
-    it("renders as enum select", function(done) {
-
-        const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
 
-        /*
-        input DomainFieldInput {
-            name: String!
-            description: String
-            type: FieldType!
-            required: Boolean!
-            maxLength: Int!
-            sqlType: String
-            config: [ConfigValueInput]
-            unique: Boolean
-        }
-         */
-
-        const component = mount(
+        const {container} = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-            >
-                {
-                    ctx => {
-
-                        renderSpy(ctx);
-                        return (
-                            <Field name="type"/>
-                        );
-                    }
-                }
-            </Form>
-        );
-
-        const select = component.find("select");
-        assert(select.instance().value === "STRING");
-        select.instance().value = "INTEGER";
-        select.simulate('change');
-
-
-        const formConfig = renderSpy.lastCall.args[0];
-
-        assert(formConfig.formikProps.values.type === "INTEGER");
-
-        //console.log(renderSpy.callCount);
-        component.find("form").simulate("submit");
-
-        setImmediate(
-            () => {
-                assert(submitSpy.called);
-                const values = submitSpy.lastCall.args[0];
-                assert(values.type === "INTEGER");
-
-                component.unmount();
-                done();
-            }
-        );
-
-
-    });
-
-    it("validates according to field type", function(done) {
-
-        const submitSpy = sinon.spy();
-        const renderSpy = sinon.spy();
-
-        /*
-        input DomainFieldInput {
-            name: String!
-            description: String
-            type: FieldType!
-            required: Boolean!
-            maxLength: Int!
-            sqlType: String
-            config: [ConfigValueInput]
-            unique: Boolean
-        }
-         */
-
-        const component = mount(
-            <Form
-                schema={ new InputSchema(rawSchema) }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                schema={getSchema()}
+                type={"DomainFieldInput"}
+                value={formRoot}
             >
                 {
                     ctx => {
@@ -254,49 +337,43 @@ describe("Field", function (){
             </Form>
         );
 
-        const select = component.find("input[type='text']");
-        assert(select.instance().value === "-1");
-        select.instance().value = "1a";
-        select.simulate('change');
+        const numericInput = queryByLabelText(container, "maxLength");
+        assert(numericInput.value === "-1");
 
+        userEvent.type(numericInput, "1a");
 
-        setImmediate(
-            () => {
-                const formConfig = renderSpy.lastCall.args[0];
+        const formConfig = renderSpy.lastCall.args[0];
 
-                assert(formConfig.formikProps.values.maxLength === "1a");
-                assert(formConfig.formikProps.errors.maxLength === "Invalid Integer");
-
-                component.unmount();
-                done();
-            }
-        );
-
+        // value is *not* written back into view model
+        assert(formConfig.root.maxLength === 1);
+        // it's kept as first error followed by the actual first error
+        assert.deepEqual(formConfig.getErrors("maxLength"), ["1a", "Invalid Integer"]);
 
     });
 
-    it("provides a field context to render function children", function(done) {
+    // make sure to de-register our label lookup to not disturb other tests
+    after(() => GlobalConfig.registerLabelLookup(null));
 
-        GlobalConfig.registerLabelLookup((formConfig, name) =>
-        {
+    it("provides a field context to render function children", function () {
+
+        GlobalConfig.registerLabelLookup((formConfig, name) => {
             return "[ " + formConfig.type + "." + name + " ]";
         });
 
-        const submitSpy = sinon.spy();
+        const schema = getSchema();
         const renderSpy = sinon.spy();
 
-        const schema = new InputSchema(rawSchema);
-        const component = mount(
+        const formRoot = observable({
+            name: "MyField",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const {container} = render(
             <Form
-                schema={ schema }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
+                schema={schema}
+                type={"DomainFieldInput"}
+                value={formRoot}
             >
                 {
                     ctx => {
@@ -308,16 +385,19 @@ describe("Field", function (){
 
                                         renderSpy(fieldContext);
 
-                                        const formikProps = fieldContext.formConfig.formikProps;
+                                        const {root} = fieldContext.formConfig;
                                         return (
 
                                             <React.Fragment>
                                                 <p>
                                                     {
-                                                        JSON.stringify(formikProps.values.name )
+                                                        JSON.stringify(root.name)
                                                     }
                                                 </p>
-                                                <button type="button" onClick={ ev => formikProps.setFieldValue("name", "From Button")} />
+                                                <button type="button"
+                                                        onClick={() => runInAction(() => root.name = "From Button")}>
+                                                    SetFromButton
+                                                </button>
                                             </React.Fragment>
                                         );
                                     }
@@ -332,33 +412,28 @@ describe("Field", function (){
 
         const fieldContext = renderSpy.lastCall.args[0];
 
-        assert(fieldContext.fieldId === "field-DomainFieldInput-description" );
-        assert(fieldContext.formConfig.schema === schema );
+        //console.log({fieldContext});
+
+        assert(fieldContext.fieldId === "field-DomainFieldInput-description");
+        assert(fieldContext.formConfig.schema === schema);
         assert(fieldContext.formConfig.type === "DomainFieldInput");
         assert.deepEqual(fieldContext.formConfig.options, DEFAULT_OPTIONS);
-        assert(fieldContext.fieldType.kind === "SCALAR" );
-        assert(fieldContext.fieldType.name === "String" );
-        assert(fieldContext.qualifiedName === "description" );
-        assert.deepEqual(fieldContext.path, ["description"] );
-        assert(fieldContext.label === "[ DomainFieldInput.description ]" );
-        assert(fieldContext.name === "description");
+        assert(fieldContext.fieldType.kind === "SCALAR");
+        assert(fieldContext.fieldType.name === "String");
+        assert(fieldContext.qualifiedName === "description");
+        assert.deepEqual(fieldContext.path, ["description"]);
+        assert(fieldContext.label === "[ DomainFieldInput.description ]");
 
-        const paragraph = component.find("p");
+        const paragraph = container.querySelector("p");
 
-        assert(paragraph.text() === "\"MyField\"");
+        assert(paragraph.innerHTML === "\"MyField\"");
 
-        component.find("button").simulate("click");
+        const button = getByText(container, "SetFromButton");
 
-        setImmediate(
-            () => {
-                const fieldContext2 = renderSpy.lastCall.args[0];
+        fireEvent.click(button);
 
-                assert(fieldContext2.formConfig.formikProps.values.name === "From Button");
-
-                component.unmount();
-                done();
-            }
-        );
+        assert(fieldContext.formConfig.root.name === "From Button");
+        assert(fieldContext.formConfig.root.model.name === "MyField");
 
     })
 });

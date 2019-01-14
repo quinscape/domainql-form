@@ -1,6 +1,7 @@
 import React from "react"
 import PropTypes from "prop-types"
 import cx from "classnames"
+import FieldMode from "./FieldMode"
 
 
 /**
@@ -38,8 +39,14 @@ class FormGroup extends React.Component
             helpText,
             labelClass,
             errorMessages,
+            mode,
             children
         } = this.props;
+
+        if (mode === FieldMode.INVISIBLE)
+        {
+            return false;
+        }
 
         const { horizontal, labelColumnClass, wrapperColumnClass } = formConfig.options;
 
@@ -66,7 +73,7 @@ class FormGroup extends React.Component
 
         let helpBlock = false;
 
-        const haveErrors = errorMessages.length > 0;
+        const haveErrors = errorMessages && errorMessages.length > 0;
 
 
         const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];

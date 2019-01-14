@@ -1,122 +1,162 @@
 import React from "react"
+import { cleanup, fireEvent, render, wait, prettyDOM } from "react-testing-library"
 
 import assert from "power-assert"
 
-import rawSchema from "./schema.json"
+import getSchema from "./util/getSchema"
 import InputSchema from "../src/InputSchema";
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Field from "../src/Field";
 import withForm from "../src/withForm";
+import { observable } from "mobx";
+import userEvent from "user-event";
+import dumpUsage from "./util/dumpUsage";
 
 
 describe("withForm()", function () {
 
-    const renderSpy = sinon.spy();
-    const submitSpy = sinon.spy();
+    // automatically unmount and cleanup DOM after the tests are finished.
+    afterEach( cleanup );
 
-    // in FormForm.js
-    class FooForm extends React.Component {
-        render()
-        {
-            renderSpy(this.props);
-
-            return (
-                <React.Fragment>
-                    <Field name="name"/>
-                    <Field name="num"/>
-                </React.Fragment>
-            )
-        }
-    }
-
-    // in FooForm.js: "export default withForm( FooForm, { type: "FooInput" } )"
-    const EnhancedForm = withForm(
-        FooForm,
-        {
-            // The form always needs the InputType
-            type: "FooInput",
-            // and the schema if it is not provided by a <FormConfigProvider/>
-            schema:  new InputSchema(rawSchema)
-
-        }
-    );
-
-    // FooForm can then be used in a higher component, e.g. in App.js
-    const initial = {
-        name: "Hans",
-        num: 21,
-        longNum: 999999999,
-        moneys: 10000
-    };
-
-    const form = mount(
-        <EnhancedForm
-            value={initial}
-            validate={(values, actions) => {
-
-                if (values.name === "foo")
-                {
-                    return {
-                        name: "Bad Name"
-                    }
-                }
-
-                return null;
-            }}
-            onSubmit={ submitSpy }
-        />
-    );
+    after(dumpUsage);
 
     it("wraps a form body component ", function () {
+
+        const renderSpy = sinon.spy();
+
+        // in FormForm.js
+        class FooForm extends React.Component {
+            render()
+            {
+                renderSpy(this.props);
+
+                return (
+                    <React.Fragment>
+                        <Field name="name"/>
+                        <Field name="num"/>
+                    </React.Fragment>
+                )
+            }
+        }
+
+        // in FooForm.js: "export default withForm( FooForm, { type: "FooInput" } )"
+        const EnhancedForm = withForm(
+            FooForm,
+            {
+                // The form always needs the InputType
+                type: "FooInput",
+                // and the schema if it is not provided by a <FormConfigProvider/>
+                schema:  getSchema()
+
+            }
+        );
+
+        // FooForm can then be used in a higher component, e.g. in App.js
+        const formRoot = observable({
+            name: "Hans",
+            num: 21,
+            longNum: 999999999,
+            moneys: 10000
+        });
+
+        const { container, getByLabelText } = render(
+            <EnhancedForm
+                value={formRoot}
+            />
+        );
 
         const props = renderSpy.lastCall.args[0];
 
         assert(props.formConfig);
-        const formikProps = props.formConfig.formikProps;
-        assert(formikProps.values.name === "Hans");
-        assert(formikProps.values.num === "21");
+        const viewModel = props.formConfig.root;
+        assert(viewModel.name === "Hans");
+        assert(viewModel.num === 21);
 
-        const input = form.find("input[type='text']");
+        const nameField = getByLabelText("name");
+        const numField = getByLabelText("num");
 
-        assert(input.length === 2);
-        const firstInput = input.at(0);
-        const secondInput = input.at(1);
-        assert(firstInput.instance().value === "Hans");
-        assert(secondInput.instance().value === "21");
+        assert(nameField.value === "Hans");
+        assert(numField.value === "21");
 
-        firstInput.instance().value = "Helmut";
-        firstInput.simulate("change");
+        userEvent.type(nameField, "Helmut");
 
-        form.find("form").simulate("submit");
+        fireEvent.submit(
+            container.querySelector("form")
+        );
 
-        setImmediate(
-            () => {
-
-            const foo = submitSpy.lastCall.args[0];
-
-            assert(foo.name === "Helmut");
-            assert(foo.num === 21);
-            assert(foo.longNum === 999999999);
-            assert(foo.moneys === 10000);
-        })
+        assert(formRoot.name === "Helmut");
+        assert(formRoot.num === 21);
+        assert(formRoot.longNum === 999999999);
+        assert(formRoot.moneys === 10000);
     });
 
-    it("uses the enhanced form component's validate prop as local validate", function () {
-
-        const input = form.find("input[type='text']").at(0);
-        input.instance().value = "foo";
-        input.simulate("change");
-
-        setImmediate(() => {
-            const props = renderSpy.lastCall.args[0];
-
-            const formikProps = props.formConfig.formikProps;
-            assert(formikProps.values.name === "foo");
-            assert(formikProps.errors.name === "Bad Name");
-        })
-    })
+    // it("uses the enhanced form component's validate prop as local validate", function () {
+    //
+    //     const renderSpy = sinon.spy();
+    //
+    //     // in FormForm.js
+    //     class FooForm extends React.Component {
+    //         render()
+    //         {
+    //             renderSpy(this.props);
+    //
+    //             return (
+    //                 <React.Fragment>
+    //                     <Field name="name"/>
+    //                     <Field name="num"/>
+    //                 </React.Fragment>
+    //             )
+    //         }
+    //     }
+    //
+    //     // in FooForm.js: "export default withForm( FooForm, { type: "FooInput" } )"
+    //     const EnhancedForm = withForm(
+    //         FooForm,
+    //         {
+    //             // The form always needs the InputType
+    //             type: "FooInput",
+    //             // and the schema if it is not provided by a <FormConfigProvider/>
+    //             schema:  getSchema()
+    //
+    //         }
+    //     );
+    //
+    //     // FooForm can then be used in a higher component, e.g. in App.js
+    //     const formRoot = observable({
+    //         name: "Hans",
+    //         num: 21,
+    //         longNum: 999999999,
+    //         moneys: 10000
+    //     });
+    //
+    //     const { container, getByLabelText } = render(
+    //         <EnhancedForm
+    //             value={formRoot}
+    //             validate={(values, actions) => {
+    //
+    //                 if (values.name === "foo")
+    //                 {
+    //                     return {
+    //                         name: "Bad Name"
+    //                     }
+    //                 }
+    //
+    //                 return null;
+    //             }}
+    //         />
+    //     );
+    //
+    //     const nameField = getByLabelText("name");
+    //
+    //     userEvent.type(nameField, "foo");
+    //
+    //     const props = renderSpy.lastCall.args[0];
+    //
+    //     const viewModel = props.formConfig.root;
+    //     assert(viewModel.name === "foo");
+    //     assert.deepEqual(props.formConfig.getErrors("name") , ["foo", "Bad Name"]);
+    // })
 
 
 });

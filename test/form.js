@@ -1,37 +1,52 @@
 import React from "react"
+import { cleanup, fireEvent, render, prettyDOM } from "react-testing-library"
 
 import assert from "power-assert"
 
-import rawSchema from "./schema.json"
-import InputSchema from "../src/InputSchema";
+import getSchema from "./util/getSchema"
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Form from "../src/Form";
 import FormConfig, { DEFAULT_OPTIONS } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import Field from "../src/Field";
+import { observable } from "mobx";
+import viewModelToJs from "./util/viewModelToJs";
+import userEvent from "user-event";
+import dumpUsage from "./util/dumpUsage";
+
 
 describe("Form", function () {
 
-    const submitSpy = sinon.spy();
-    let renderSpy = sinon.spy();
+    // automatically unmount and cleanup DOM after the tests are finished.
+    afterEach( cleanup );
 
-    let component = mount(
-        <Form
-            schema={ new InputSchema(rawSchema) }
-            onSubmit={ submitSpy }
-            type={ "EnumTypeInput" }
-            value={{}}
-        >
-            {
-                renderSpy
-            }
-        </Form>
-    );
+    after(dumpUsage);
 
 
     it("provides a form config to render function", function () {
+
+        const submitSpy = sinon.spy();
+        let renderSpy = sinon.spy();
+
+        // yup, that's valid
+        const {  } = render(
+            <Form
+                schema={ getSchema() }
+                onSubmit={ submitSpy }
+                type={ "EnumTypeInput" }
+                value={observable({
+                    description: "",
+                    name: "",
+                    values: null
+                })}
+            >
+                {
+                    renderSpy
+                }
+            </Form>
+        );
+
         // the validation causes a re-render, which is more of an implementation detail
         // we look at the last render here only
         const formConfig = renderSpy.lastCall.args[0];
@@ -47,14 +62,12 @@ describe("Form", function () {
             /'.' is only a valid name with a non-empty base-path/
         );
 
-        assert(formConfig.formikProps);
+        //assert(formConfig.formikProps);
 
-        assert.deepEqual(formConfig.formikProps.values, {
-            "description": "",
-            "name": "",
-            "values": null
-        })
-
+        assert(formConfig.root.description === "");
+        assert(formConfig.root.name === "");
+        assert(formConfig.root.values === null);
+        
     });
 
     it("validates the initial values", function () {
@@ -67,28 +80,20 @@ describe("Form", function () {
             }
          */
 
-        const formConfig = renderSpy.lastCall.args[0];
+        const submitSpy = sinon.spy();
+        let renderSpy = sinon.spy();
 
-        assert.deepEqual(
-            formConfig.formikProps.errors,
-            {
-                "name": "$FIELD required",
-                "values": "$FIELD required"
-            }
-        );
-
-        component.unmount();
-        renderSpy = sinon.spy();
-
-        component = mount(
+        // yup, that's valid
+        const {  } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
+                schema={ getSchema() }
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
-                value={{
+                value={observable( {
                     name: "MYENUM",
+                    description: "",
                     values: ["AA","BB","CC"]
-                }}
+                })}
             >
                 {
                     renderSpy
@@ -96,9 +101,12 @@ describe("Form", function () {
             </Form>
         );
 
+        const formConfig = renderSpy.lastCall.args[0];
+        assert( formConfig.getErrors("name").length === 0);
+
         const validConfig = renderSpy.lastCall.args[0];
 
-        assert.deepEqual(validConfig.formikProps.values, {
+        assert.deepEqual(viewModelToJs(validConfig.root), {
             "description": "",
             "name": "MYENUM",
             "values": [
@@ -108,24 +116,26 @@ describe("Form", function () {
             ]
         });
 
-        assert.deepEqual(validConfig.formikProps.errors, {});
-
-        component.unmount();
-
+        assert.deepEqual(validConfig.listAllErrors(), []);
     });
+
 
     it("provides form config as React context", function () {
 
+        const submitSpy = sinon.spy();
         const consumerSpy = sinon.spy();
 
-        component = mount(
+        // yup, that's valid
+        const {  } = render(
             <Form
-                schema={ new InputSchema(rawSchema) }
+                schema={ getSchema() }
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
-                value={{
-                    name: "MYENUM"
-                }}
+                value={
+                    observable({
+                        name: "MYENUM"
+                    })
+                }
             >
                 <div>
                     <FormConfig.Consumer>
@@ -137,39 +147,43 @@ describe("Form", function () {
 
         assert(consumerSpy.called);
         assert(consumerSpy.getCall(0).args[0] instanceof FormConfig)
-
-        component.unmount();
     });
+
 
     it("inherits schema from FormConfigProvider", function () {
 
+        const submitSpy = sinon.spy();
+
         // no schema at all throws
-        assert.throws(
-            () =>
-                mount(
-                    <Form
-                        onSubmit={ submitSpy }
-                        type={ "EnumTypeInput" }
-                        value={{}}
-                    />
-                )
-            ,
-            /No schema prop given and no FormConfigProvider providing one either/
-        );
+        // assert.throws(
+        //     () =>
+        //         render(
+        //             <Form
+        //                 onSubmit={ submitSpy }
+        //                 type={ "EnumTypeInput" }
+        //                 value={observable({})}
+        //             />
+        //         )
+        //     ,
+        //     /No schema prop given and no FormConfigProvider providing one either/
+        // );
 
-        renderSpy = sinon.spy();
+        const renderSpy = sinon.spy();
 
-        component = mount(
+        // yup, that's valid
+        const {  } = render(
             <FormConfigProvider
-                schema={new InputSchema(rawSchema) }
+                schema={getSchema() }
 
             >
             <Form
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
-                value={{
-                    name: "MYENUM"
-                }}
+                value={
+                    observable({
+                        name: "MYENUM"
+                    })
+                }
             >
                 { renderSpy }
             </Form>
@@ -179,26 +193,28 @@ describe("Form", function () {
         assert(renderSpy.called);
         assert(renderSpy.lastCall.args[0] instanceof FormConfig)
 
-        component.unmount();
-
     });
 
     it("inherits options FormConfigProvider", function () {
 
-        renderSpy = sinon.spy();
+        const submitSpy = sinon.spy();
+        const renderSpy = sinon.spy();
 
-        component = mount(
+        // yup, that's valid
+        const {  } = render(
             <FormConfigProvider
-                schema={new InputSchema(rawSchema) }
+                schema={getSchema() }
                 horizontal={ !DEFAULT_OPTIONS.horizontal }
 
             >
                 <Form
                     onSubmit={ submitSpy }
                     type={ "EnumTypeInput" }
-                    value={{
-                        name: "MYENUM"
-                    }}
+                    value={
+                        observable({
+                            name: "MYENUM"
+                        })
+                    }
                 >
                     { renderSpy }
                 </Form>
@@ -209,85 +225,273 @@ describe("Form", function () {
         assert(renderSpy.lastCall.args[0] instanceof FormConfig);
         assert(renderSpy.lastCall.args[0].options.horizontal  === !DEFAULT_OPTIONS.horizontal);
 
-        component.unmount();
 
     });
 
-    it("validates locally", function (done) {
+    it("commits on submit by default", function (done) {
 
-
-        const submitSpy = sinon.spy();
         const renderSpy = sinon.spy();
 
-        const schema = new InputSchema(rawSchema);
-        const component = mount(
+        const formRoot = observable({
+            name: "MyEnum",
+            values: ["A", "B", "C"],
+        });
+        const { container, getByLabelText } = render(
             <Form
-                schema={ schema }
-                onSubmit={ submitSpy }
-                type={ "DomainFieldInput" }
-                value={{
-                    name: "MyField",
-                    description: "MyField Desc",
-                    type: "STRING",
-                    required: true,
-                    maxLength: -1
-                }}
-
-                validate={ values => {
-
-                    if (values.name === values.description)
-                    {
-                        return {
-                            name: "NAME=DESC",
-                            description: "DESC=NAME",
-                        };
-                    }
-                    return {};
-                }}
+                schema={ getSchema() }
+                type={ "EnumTypeInput" }
+                value={
+                    formRoot
+                }
             >
                 {
                     ctx => {
 
                         renderSpy(ctx);
-
                         return (
-                            <React.Fragment>
-                                <Field  name="name"/>
-                                <Field name="description"/>
-                            </React.Fragment>
+                            <Field name="name"/>
                         );
                     }
                 }
             </Form>
         );
 
+
+        const input = getByLabelText("name");
+
+        userEvent.type(input, "AnotherEnum");
+
         const formConfig = renderSpy.lastCall.args[0];
-
-        assert(formConfig.formikProps.values.name === "MyField");
-        assert(formConfig.formikProps.values.description === "MyField Desc");
-        assert(!formConfig.formikProps.errors.name);
-        assert(!formConfig.formikProps.errors.description);
+        assert(formConfig.root.name === "AnotherEnum");
 
 
-        const input = component.find("input[name='description']");
-
-        input.instance().value = "MyField";
-        input.simulate('change');
-
-        setImmediate(
-            () => {
-                const formConfig2 = renderSpy.lastCall.args[0];
-                assert(formConfig2.formikProps.values.name === "MyField");
-                assert(formConfig2.formikProps.values.description === "MyField");
-                assert(formConfig2.formikProps.errors.name === "NAME=DESC");
-                assert(formConfig2.formikProps.errors.description === "DESC=NAME");
+        const form = container.querySelector("form");
 
 
-                component.unmount();
-                done();
-
-            }
+        fireEvent.submit(
+            form
         );
+
+        assert(formRoot.name === "AnotherEnum");
+
+        done();
+
+    });
+    it("supports custom onSubmit", function () {
+
+        const submitSpy = sinon.spy();
+        const renderSpy = sinon.spy();
+
+        const { container, getByLabelText } = render(
+            <Form
+                schema={ getSchema() }
+                onSubmit={submitSpy }
+                type={ "EnumTypeInput" }
+                value={
+                    observable({
+                        name: "MyEnum",
+                        values: ["A", "B", "C"],
+                    })
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field name="name"/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+
+        const input = getByLabelText("name");
+
+        userEvent.type(input, "AnotherEnum");
+
+        const formConfig = renderSpy.lastCall.args[0];
+        assert(formConfig.root.name === "AnotherEnum");
+
+
+        const form = container.querySelector("form");
+
+
+        fireEvent.submit(
+            form
+        );
+
+        assert(submitSpy.called);
+
+        const viewModel = submitSpy.lastCall.args[0].root;
+
+        // if a onSubmit is set, the viewModel is returned as-is and *not* committed.
+        assert(viewModel.isDirty);
+        assert(viewModelToJs(viewModel).name === "AnotherEnum");
+
+
+
+    });
+
+
+    it("works on sub-elements", function () {
+
+        const renderSpy = sinon.spy();
+
+        /*
+            input DomainTypeInput {
+              name: String!
+              description: String
+              fields: [DomainFieldInput]!
+              primaryKey: UniqueConstraintInput!
+              foreignKeys: [ForeignKeyInput]!
+              uniqueConstraints: [UniqueConstraintInput]!
+            }
+         */
+
+        const formRoot = observable({
+            name: "MyType",
+            fields: [
+                {
+                    name: "id",
+                    type: "UUID",
+                    maxLength: 36,
+                    required: true,
+                    unique: false
+                }, {
+                    name: "name",
+                    type: "STRING",
+                    maxLength: 100,
+                    required: true,
+                    unique: false
+                }
+            ],
+            foreignKeys: [],
+            uniqueConstraints: [],
+            primaryKey: {
+                fields: ["id"]
+            }
+        });
+
+        const { container, getByLabelText } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                value={
+                    // we only edit the second field of the domain type
+                    formRoot.fields[1]
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field name="name"/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+
+        const input = getByLabelText("name");
+
+        assert(input.value === "name");
+
+        userEvent.type(input, "AnotherName");
+
+        const formConfig = renderSpy.lastCall.args[0];
+        assert(formConfig.root.name === "AnotherName");
+
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        assert(formRoot.fields[1].name === "AnotherName");
+
+    });
+
+    it("works on nested fields", function () {
+
+        const renderSpy = sinon.spy();
+
+        /*
+            input DomainTypeInput {
+              name: String!
+              description: String
+              fields: [DomainFieldInput]!
+              primaryKey: UniqueConstraintInput!
+              foreignKeys: [ForeignKeyInput]!
+              uniqueConstraints: [UniqueConstraintInput]!
+            }
+         */
+
+        const formRoot = observable({
+            name: "MyType",
+            fields: [
+                {
+                    name: "id",
+                    type: "UUID",
+                    maxLength: 36,
+                    required: true,
+                    unique: false
+                }, {
+                    name: "name",
+                    type: "STRING",
+                    maxLength: 100,
+                    required: true,
+                    unique: false
+                }
+            ],
+            foreignKeys: [],
+            uniqueConstraints: [],
+            primaryKey: {
+                fields: ["id"]
+            }
+        });
+
+        const { container, getByLabelText } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainTypeInput" }
+                value={
+                    // we only edit the second field of the domain type
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field name="fields.1.name"/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        const input = getByLabelText("name");
+
+        assert(input.value === "name");
+
+        userEvent.type(input, "AnotherName");
+
+        const formConfig = renderSpy.lastCall.args[0];
+        assert(formConfig.root.fields[1].name === "AnotherName");
+
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        assert(formRoot.fields[1].name === "AnotherName");
 
     });
 

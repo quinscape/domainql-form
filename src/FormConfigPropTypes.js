@@ -27,6 +27,11 @@ export default {
     currencyAddonRight: PropTypes.bool,
 
     /**
+     * True if disabled fields should be disabled by setting the readonly flag instead of
+     */
+    useReadOnlyAttribute: PropTypes.bool,
+
+    /**
      * Optional function to look up a form field label based on formConfig and field name / path.
      */
     lookupLabel: PropTypes.func,

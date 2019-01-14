@@ -2,22 +2,19 @@
     "name": "domainql-form",
     "version": "2.0.1",
     "description": "Form and conversion helpers for GraphQL and mobx",
-
     "main": "lib/index.js",
-    "esnext" : "src/index.js",
-
+    "esnext": "src/index.js",
     "author": "Sven Helmberger",
     "license": "Apache-2.0",
     "dependencies": {
+        "cartesian": "^1.0.1",
         "classnames": "^2.2.5",
         "lodash.debounce": "^4.0.8",
         "lodash.get": "^4.4.2",
         "lodash.isequal": "^4.5.0",
         "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
-        "prop-types": "^15.6.1",
-        "react": "^16.6.3",
-        "react-dom": "^16.6.3"
+        "prop-types": "^15.6.1"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",
@@ -32,23 +29,34 @@
         "babel-preset-react": "^6.24.1",
         "babel-preset-stage-1": "^6.24.1",
         "babel-register": "^6.26.0",
+        "bignumber.js": "^8.0.1",
         "cross-env": "^5.1.4",
         "enzyme": "^3.3.0",
         "enzyme-adapter-react-16": "^1.1.1",
+        "enzyme-adapter-utils": "latest",
         "formik": "^1.0.0-beta.2",
         "jsdom": "^11.11.0",
+        "jsdom-global": "^3.0.2",
         "mobx": "^5.5.0",
+        "mobx-react": "^5.2.8",
         "mobx-utils": "^5.0.4",
         "mocha": "^5.1.1",
-        "mobx-react": "^5.2.8",
+        "mocha-param": "^2.0.0",
         "power-assert": "^1.5.0",
+        "prop-types": "^15.6.1",
+        "react": "^16.6.3",
         "react-docgen": "^2.20.1",
-        "sinon": "^5.0.10"
+        "react-dom": "^16.6.3",
+        "react-reconciler": "^0.18.0",
+        "react-test-renderer": "latest",
+        "react-testing-library": "^5.4.4",
+        "sinon": "^5.0.10",
+        "user-event": "^1.4.4"
     },
     "scripts": {
         "prepublish": "cross-env NODE_ENV=production babel src --out-dir lib",
         "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir lib",
-        "test": "cross-env BABEL_ENV=test mocha -r babel-register -r test/setup.js -R spec test/",
+        "test": "cross-env BABEL_ENV=test mocha -r babel-register -r ./test/setup.js -R spec test/",
         "build-docs": "babel-node tooling/build-ref.js"
     },
     "peerDependencies": {

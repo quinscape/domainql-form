@@ -11,29 +11,41 @@ import FormGroup from "./FormGroup"
 import unwrapType from "./util/unwrapType";
 
 
-function renderStatic(fieldType, inputClass, fieldValue)
+function renderStatic(ctx, fieldValue)
 {
+
+    const {
+        fieldId,
+        inputClass,
+        fieldType
+    } = ctx;
+
     const scalarType = unwrapNonNull(fieldType);
 
     const staticRenderer = resolveStaticRenderer(scalarType.name);
 
+    const value = scalarType.kind === "SCALAR" ? InputSchema.valueToScalar(
+        scalarType.name,
+        fieldValue
+    ): fieldValue;
+
+
     return (
-        <p className={
-            cx(
-                inputClass,
-                "form-control-plaintext"
-            )
-        }
+        <span
+            id={ fieldId }
+            className={
+                cx(
+                    inputClass,
+                    "form-control-plaintext"
+                )
+            }
         >
             {
                 staticRenderer(
-                    InputSchema.valueToScalar(
-                        scalarType.name,
-                        fieldValue
-                    )
+                    value
                 )
             }
-        </p>
+        </span>
     );
 }
 
@@ -52,27 +64,30 @@ const DEFAULT_RENDERERS =
 
                 const { fieldType, mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
 
-                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path));
-
-                const effectiveMode = mode || formConfig.options.mode;
+                // no need to convert
+                const fieldValue =  formConfig.getValue(path);
 
                 //console.log("checkbox value = ", fieldValue);
 
                 let checkBoxElement;
 
-                if (effectiveMode === FieldMode.READ_ONLY)
+                if (mode === FieldMode.PLAIN_TEXT)
                 {
                     const staticRenderer = resolveStaticRenderer("Boolean");
 
                     checkBoxElement = (
-                        <p className="form-control-plaintext">
+                        <span id={fieldId} className="form-control-plaintext">
                             {
                                 staticRenderer(fieldValue)
                             }
+                            <label
+                                htmlFor={ fieldId }
+                            >
                             {
                                 label
                             }
-                        </p>
+                            </label>
+                        </span>
                     )
                 }
                 else
@@ -89,7 +104,7 @@ const DEFAULT_RENDERERS =
                                 checked={ fieldValue }
                                 onChange={ onChange }
                                 onBlur={ onBlur }
-                                disabled={ effectiveMode === FieldMode.DISABLED }
+                                disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
                             />
                             <label
                                 htmlFor={ fieldId }
@@ -135,15 +150,13 @@ const DEFAULT_RENDERERS =
                     onBlur
                 } = ctx;
 
-                const effectiveMode = mode || formConfig.options.mode;
-
                 const errorMessages = formConfig.getErrors(path);
-                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
+                const fieldValue =  formConfig.getValue(path, errorMessages);
 
                 let fieldElement;
-                if (effectiveMode === FieldMode.READ_ONLY)
+                if (mode === FieldMode.PLAIN_TEXT)
                 {
-                    fieldElement = renderStatic(fieldType, inputClass, fieldValue);
+                    fieldElement = renderStatic(ctx, fieldValue);
                 }
                 else
                 {
@@ -157,7 +170,7 @@ const DEFAULT_RENDERERS =
                             name={ qualifiedName }
                             className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
                             title={ title }
-                            disabled={ effectiveMode === FieldMode.DISABLED }
+                            disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
                             value={ fieldValue }
                             onChange={ onChange }
                             onBlur={ onBlur }
@@ -216,7 +229,6 @@ const DEFAULT_RENDERERS =
                 } = ctx;
 
                 const { currency, currencyAddonRight, mode: modeFromOptions } = formConfig.options;
-                const effectiveMode = mode || modeFromOptions;
 
                 const errorMessages = formConfig.getErrors(qualifiedName);
                 const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
@@ -224,9 +236,9 @@ const DEFAULT_RENDERERS =
                 //console.log("RENDER FIELD",{ ctx, fieldValue });
 
                 let fieldElement;
-                if (effectiveMode === FieldMode.READ_ONLY)
+                if (mode === FieldMode.PLAIN_TEXT)
                 {
-                    fieldElement = renderStatic(fieldType, inputClass, fieldValue);
+                    fieldElement = renderStatic(ctx, fieldValue);
                 }
                 else
                 {
@@ -238,7 +250,8 @@ const DEFAULT_RENDERERS =
                             type="text"
                             placeholder={ placeholder }
                             title={ title }
-                            disabled={ effectiveMode === FieldMode.DISABLED }
+                            disabled={ mode === FieldMode.DISABLED }
+                            readOnly={ mode === FieldMode.READ_ONLY }
                             value={ fieldValue }
                             onChange={ onChange }
                             onBlur={ onBlur }

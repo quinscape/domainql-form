@@ -2,6 +2,7 @@ import toPath from "lodash.topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
 
+
 const PLAN_SCALAR_LIST = { __scalar_list : true };
 const PLAN_COMPLEX_LIST = { __complex_list : true };
 const PLAN_INPUT_OBJECT = { __input_object : true };
@@ -225,7 +226,7 @@ function getValidationPlan(inputSchema, typeName)
         }
         else if (isListType(actualType))
         {
-            const elementType = inputSchema.getType(actualType.ofType.name);
+            const elementType = actualType.ofType;
 
             if (isScalarType(elementType))
             {
@@ -250,7 +251,7 @@ function getValidationPlan(inputSchema, typeName)
 
     if (inputSchema.debug)
     {
-//        console.log("Validation plan for ", typeName, "is: ", plan);
+        console.log("Validation plan for ", typeName, "is: ", plan);
     }
 
     inputSchema.validationPlan[typeName] = plan;
@@ -263,22 +264,22 @@ export function isEnumType(fieldType)
     return fieldType && fieldType.kind === "ENUM";
 }
 
-function convertValue(inputSchema, fieldType, value, toScalar)
+function convertValue(inputSchema, typeRef, value, toScalar)
 {
-    fieldType = unwrapNonNull(fieldType);
+    typeRef = unwrapNonNull(typeRef);
 
-    if (isScalarType(fieldType))
+    if (isScalarType(typeRef))
     {
         let result;
         if (toScalar)
         {
-            result = InputSchema.valueToScalar(fieldType.name, value);
+            result = InputSchema.valueToScalar(typeRef.name, value);
         }
         else
         {
-            result = InputSchema.scalarToValue(fieldType.name, value);
+            result = InputSchema.scalarToValue(typeRef.name, value);
 
-            if (fieldType.name !== "Boolean")
+            if (typeRef.name !== "Boolean")
             {
                 result = result || "";
             }
@@ -286,12 +287,12 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-//            console.log(value, "( type", fieldType, ") ==", toScalar ? "toScalar" : "fromScalar", "=> ", result, typeof result, path);
+            console.log(value, "( type", typeRef, ") ==", toScalar ? "toScalar" : "fromScalar", "=> ", result, typeof result, path);
         }
 
         return result;
     }
-    else if (isInputType(fieldType))
+    else if (isInputType(typeRef))
     {
         if (!value)
         {
@@ -300,12 +301,12 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-//            console.log("Convert InputObject ", fieldType.name, path);
+            console.log("Convert InputObject ", typeRef.name, path);
         }
 
-        return convertInput(inputSchema, inputSchema.getType(fieldType.name), value, toScalar);
+        return convertInput(inputSchema, inputSchema.getType(typeRef.name), value, toScalar);
     }
-    else if (isListType(fieldType))
+    else if (isListType(typeRef))
     {
         if (!value)
         {
@@ -316,22 +317,24 @@ function convertValue(inputSchema, fieldType, value, toScalar)
 
         if (inputSchema.debug)
         {
-//            console.log("Convert List of ", fieldType.ofType.name, path);
+            console.log("Convert List of ", typeRef.ofType.name, path);
         }
+
+        //const elementType = inputSchema.getType(typeRef.ofType.name);
 
         for (let j = 0; j < value.length; j++)
         {
-            array[j] = convertValue(inputSchema, inputSchema.getType(fieldType.ofType.name), value[j], toScalar);
+            array[j] = convertValue(inputSchema, typeRef.ofType, value[j], toScalar);
         }
         return array;
     }
-    else if (isEnumType(fieldType))
+    else if (isEnumType(typeRef))
     {
         return value;
     }
     else
     {
-        throw new Error("Unhandled field type : " + JSON.stringify(fieldType));
+        throw new Error("Unhandled field type : " + JSON.stringify(typeRef));
     }
 }
 
@@ -521,6 +524,8 @@ class InputSchema
         return this.schema.types;
     }
 
+
+
     validate(type, values)
     {
         const validationPlan = getValidationPlan(this, type);
@@ -529,7 +534,7 @@ class InputSchema
 
         if (this.debug)
         {
-//            console.log("Errors for ", values, "=>", errors);
+            console.log("Errors for ", values, "=>", errors);
         }
 
         return errors;
