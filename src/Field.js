@@ -69,10 +69,10 @@ class Field extends React.Component {
         autoFocus: PropTypes.bool
     };
 
+
     static getDerivedStateFromProps(nextProps, prevState)
     {
-        const { id, name, label, formConfig, autoFocus, mode, placeHolder, inputClass, labelClass } = nextProps;
-
+        const { id, name, label, formConfig, autoFocus, mode, placeholder, inputClass, labelClass, tooltip } = nextProps;
 
         const effectiveMode = mode || formConfig.options.mode;
 
@@ -80,14 +80,12 @@ class Field extends React.Component {
         const { fieldContext } = prevState;
 
         if (
-            fieldContext  &&
-            fieldContext.id === id &&
-            fieldContext.name === name &&
-            fieldContext.mode === effectiveMode &&
-            fieldContext.label === label &&
-            fieldContext.placeHolder === placeHolder &&
+            fieldContext &&
+            fieldContext.effectiveMode === effectiveMode &&
+            fieldContext.placeholder === placeholder &&
             fieldContext.inputClass === inputClass &&
-            prevState.fieldContext.labelClass === labelClass
+            fieldContext.labelClass === labelClass &&
+            fieldContext.tooltip === tooltip
         )
         {
             // yes -> no update
@@ -106,7 +104,8 @@ class Field extends React.Component {
         {
             const lastSegment = path[path.length - 1];
             fieldId = id || "field-" + formConfig.type + "-" + qualifiedName;
-            effectiveLabel = typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
+            effectiveLabel =
+                typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
         }
         else
         {
@@ -146,56 +145,56 @@ class Field extends React.Component {
         };
     }
 
+
     onChange = ev => {
 
         const { target } = ev;
 
         const { formConfig } = this.props;
-        const { fieldContext : { fieldType } } = this.state;
-
-        const { name } = target;
+        const { fieldContext } = this.state;
 
         const value = target.type === "checkbox" ? target.checked : target.value;
 
         //console.log("onChange", fieldType, name, value);
 
-        formConfig.handleChange(fieldType, name, value);
+        formConfig.handleChange(fieldContext, value);
     };
 
     onBlur = ev => {
-        const { target: { name, value } } = ev;
+        const {target: { value}} = ev;
 
-        const { formConfig } = this.props;
-        const { fieldContext : { fieldType } } = this.state;
+        const {formConfig} = this.props;
+        const { fieldContext } = this.state;
 
-        formConfig.handleBlur(fieldType, name, value);
+        formConfig.handleBlur(fieldContext, value);
 
     };
 
     state = {
-        onChange: this.onChange,
-        onBlur: this.onBlur,
+        fieldInstance: this,
         fieldContext: null
     };
+    
 
     render()
     {
-        const { children } = this.props;
+        const { children, formConfig } = this.props;
         const { fieldContext } = this.state;
 
         //console.log("RENDER FIELD", fieldContext);
 
         if (typeof children === "function")
         {
-            return children(fieldContext);
+            return children(formConfig, fieldContext);
         }
         else
         {
-            const renderFn = GlobalConfig.get(fieldContext);
-            return renderFn(fieldContext);
+            const renderFn = GlobalConfig.getRenderFn(formConfig,fieldContext);
+            return renderFn(formConfig, fieldContext);
         }
     };
 }
+
 
 export default withFormConfig(
     observer(

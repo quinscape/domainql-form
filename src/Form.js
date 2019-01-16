@@ -65,11 +65,9 @@ class Form extends React.Component {
         initialValues: PropTypes.func,
 
         /**
-         * Optional validate function. Note that the values object received here is *not* typed, i.e. it contains the
-         * raw formik string/boolean values. If you need all values to be converted to a typed GraphQL object, you
-         * need to invoke InputSchema.fromValues(type, values) manually on the received values object.
+         * High-level validation configuration object
          */
-        validate: PropTypes.func,
+        validation: PropTypes.object,
 
         /**
          * Optional onClick handler for the form element.

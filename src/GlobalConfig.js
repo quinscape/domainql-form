@@ -135,7 +135,7 @@ const GlobalConfig = {
      *
      * @param fieldContext              field context object
      */
-    get: function(fieldContext)
+    getRenderFn: function(formConfig, fieldContext)
     {
         const { fieldType, path } = fieldContext;
 
@@ -145,10 +145,10 @@ const GlobalConfig = {
 
         if ( !isScalarType(actualType) && !isEnumType(actualType))
         {
-            throw new Error("Field  type for "+ fieldContext.formConfig.type + "." + path + " is no scalar or enum: " + JSON.stringify(actualType));
+            throw new Error("Field  type for "+ formConfig.type + "." + path + " is no scalar or enum: " + JSON.stringify(actualType));
         }
 
-        return findRenderer( fieldContext.formConfig.type, actualType.kind, actualType.name, path[path.length - 1]);
+        return findRenderer( formConfig.type, actualType.kind, actualType.name, path[path.length - 1]);
     },
 
     renderStatic: function(typeName, value)

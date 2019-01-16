@@ -40,5 +40,11 @@ export default {
      * Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control
      * all fields inside the form block or form.
      */
-    mode: PropTypes.oneOf(FieldMode.values())
+    mode: PropTypes.oneOf(FieldMode.values()),
+
+    /**
+     * High-level validation configuration object
+     */
+    validation: PropTypes.object
+
 }

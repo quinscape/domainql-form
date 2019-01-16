@@ -381,11 +381,11 @@ describe("Field", function () {
                         return (
                             <Field name="description">
                                 {
-                                    fieldContext => {
+                                    (formConfig, fieldContext) => {
 
-                                        renderSpy(fieldContext);
+                                        renderSpy(formConfig, fieldContext);
 
-                                        const {root} = fieldContext.formConfig;
+                                        const { root} = formConfig;
                                         return (
 
                                             <React.Fragment>
@@ -410,14 +410,15 @@ describe("Field", function () {
             </Form>
         );
 
-        const fieldContext = renderSpy.lastCall.args[0];
+        const formConfig = renderSpy.lastCall.args[0];
+        const fieldContext = renderSpy.lastCall.args[1];
 
         //console.log({fieldContext});
 
         assert(fieldContext.fieldId === "field-DomainFieldInput-description");
-        assert(fieldContext.formConfig.schema === schema);
-        assert(fieldContext.formConfig.type === "DomainFieldInput");
-        assert.deepEqual(fieldContext.formConfig.options, DEFAULT_OPTIONS);
+        assert(formConfig.schema === schema);
+        assert(formConfig.type === "DomainFieldInput");
+        assert.deepEqual(formConfig.options, DEFAULT_OPTIONS);
         assert(fieldContext.fieldType.kind === "SCALAR");
         assert(fieldContext.fieldType.name === "String");
         assert(fieldContext.qualifiedName === "description");
@@ -432,8 +433,8 @@ describe("Field", function () {
 
         fireEvent.click(button);
 
-        assert(fieldContext.formConfig.root.name === "From Button");
-        assert(fieldContext.formConfig.root.model.name === "MyField");
+        assert(formConfig.root.name === "From Button");
+        assert(formConfig.root.model.name === "MyField");
 
     })
 });

@@ -60,9 +60,9 @@ const DEFAULT_RENDERERS =
 
             // CHECKBOX
 
-            render: ctx => {
+            render: (formConfig, ctx) =>  {
 
-                const { fieldType, mode, formConfig, fieldId, inputClass, label, labelClass, title, path, qualifiedName, onChange, onBlur } = ctx;
+                const { fieldType, mode, fieldId, inputClass, label, labelClass, title, path, qualifiedName, fieldInstance } = ctx;
 
                 // no need to convert
                 const fieldValue =  formConfig.getValue(path);
@@ -102,8 +102,8 @@ const DEFAULT_RENDERERS =
                                 type="checkbox"
                                 title={ title }
                                 checked={ fieldValue }
-                                onChange={ onChange }
-                                onBlur={ onBlur }
+                                onChange={ fieldInstance.onChange }
+                                onBlur={ fieldInstance.onBlur }
                                 disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
                             />
                             <label
@@ -120,6 +120,7 @@ const DEFAULT_RENDERERS =
                 return (
                     <FormGroup
                         { ...ctx }
+                        formConfig={ formConfig }
                         label=""
                     >
                         {
@@ -135,19 +136,17 @@ const DEFAULT_RENDERERS =
 
             // ENUM SELECT
 
-            render: ctx => {
+            render: (formConfig, ctx) =>  {
 
                 const {
                     fieldId,
                     mode,
                     inputClass,
-                    formConfig,
                     fieldType,
                     title,
                     path,
                     qualifiedName,
-                    onChange,
-                    onBlur
+                    fieldInstance
                 } = ctx;
 
                 const errorMessages = formConfig.getErrors(path);
@@ -172,8 +171,8 @@ const DEFAULT_RENDERERS =
                             title={ title }
                             disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
                             value={ fieldValue }
-                            onChange={ onChange }
-                            onBlur={ onBlur }
+                            onChange={ fieldInstance.onChange }
+                            onBlur={ fieldInstance.onBlur }
                         >
                             {
                                 enumType.enumValues.map(enumValue =>
@@ -192,6 +191,7 @@ const DEFAULT_RENDERERS =
                 return (
                     <FormGroup
                         { ...ctx }
+                        formConfig={ formConfig }
                         errorMessages={ errorMessages }
                     >
                         {
@@ -208,23 +208,22 @@ const DEFAULT_RENDERERS =
 
             /**
              *
-             * @param {FieldRenderContext} ctx
+             * @param {FormConfig} formConfig
+             * @param {object} ctx
              * @returns {*}
              */
-            render: ctx => {
+            render: (formConfig, ctx) =>  {
 
                 const {
                     fieldId,
                     mode,
                     inputClass,
                     placeholder,
-                    formConfig,
+                    tooltip,
                     fieldType,
-                    title,
                     path,
                     qualifiedName,
-                    onChange,
-                    onBlur,
+                    fieldInstance,
                     autoFocus
                 } = ctx;
 
@@ -249,12 +248,12 @@ const DEFAULT_RENDERERS =
                             className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
                             type="text"
                             placeholder={ placeholder }
-                            title={ title }
+                            title={ tooltip }
                             disabled={ mode === FieldMode.DISABLED }
                             readOnly={ mode === FieldMode.READ_ONLY }
                             value={ fieldValue }
-                            onChange={ onChange }
-                            onBlur={ onBlur }
+                            onChange={ fieldInstance.onChange }
+                            onBlur={ fieldInstance.onBlur }
                             autoFocus={ autoFocus ? true : null }
                         />
                     );
@@ -302,6 +301,7 @@ const DEFAULT_RENDERERS =
                 return (
                     <FormGroup
                         { ...ctx }
+                        formConfig={ formConfig }
                         errorMessages={ errorMessages }
                     >
                         {

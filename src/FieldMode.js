@@ -1,6 +1,8 @@
 import Enum from "./util/enum"
 
+
 const FIELD_MODE_VALUES = {
+    // XXX: Keep enum values in sync with domainql/src/main/java/de/quinscape/domainql/model/FieldMode.java
     NORMAL : true,
     DISABLED : true,
     READ_ONLY : true,

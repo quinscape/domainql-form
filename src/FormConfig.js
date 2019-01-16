@@ -7,7 +7,7 @@ import keys from "./util/keys";
 import get from "lodash.get"
 import set from "lodash.set"
 
-import { runInAction } from "mobx"
+import { action } from "mobx"
 
 export const DEFAULT_OPTIONS = {
     horizontal: true,
@@ -17,7 +17,8 @@ export const DEFAULT_OPTIONS = {
     mode: FieldMode.NORMAL,
     currency: "EUR",
     currencyAddonRight: true,
-    lookupLabel: GlobalConfig.lookupLabel
+    lookupLabel: GlobalConfig.lookupLabel,
+    validation: null
 };
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
@@ -55,6 +56,13 @@ function findError(errors, path)
     }
     return -1;
 }
+
+const setFormValueAction = action(
+    "Set Form-Value",
+    (root, name, value) => {
+        set(root,name,value);
+    }
+);
 
 
 /**
@@ -270,10 +278,12 @@ class FormConfig
         }
     }
 
-    handleChange(fieldType, name, value)
+    handleChange(fieldContext, value)
     {
         try
         {
+            const { fieldType, qualifiedName } = fieldContext;
+
 //            console.log("handleChange", { fieldType, name, value});
 
             const unwrapped = unwrapType(fieldType);
@@ -320,14 +330,14 @@ class FormConfig
             const { errors : currentErrors } = this;
 
             let changedErrors;
-            const index =  findError(currentErrors, name);
+            const index =  findError(currentErrors, qualifiedName);
             if (index < 0)
             {
                 if (errorsForField)
                 {
                     // ADD ERRORS
                     changedErrors = currentErrors.concat({
-                        path: name,
+                        path: qualifiedName,
                         errorMessages: errorsForField
                     });
                 }
@@ -339,7 +349,7 @@ class FormConfig
                     // UPDATE ERRORS
                     changedErrors = currentErrors.slice();
                     changedErrors[index] = {
-                        path: name,
+                        path: qualifiedName,
                         errorMessages: errorsForField
                     }
                 }
@@ -356,16 +366,16 @@ class FormConfig
             {
                 //console.log("SET FIELD VALUE", this.root, name, converted);
 
-                runInAction( () => set(this.root, name, converted));
+                setFormValueAction(this.root, qualifiedName, converted);
             }
 
             if (changedErrors)
             {
-//                console.log("CHANGED ERRORS", changedErrors);
+                //console.log("CHANGED ERRORS", changedErrors);
 
                 const newFormConfig = this.copy();
                 newFormConfig.errors = changedErrors;
-                
+
                 this.formInstance.setState({
                     formConfig: newFormConfig
                 })
@@ -378,10 +388,10 @@ class FormConfig
 
     };
 
-    handleBlur = (fieldType, name, value) => {
+    handleBlur = (fieldContext, value) => {
         try
         {
-            //console.log("BLUR", name)
+            //console.log("BLUR", fieldContext, value)
         }
         catch(e)
         {

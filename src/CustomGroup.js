@@ -45,7 +45,7 @@ class CustomGroup extends React.Component {
         )
     }
 
-    renderWithFieldContext = fieldContext => {
+    renderWithFieldContext = (formConfig, fieldContext) => {
 
         const { label, labelClass, children } = this.props;
 
@@ -57,6 +57,7 @@ class CustomGroup extends React.Component {
         return (
             <FormGroup
                 { ... fieldContext }
+                formConfig={ formConfig }
                 label={ label }
                 labelClass={ labelClass }
             >

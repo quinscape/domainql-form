@@ -85,10 +85,10 @@ class TextArea extends React.Component {
         )
     }
 
-    renderWithFieldContext = fieldContext => {
+    renderWithFieldContext = (formConfig, fieldContext) => {
 
-        const { rows, cols, inputClass, placeholder } = this.props;
-        const { fieldId, fieldType, mode, qualifiedName, path, formConfig, onChange, onBlur, autoFocus } = fieldContext;
+        const { rows, cols, inputClass } = this.props;
+        const { fieldId, fieldType, mode, qualifiedName, path, autoFocus, fieldInstance, tooltip, placeholder } = fieldContext;
 
         const errorMessages = formConfig.getErrors(path);
         const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
@@ -99,6 +99,7 @@ class TextArea extends React.Component {
         return (
             <FormGroup
                 { ...fieldContext }
+                formConfig={ formConfig }
                 errorMessages={ errorMessages }
             >
                 {
@@ -126,8 +127,9 @@ class TextArea extends React.Component {
                             name={ qualifiedName }
                             value={ fieldValue }
                             placeholder={ placeholder }
-                            onChange={ onChange }
-                            onBlur={ onBlur }
+                            title={ tooltip }
+                            onChange={ fieldInstance.onChange }
+                            onBlur={ fieldInstance.onBlur }
                             autoFocus={ autoFocus }
                             disabled={ mode === FieldMode.DISABLED }
                             readOnly={ mode === FieldMode.READ_ONLY }

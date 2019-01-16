@@ -17,23 +17,24 @@ import { observer } from "mobx-react"
  */
 export default function(Component, formProps)
 {
+    //console.log("withForm", Component, formProps);
+
     return class extends React.Component
     {
         static displayName = getDisplayName(Component);
 
         render()
         {
-            const { value, validate, onSubmit } = this.props;
+            const { value, onSubmit } = this.props;
 
             const options = FormConfig.mergeOptions({}, this.props);
 
             return (
                 <Form
+                    { ... options }
                     { ... formProps}
-                    validate={ validate }
                     onSubmit={ onSubmit }
                     value={ value }
-                    { ... options }
                 >
                 {
                     this.renderWithFormConfig

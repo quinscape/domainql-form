@@ -108,7 +108,7 @@ class Select extends React.Component {
 
         if (!ev.isDefaultPrevented())
         {
-            return fieldContext.onChange(ev);
+            return fieldContext.fieldInstance.onChange(ev);
         }
     };
 
@@ -129,11 +129,11 @@ class Select extends React.Component {
     }
 
 
-    renderWithFieldContext = fieldContext => {
+    renderWithFieldContext = (formConfig, fieldContext) => {
         //console.log("render Select", fieldContext);
 
         const {values, inputClass, required} = this.props;
-        const {fieldId, fieldType, mode, formConfig, path, qualifiedName, onBlur, autoFocus} = fieldContext;
+        const {fieldId, fieldType, mode, path, qualifiedName, onBlur, autoFocus} = fieldContext;
 
         const errorMessages = formConfig.getErrors(path);
         const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
@@ -145,6 +145,7 @@ class Select extends React.Component {
         return (
             <FormGroup
                 {...fieldContext}
+                formConfig={ formConfig }
                 errorMessages={errorMessages}
             >
                 {
