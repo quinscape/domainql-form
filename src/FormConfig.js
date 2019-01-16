@@ -290,7 +290,29 @@ class FormConfig
             }
             else
             {
-                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
+                const { validation } = this.options;
+
+                if (validation && validation.validateField)
+                {
+                    const highLevelResult = validation.validateField(fieldContext, value);
+
+                    if (highLevelResult)
+                    {
+                        if (Array.isArray(highLevelResult))
+                        {
+                            errorsForField = [value, ... highLevelResult];
+                        }
+                        else
+                        {
+                            errorsForField = [ value, highLevelResult ];
+                        }
+                    }
+                }
+
+                if (!errorsForField)
+                {
+                    converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
+                }
             }
 
             // UPDATE

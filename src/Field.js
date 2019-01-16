@@ -117,22 +117,32 @@ class Field extends React.Component {
         }
 
         // update field state
+        let newFieldContext = {
+            name,
+            fieldId,
+            fieldType,
+            qualifiedName,
+            path,
+            label: effectiveLabel,
+            fieldInstance: prevState.fieldInstance,
+            autoFocus,
+            mode: effectiveMode,
+            effectiveMode,
+            placeholder,
+            inputClass,
+            labelClass,
+            tooltip
+        };
+
+        const { validation } = formConfig.options;
+
+        if (validation && validation.fieldContext)
+        {
+            validation.fieldContext(newFieldContext)
+        }
+
         return {
-            fieldContext : {
-                formConfig,
-                fieldId,
-                fieldType,
-                qualifiedName,
-                path,
-                label: effectiveLabel,
-                onChange: prevState.onChange,
-                onBlur: prevState.onBlur,
-                autoFocus,
-                mode: effectiveMode,
-                placeHolder,
-                inputClass,
-                labelClass
-            }
+            fieldContext: newFieldContext
         };
     }
 
