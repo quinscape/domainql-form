@@ -236,7 +236,10 @@ export default class WireFormat {
                     out = {};
                 }
 
-                out._type = typeName;
+                if (fromWire)
+                {
+                    out._type = typeName;
+                }
 
                 const typeDef = this.inputSchema.getType(typeName);
                 if (!typeDef)
