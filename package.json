@@ -1,6 +1,6 @@
 {
     "name": "domainql-form",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "description": "Form and conversion helpers for GraphQL and mobx",
     "main": "lib/index.js",
     "esnext": "src/index.js",
