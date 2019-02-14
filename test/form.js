@@ -7,7 +7,7 @@ import getSchema from "./util/getSchema"
 
 import sinon from "sinon"
 import Form from "../src/Form";
-import FormConfig, { DEFAULT_OPTIONS } from "../src/FormConfig";
+import FormConfig, { FormConfigContext, DEFAULT_OPTIONS } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import Field from "../src/Field";
 import { observable } from "mobx";
@@ -138,9 +138,9 @@ describe("Form", function () {
                 }
             >
                 <div>
-                    <FormConfig.Consumer>
+                    <FormConfigContext.Consumer>
                         { consumerSpy }
-                    </FormConfig.Consumer>
+                    </FormConfigContext.Consumer>
                 </div>
             </Form>
         );

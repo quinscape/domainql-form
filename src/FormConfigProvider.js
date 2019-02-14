@@ -1,55 +1,61 @@
-import React from "react"
+import React, { useMemo } from "react"
 import PropTypes from "prop-types"
 
-import FormConfig from "./FormConfig"
+import FormConfig, { FormConfigContext, FORM_OPTION_NAMES } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
 
 
 /**
+ * Extracts an memo input array of all form props
+ *
+ * @param props         props object
+ *
+ * @return {Array<*>} memo inputs for all form props
+ */
+export function extractFormPropValues(props)
+{
+    const numOpts = FORM_OPTION_NAMES.length;
+    const list = new Array(numOpts);
+
+    for (let i = 0; i < numOpts; i++)
+    {
+        list[i] = props[FORM_OPTION_NAMES[i]];
+    }
+    return list;
+}
+
+
+/**
  * Allows the definition defaults for form config options and schema at the top of the application component hierarchy.
  */
-class FormConfigProvider extends React.Component {
+const FormConfigProvider = props => {
 
-    state = FormConfigProvider.getDerivedStateFromProps(this.props, null);
+    const { children } = props;
 
-    static propTypes = {
-        // provides the input schema for all child <Form/> components.
-        schema: PropTypes.oneOfType([
-            PropTypes.instanceOf(InputSchema),
-            PropTypes.object
-        ]),
-        // default Form configaration properties for all child <Form/> components.
-        ... FORM_CONFIG_PROP_TYPES
-    };
+    const formConfig = useMemo(() => {
+        return new FormConfig(props, props.schema);
+    }, extractFormPropValues(props));
 
-    static getDerivedStateFromProps(nextProps, prevState)
-    {
-        const formConfig = new FormConfig(nextProps, nextProps.schema);
+    return (
+        <FormConfigContext.Provider value={ formConfig }>
+            {
+                children
+            }
+        </FormConfigContext.Provider>
+    )
+};
 
-        if (prevState && formConfig.equals(prevState.formConfig))
-        {
-            return null;
-        }
+FormConfigProvider.propTypes = {
+    // provides the input schema for all child <Form/> components.
+    schema: PropTypes.oneOfType([
+        PropTypes.instanceOf(InputSchema),
+        PropTypes.object
+    ]),
+    // default Form configaration properties for all child <Form/> components.
+    ... FORM_CONFIG_PROP_TYPES
+};
 
-        return {
-            formConfig
-        };
-    }
-
-    render()
-    {
-        const { children } = this.props;
-
-        return (
-            <FormConfig.Provider value={ this.state.formConfig }>
-                {
-                    children
-                }
-            </FormConfig.Provider>
-        )
-    }
-}
 
 export default FormConfigProvider

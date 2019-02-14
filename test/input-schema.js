@@ -11,7 +11,7 @@ describe("InputSchema", function () {
 
     after(dumpUsage);
 
-    it("converts complex values to formik values", function () {
+    it("converts complex values to string values", function () {
 
         const inputSchema = getSchema();
 
@@ -35,63 +35,7 @@ describe("InputSchema", function () {
         assert( converted.description === "");
     });
 
-    it("does type-based formik values validation", function () {
-
-        const inputSchema = getSchema();
-
-        {
-            const errors = inputSchema.validate("DomainTypeInput", {});
-
-            assert(Object.keys(errors).length === 5);
-
-            assert( errors.name === "$FIELD required");
-            assert( errors.fields === "$FIELD required");
-            assert( errors.primaryKey === "$FIELD required");
-            assert( errors.foreignKeys === "$FIELD required");
-            assert( errors.uniqueConstraints === "$FIELD required");
-
-        }
-
-        {
-            const errors = inputSchema.validate("DomainTypeInput", {
-                name: "Test",
-                fields: [],
-                primaryKey: {
-                    fields: ["id"]
-                },
-                uniqueConstraints: [],
-                foreignKeys: []
-            });
-
-            assert.deepEqual(errors , {});
-        }
-
-        {
-            const errors = inputSchema.validate("DomainTypeInput", {
-                name: "Test",
-                fields: [{
-                    name : "f1",
-                    type: "PLAINTEXT",
-                    required: false,
-                    maxLength: "3a"
-                }],
-                primaryKey: {
-                    fields: ["id"]
-                },
-                uniqueConstraints: [],
-                foreignKeys: []
-            });
-
-            //console.log(errors);
-
-            assert(Object.keys(errors).length === 1);
-
-            assert( errors.fields.length === 1);
-            assert( errors.fields[0].maxLength === "Invalid Integer");
-        }
-    });
-    
-    it("converts formik values back to typed values", function () {
+    it("converts string values back to typed values", function () {
 
         const inputSchema = getSchema();
 

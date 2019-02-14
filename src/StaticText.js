@@ -2,67 +2,43 @@ import React from "react"
 import PropTypes from "prop-types"
 import get from "lodash.get"
 import GlobalConfig from "./GlobalConfig"
-import FormConfig from "./FormConfig"
+import useFormConfig from "./useFormConfig";
 
 
 /**
  * Helper to render a static value without form or form field.
  */
-class StaticText extends React.Component {
+const StaticText = props => {
 
-    static propTypes = {
-        type: PropTypes.string.isRequired,
-        value: PropTypes.any,
-        name: PropTypes.oneOfType([
-            PropTypes.string,
-            PropTypes.array
-        ])
-    };
+    const formConfig = useFormConfig();
 
-    shouldComponentUpdate(nextProps, nextState) {
+    const { name, value, type, schema } = props;
 
-        const { props } = this;
-
-        return (
-            props.type !== nextProps.type ||
-            props.value !== nextProps.value ||
-            props.name !== nextProps.name
-        );
-    }
-
-    render()
+    let result, resultType;
+    if (name)
     {
-        return (
-            <FormConfig.Consumer>
-                {
-                    this.renderWithFormContext
-                }
-            </FormConfig.Consumer>
-        )
+        const path = formConfig.getPath(name);
+        resultType = schema.resolveType(formConfig.type, path);
+        result = get(value, path);
+    }
+    else
+    {
+        resultType = schema.getType(type);
+        result = value;
     }
 
-    renderWithFormContext = formConfig => {
-        const { name, value, type, schema } = this.props;
+    return (
+        GlobalConfig.renderStatic(resultType.name, result)
+    );
+};
 
-        let result, resultType;
-        if (name)
-        {
-            const path = formConfig.getPath(name);
-            resultType = schema.resolveType(formConfig.type, path);
-            result = get(value, path);
-        }
-        else
-        {
-            resultType = schema.getType(type);
-            result = value;
-        }
-
-        return (
-            GlobalConfig.renderStatic(resultType.name, result)
-        );
-
-    };
-
-}
+StaticText.propTypes = {
+    type: PropTypes.string.isRequired,
+    value: PropTypes.any,
+    name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.array
+    ])
+};
 
 export default StaticText

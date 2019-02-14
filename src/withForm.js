@@ -4,8 +4,6 @@ import Form from "./Form";
 import FormConfig from "./FormConfig";
 import getDisplayName from "./util/getDisplayName";
 
-import { observer } from "mobx-react"
-
 /**
  * Convenience HOC that render a domainql-form around the wrapped component, providing
  * it with the form config as props
@@ -19,36 +17,32 @@ export default function(Component, formProps)
 {
     //console.log("withForm", Component, formProps);
 
-    return class extends React.Component
-    {
-        static displayName = getDisplayName(Component);
+    const enhanced = props => {
 
-        render()
-        {
-            const { value, onSubmit } = this.props;
+        const { value, onSubmit } = props;
 
-            const options = FormConfig.mergeOptions({}, this.props);
+        const options = FormConfig.mergeOptions({}, props);
 
-            return (
-                <Form
-                    { ... options }
-                    { ... formProps}
-                    onSubmit={ onSubmit }
-                    value={ value }
-                >
+        return (
+            <Form
+                { ... options }
+                { ... formProps}
+                onSubmit={ onSubmit }
+                value={ value }
+            >
                 {
-                    this.renderWithFormConfig
+                    formConfig => (
+                        <Component
+                            { ... props }
+                            formConfig={ formConfig }
+                        />
+                    )
                 }
-                </Form>
-            );
-        }
+            </Form>
+        );
+    };
 
-        renderWithFormConfig = formConfig => (
-            <Component
-                ref={ c => this._component = c }
-                { ... this.props }
-                formConfig={ formConfig }
-            />
-        )
-    }
+    enhanced.displayName = getDisplayName(Component);
+
+    return enhanced;
 }

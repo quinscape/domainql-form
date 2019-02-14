@@ -321,7 +321,6 @@ horizontal | custom | True to use "horizontal" bootstrap form groups
 labelColumnClass | custom | Additional label column class to use if in horizontal mode.
 lookupLabel | custom | Optional function to look up a form field label based on formConfig and field name / path.
 mode | custom | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
-useReadOnlyAttribute | custom | True if disabled fields should be disabled by setting the readonly flag instead of
 wrapperColumnClass | custom | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
 

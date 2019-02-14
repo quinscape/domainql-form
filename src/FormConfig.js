@@ -13,7 +13,6 @@ export const DEFAULT_OPTIONS = {
     horizontal: true,
     labelColumnClass: "col-md-5",
     wrapperColumnClass: "col-md-7",
-    useReadOnlyAttribute: false,
     mode: FieldMode.NORMAL,
     currency: "EUR",
     currencyAddonRight: true,
@@ -24,9 +23,13 @@ export const DEFAULT_OPTIONS = {
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import unwrapType from "./util/unwrapType";
 
-const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
+export const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
 
-const context = React.createContext(null);
+/**
+ * React context for the current FormConfig object
+ * @type {React.Context<FormConfig>}
+ */
+export const FormConfigContext = React.createContext(null);
 
 const EMPTY = [];
 
@@ -110,19 +113,21 @@ class FormConfig
      *
      * @param {String} [type]               name of the form base input type
      * @param {String} [basePath]           current base path within the form
-     * @param {object} [value]              mobx input model
-     * @param {function} [formInstance]     Form component instance
+     * @param {object} [root]               mobx input model
+     * @param {function} [setRoot]          change handler for root
+     * @param {Array<String>} [errors]      current form errors
+     * @param {function} [setErrors]        change handler for root
      */
-    setFormContext(type = "", basePath = "", value = null, formInstance = null)
+    setFormContext(type = "", basePath = "", root = null, setRoot = null, errors = EMPTY, setErrors = null)
     {
-        //console.log("setFormContext", { type, basePath, value, formInstance} );
+        //console.log("setFormContext", { type, basePath, value, setRoot, errors, setErrors } );
 
         this.type = type;
         this.basePath = basePath;
-        this.root = value;
-        this.formInstance = formInstance ;
-
-        this.errors = [];
+        this.root = root;
+        this.setRoot = setRoot;
+        this.errors = errors;
+        this.setErrors = setErrors;
     }
 
     copy()
@@ -132,7 +137,9 @@ class FormConfig
         copy.button = this.button;
         copy.errors = this.errors;
         copy.root = this.root;
-        copy.formInstance = this.formInstance;
+        copy.setRoot = this.setRoot;
+        copy.errors = this.errors;
+        copy.setErrors = this.setErrors;
         return copy;
     }
     
@@ -365,20 +372,12 @@ class FormConfig
             if (!errorsForField)
             {
                 //console.log("SET FIELD VALUE", this.root, name, converted);
-
                 setFormValueAction(this.root, qualifiedName, converted);
             }
 
             if (changedErrors)
             {
-                //console.log("CHANGED ERRORS", changedErrors);
-
-                const newFormConfig = this.copy();
-                newFormConfig.errors = changedErrors;
-
-                this.formInstance.setState({
-                    formConfig: newFormConfig
-                })
+                this.setErrors(changedErrors);
             }
         }
         catch(e)
@@ -398,18 +397,6 @@ class FormConfig
             console.error("HANDLE-BLUR ERROR", e);
         }
     };
-
-    /**
-     * Internal React Consumer for FormConfig
-     * @type {React.Element}
-     */
-    static Consumer = context.Consumer;
-
-    /**
-     * Internal React Provider for FormConfig. Users should use <FormConfigProvider/>, not <FormConfig.Provider/>
-     * @type {React.Element}
-     */
-    static Provider = context.Provider;
 }
 
 export default FormConfig

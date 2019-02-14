@@ -1,13 +1,14 @@
-import React from "react"
+import React, { useState, useMemo } from "react"
 import cx from "classnames"
 import { createViewModel } from "mobx-utils"
 
 import PropTypes from "prop-types"
-import FormConfig from "./FormConfig";
+import FormConfig, { FormConfigContext } from "./FormConfig";
 import InputSchema from "./InputSchema";
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
-import withFormConfig from "./withFormConfig";
+import useFormConfig from "./useFormConfig";
+import { extractFormPropValues } from "./FormConfigProvider";
 
 function getSchema(formConfig, props)
 {
@@ -26,64 +27,55 @@ function getSchema(formConfig, props)
 /**
  * Form description
  */
-class Form extends React.Component {
+const Form  = props =>  {
+
+    const parentConfig = useFormConfig();
+
+    const { children, onClick, value, type } = props;
+
+    const [ errors, setErrors] = useState([]);
+    const [ root, setRoot] = useState( () => createViewModel(value) );
 
 
-    static propTypes = {
-        /**
-         * Submit handler handling the final typed GraphQL result
-         */
-        onSubmit: PropTypes.func,
+    let didRecreate = true;
+    const formConfig = useMemo( () => {
 
-        /**
-         * schema to use for this form
-         */
-        schema: PropTypes.oneOfType([
-            PropTypes.instanceOf(InputSchema),
-            PropTypes.object
-        ]),
+        const schema = getSchema(parentConfig, props);
 
-        /**
-         * form base type
-         */
-        type: PropTypes.string.isRequired,
+        didRecreate = false;
 
-        /**
-         * initial value (typed GraphQL object)
-         */
-        value: PropTypes.any.isRequired,
+        let formConfig;
+        if (parentConfig)
+        {
+            formConfig = new FormConfig(
+                FormConfig.mergeOptions(
+                    parentConfig.options,
+                    props
+                ),
+                schema
+            );
+        }
+        else
+        {
+            formConfig = new FormConfig(
+                props,
+                schema
+            );
+        }
 
-        /**
-         * true if the initial value is valid
-         */
-        isInitialValid: PropTypes.bool,
+        formConfig.setFormContext(type, "", root, setRoot, errors, setErrors);
 
-        /**
-         * Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object.
-         * Might also be invalid (See isInitialValid)
-         */
-        initialValues: PropTypes.func,
+        return formConfig;
 
-        /**
-         * High-level validation configuration object
-         */
-        validation: PropTypes.object,
+    }, [parentConfig, root, errors, ... extractFormPropValues(props)]);
+    
+    //console.log("RENDER FORM", formConfig);
 
-        /**
-         * Optional onClick handler for the form element.
-         */
-        onClick: PropTypes.func,
-
-        ... FORM_CONFIG_PROP_TYPES
-        
-    };
-
-    handleSubmit = ev => {
+    const handleSubmit = ev => {
 
         ev && ev.preventDefault();
 
-        const { onSubmit } = this.props;
-        const { formConfig } = this.state;
+        const { onSubmit } = props;
 
         if (onSubmit)
         {
@@ -95,13 +87,11 @@ class Form extends React.Component {
         }
     };
 
-    handleReset = ev => {
+    const handleReset = ev => {
 
         ev.preventDefault();
 
-        const { onReset } = this.props;
-        const { formConfig } = this.state;
-
+        const { onReset } = props;
 
         if (onReset)
         {
@@ -114,113 +104,73 @@ class Form extends React.Component {
 
     };
 
-    static getDerivedStateFromProps(nextProps, prevState)
-    {
-//        console.log("getDerivedStateFromProps", nextProps, prevState);
-
-        const { value, type, formConfig: parentConfig } = nextProps;
-
-        const schema = getSchema(parentConfig, nextProps);
-
-        let formConfig;
-        if (parentConfig)
-        {
-            formConfig = new FormConfig(
-                FormConfig.mergeOptions(
-                    parentConfig.options,
-                    nextProps
-                ),
-                schema
-            );
-        }
-        else
-        {
-            formConfig = new FormConfig(
-                nextProps,
-                schema
-            );
-        }
-
-        // did the form config actually change since last time?
-        if (prevState.formConfig && prevState.formConfig.equals(formConfig))
-        {
-            // no -> no update
-
-            //console.log("NO UPDATE");
-
-            return null;
-        }
-
-        //console.log("NEW formConfig", formConfig, parentConfig, value);
-
-        const viewModel = prevState.formConfig ? prevState.formConfig.root : createViewModel(value);
-
-        formConfig.setFormContext(type, "", viewModel, prevState.instance);
-        if (prevState.formConfig)
-        {
-            formConfig.errors = prevState.formConfig.errors;
-        }
-
-        // update form config in local state
-        return {
-            formConfig
-        };
-    }
-
-    state = {
-        instance: this,
-        formConfig: null
-    };
-
-    // called from outer form
-    // noinspection JSUnusedGlobalSymbols
-    validate = (values) => {
-
-        const { formConfig } = this.state;
-
-        const { validate } = this.props;
-
-        const { schema, type } = formConfig;
-
-        const errors = schema.validate( type, values);
-
-        if (validate)
-        {
-            const localErrors = validate(values);
-            return Object.assign({}, errors, localErrors);
-        }
-        return errors;
-    };
-
-
-    render()
-    {
-        const { children, onClick } = this.props;
-
-        const { formConfig } = this.state;
-
-//        console.log("RENDER FORM", formConfig);
-
-        return (
-            <form
-                className={
-                    cx(
-                        "form",
-                        false && "was-validated"
-                    )
+    return (
+        <form
+            className={
+                cx(
+                    "form"
+                )
+            }
+            onSubmit={ handleSubmit }
+            onReset={ handleReset }
+            onClick={ onClick }
+        >
+            <FormConfigContext.Provider value={ formConfig }>
+                {
+                    typeof children === "function" ? children(formConfig) : children
                 }
-                onSubmit={ this.handleSubmit }
-                onReset={ this.handleReset }
-                onClick={ onClick }
-            >
-                <FormConfig.Provider value={ formConfig }>
-                    {
-                        typeof children === "function" ? children(formConfig) : children
-                    }
-                </FormConfig.Provider>
-            </form>
-        );
-    }
-}
+            </FormConfigContext.Provider>
+        </form>
+    );
+};
 
-export default withFormConfig(Form)
+Form.propTypes = {
+    /**
+     * Submit handler handling the final typed GraphQL result
+     */
+    onSubmit: PropTypes.func,
+
+    /**
+     * schema to use for this form
+     */
+    schema: PropTypes.oneOfType([
+        PropTypes.instanceOf(InputSchema),
+        PropTypes.object
+    ]),
+
+    /**
+     * form base type
+     */
+    type: PropTypes.string.isRequired,
+
+    /**
+     * initial value (typed GraphQL object)
+     */
+    value: PropTypes.any.isRequired,
+
+    /**
+     * true if the initial value is valid
+     */
+    isInitialValid: PropTypes.bool,
+
+    /**
+     * Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object.
+     * Might also be invalid (See isInitialValid)
+     */
+    initialValues: PropTypes.func,
+
+    /**
+     * High-level validation configuration object
+     */
+    validation: PropTypes.object,
+
+    /**
+     * Optional onClick handler for the form element.
+     */
+    onClick: PropTypes.func,
+
+    ... FORM_CONFIG_PROP_TYPES
+
+};
+
+export default Form

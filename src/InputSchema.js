@@ -1,13 +1,7 @@
 import toPath from "lodash.topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
-
-
-const PLAN_SCALAR_LIST = { __scalar_list : true };
-const PLAN_COMPLEX_LIST = { __complex_list : true };
-const PLAN_INPUT_OBJECT = { __input_object : true };
-
-const NO_ERRORS = {};
+import { INPUT_OBJECT, LIST, NON_NULL, SCALAR } from "./kind";
 
 export function findNamed(array, name)
 {
@@ -53,22 +47,22 @@ resetConverter();
 
 export function isInputType(type)
 {
-    return type && type.kind === "INPUT_OBJECT"
+    return type && type.kind === INPUT_OBJECT
 }
 
 export function isScalarType(type)
 {
-    return type && type.kind === "SCALAR"
+    return type && type.kind === SCALAR
 }
 
 export function isListType(type)
 {
-    return type && type.kind === "LIST"
+    return type && type.kind === LIST
 }
 
 export function isNonNull(type)
 {
-    return type && type.kind === "NON_NULL"
+    return type && type.kind === NON_NULL
 }
 
 
@@ -152,111 +146,6 @@ function handlerFn(typeName, handlerName)
         throw new Error("Undefined handler '" + handlerName + "' on " + typeName);
     }
     return fn;
-}
-
-function checkNonNull(value)
-{
-    return !value ? "$FIELD required" : null
-}
-
-function checkNonNullBool(value)
-{
-    return value !== true && value !== false ? "$FIELD required" : null
-}
-
-function getValidationPlan(inputSchema, typeName)
-{
-    const existing = inputSchema.validationPlan[typeName];
-    if (existing)
-    {
-        return existing;
-    }
-
-    const inputTypeDef = inputSchema.getType(typeName);
-
-    if (!isInputType(inputTypeDef))
-    {
-        throw new Error("'" + typeName + "' is not a known input type");
-    }
-
-    const { inputFields } = inputTypeDef;
-
-
-    const plan = [];
-
-    for (let i = 0; i < inputFields.length; i++)
-    {
-        const field = inputFields[i];
-        const { name, type} = field;
-
-        const typeIsNonNull = isNonNull(type);
-        const actualType = unwrapNonNull(type);
-        const isScalar = isScalarType(actualType);
-
-        if (typeIsNonNull)
-        {
-            if (isScalar && actualType.name === "Boolean")
-            {
-                plan.push(name, checkNonNullBool);
-            }
-            else
-            {
-                plan.push(name, checkNonNull);
-            }
-        }
-
-        if (isScalar)
-        {
-            const fn = handlerFn(actualType.name, "validate");
-
-            //console.log("Scalar type ", actualType, ": validator = ", fn);
-
-            if (fn)
-            {
-                plan.push(name, fn);
-            }
-        }
-        else if (isInputType(actualType))
-        {
-            const inputTypePlan = getValidationPlan(inputSchema, actualType.name);
-            if (inputTypePlan.length)
-            {
-                plan.push(name, [ PLAN_INPUT_OBJECT, ... inputTypePlan])
-            }
-        }
-        else if (isListType(actualType))
-        {
-            const elementType = actualType.ofType;
-
-            if (isScalarType(elementType))
-            {
-                const fn = handlerFn(elementType.name, "validate");
-
-                if (fn)
-                {
-                    plan.push(name, [ PLAN_SCALAR_LIST, fn])
-                }
-            }
-            else
-            {
-                const elementPlan = getValidationPlan(inputSchema, elementType.name);
-                if (elementPlan.length)
-                {
-                    plan.push(name, [ PLAN_COMPLEX_LIST, ... elementPlan])
-                    plan.push(name, elementPlan)
-                }
-            }
-        }
-    }
-
-    if (inputSchema.debug)
-    {
-        console.log("Validation plan for ", typeName, "is: ", plan);
-    }
-
-    inputSchema.validationPlan[typeName] = plan;
-
-    return plan;
 }
 
 export function isEnumType(fieldType)
@@ -354,78 +243,6 @@ function convertInput(inputSchema, baseTypeDef, value, toScalar)
     return out;
 }
 
-function executeValidationPlan(values, validationPlan, start)
-{
-    if (validationPlan[start] === PLAN_SCALAR_LIST)
-    {
-        const result = validationPlan[start + 1](values);
-
-        //console.log("Scalar List elem ", values, " => ", result);
-
-        return result;
-    }
-
-    let errors = null;
-
-    for (let i = start; i < validationPlan.length; i+= 2)
-    {
-        const name = validationPlan[i];
-        const fnOrArray = validationPlan[i + 1];
-
-        const fieldValue = values[name];
-        if (typeof fnOrArray === "function")
-        {
-            const error = fnOrArray(fieldValue);
-
-            //console.log("field ", name, ": ", fieldValue, " => ", error);
-            if (error)
-            {
-                errors = errors || {};
-                errors[name] = error;
-            }
-        }
-        else
-        {
-            if (fnOrArray[0] === PLAN_COMPLEX_LIST)
-            {
-                if (fieldValue)
-                {
-                    let array = null;
-
-                    for (let j = 0; j < fieldValue.length; j++)
-                    {
-                        const err = executeValidationPlan(fieldValue[j], fnOrArray, 1);
-                        if (err)
-                        {
-                            array = array || new Array(fieldValue.length);
-                            array[j] = err;
-                        }
-                    }
-
-                    if (array)
-                    {
-                        errors = errors || {};
-                        errors[name] = array;
-                    }
-                }
-            }
-            else if (fnOrArray[0] === PLAN_INPUT_OBJECT)
-            {
-                if (fieldValue)
-                {
-                    const err = executeValidationPlan(fieldValue, fnOrArray, 1);
-                    if (err)
-                    {
-                        errors = errors || {};
-                        errors[name] = err;
-                    }
-                }
-            }
-        }
-    }
-    return errors;
-}
-
 class InputSchema
 {
     constructor(schema, debug = false)
@@ -438,7 +255,6 @@ class InputSchema
         }
 
         this.schema = schema;
-        this.validationPlan = {};
         this.debug = debug;
     }
 
@@ -523,23 +339,6 @@ class InputSchema
     {
         return this.schema.types;
     }
-
-
-
-    validate(type, values)
-    {
-        const validationPlan = getValidationPlan(this, type);
-
-        const errors = executeValidationPlan(values, validationPlan, 0) || NO_ERRORS;
-
-        if (this.debug)
-        {
-            console.log("Errors for ", values, "=>", errors);
-        }
-
-        return errors;
-    }
-
 }
 
 export default InputSchema

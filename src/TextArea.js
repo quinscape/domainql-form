@@ -4,7 +4,6 @@ import PropTypes from "prop-types"
 import FieldMode from "./FieldMode"
 import FormGroup from "./FormGroup"
 import Field from "./Field"
-import get from "lodash.get";
 import cx from "classnames";
 
 import { resolveStaticRenderer } from "./GlobalConfig"
@@ -17,128 +16,123 @@ import unwrapType from "./util/unwrapType";
  *
  * This is a good example how to implement custom fields.
  */
-class TextArea extends React.Component {
+const TextArea = props => {
 
-    static propTypes = {
-        /**
-         * Name / path for this field (e.g. "name", but also "foos.0.name")
-         */
-        name: PropTypes.string.isRequired,
-        /**
-         * Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
-         */
-        mode: PropTypes.oneOf(FieldMode.values()),
-        /**
-         * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
-         */
-        helpText: PropTypes.string,
-        /**
-         * Title attribute
-         */
-        title: PropTypes.string,
-        /**
-         * Label for the field.
-         */
-        label: PropTypes.string,
-        /**
-         * Placeholder text to render for the empty text area.
-         */
-        placeholder: PropTypes.string,
+    const { rows, cols, inputClass, ...fieldProps } = props;
 
-        /**
-         * Additional HTML classes for the textarea element.
-         */
-        inputClass: PropTypes.string,
+    return (
+        <Field
+            {...fieldProps}
+            rows={null}
+            cols={null}
+        >
+            {
+                (formConfig, fieldContext) => {
 
-        /**
-         * Additional HTML classes for the label element.
-         */
-        labelClass: PropTypes.string,
+                    const {fieldId, fieldType, mode, qualifiedName, path, autoFocus, tooltip, placeholder, handleChange, handleBlur} = fieldContext;
 
-        /**
-         * Rows attribute for the textarea element (default is 3)
-         */
-        rows: PropTypes.number,
-        /**
-         * Cols attribute for the textarea element (default is 60)
-         */
-        cols: PropTypes.number,
-    };
+                    const errorMessages = formConfig.getErrors(path);
+                    const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
 
-    static defaultProps = {
-        rows: 3,
-        cols: 60
-    };
+                    const isPlainText = mode === FieldMode.PLAIN_TEXT;
 
-    render()
-    {
-        return (
-            <Field
-                { ...this.props }
-                rows={ null }
-                cols={ null }
-            >
-                {
-                    this.renderWithFieldContext
-                }
-            </Field>
-        )
-    }
-
-    renderWithFieldContext = (formConfig, fieldContext) => {
-
-        const { rows, cols, inputClass } = this.props;
-        const { fieldId, fieldType, mode, qualifiedName, path, autoFocus, fieldInstance, tooltip, placeholder } = fieldContext;
-
-        const errorMessages = formConfig.getErrors(path);
-        const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
-
-
-        const isPlainText = mode === FieldMode.PLAIN_TEXT;
-
-        return (
-            <FormGroup
-                { ...fieldContext }
-                formConfig={ formConfig }
-                errorMessages={ errorMessages }
-            >
-                {
-                    isPlainText ? (
-                        <span
-                            id={ fieldId }
-                            className="form-control-plaintext"
+                    return (
+                        <FormGroup
+                            {...fieldContext}
+                            formConfig={formConfig}
+                            errorMessages={errorMessages}
                         >
                             {
-                                resolveStaticRenderer(fieldContext.fieldType)(fieldValue) 
+                                isPlainText ? (
+                                    <span
+                                        id={fieldId}
+                                        className="form-control-plaintext"
+                                    >
+                            {
+                                resolveStaticRenderer(fieldContext.fieldType)(fieldValue)
                             }
                         </span>
-                    ) : (
-                        <textarea
-                            id={ fieldId }
-                            className={
-                                cx(
-                                    inputClass,
-                                    "form-control",
-                                    errorMessages.length > 0 && "is-invalid"
+                                ) : (
+                                    <textarea
+                                        id={fieldId}
+                                        className={
+                                            cx(
+                                                inputClass,
+                                                "form-control",
+                                                errorMessages.length > 0 && "is-invalid"
+                                            )
+                                        }
+                                        rows={rows}
+                                        cols={cols}
+                                        name={qualifiedName}
+                                        value={fieldValue}
+                                        placeholder={placeholder}
+                                        title={tooltip}
+                                        onChange={handleChange}
+                                        onBlur={handleBlur}
+                                        autoFocus={autoFocus}
+                                        disabled={mode === FieldMode.DISABLED}
+                                        readOnly={mode === FieldMode.READ_ONLY}
+                                    />
                                 )
                             }
-                            rows={ rows }
-                            cols={ cols }
-                            name={ qualifiedName }
-                            value={ fieldValue }
-                            placeholder={ placeholder }
-                            title={ tooltip }
-                            onChange={ fieldInstance.onChange }
-                            onBlur={ fieldInstance.onBlur }
-                            autoFocus={ autoFocus }
-                            disabled={ mode === FieldMode.DISABLED }
-                            readOnly={ mode === FieldMode.READ_ONLY }
-                        />
+                        </FormGroup>
                     )
                 }
-            </FormGroup>
-        )
-    };
-}
+            }
+        </Field>
+    )
+};
+
+TextArea.propTypes = {
+    /**
+     * Name / path for this field (e.g. "name", but also "foos.0.name")
+     */
+    name: PropTypes.string.isRequired,
+    /**
+     * Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
+     */
+    mode: PropTypes.oneOf(FieldMode.values()),
+    /**
+     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
+     */
+    helpText: PropTypes.string,
+    /**
+     * Title attribute
+     */
+    title: PropTypes.string,
+    /**
+     * Label for the field.
+     */
+    label: PropTypes.string,
+    /**
+     * Placeholder text to render for the empty text area.
+     */
+    placeholder: PropTypes.string,
+
+    /**
+     * Additional HTML classes for the textarea element.
+     */
+    inputClass: PropTypes.string,
+
+    /**
+     * Additional HTML classes for the label element.
+     */
+    labelClass: PropTypes.string,
+
+    /**
+     * Rows attribute for the textarea element (default is 3)
+     */
+    rows: PropTypes.number,
+    /**
+     * Cols attribute for the textarea element (default is 60)
+     */
+    cols: PropTypes.number,
+};
+
+TextArea.defaultProps = {
+    rows: 3,
+    cols: 60
+};
 
 export default TextArea

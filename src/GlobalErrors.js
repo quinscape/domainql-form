@@ -1,12 +1,12 @@
-import React from "react"
+import React, { useEffect, useRef, useState } from "react"
 import PropTypes from "prop-types"
-import withFormConfig from "./withFormConfig";
+import useFormConfig from "./useFormConfig";
 
 
 /**
  * Searches for an HTML with the given name attribute and returns the id attribute of that HTML element or null if there
  * is no such element.
- * 
+ *
  * @param {HTMLFormElement} form      form element
  * @param {String} name               field name / path
  * @return {*}
@@ -22,144 +22,104 @@ function getFieldId(form, name)
     return elem && elem.getAttribute("id");
 }
 
+
+function findFieldIds(errors, component)
+{
+    let form = null;
+    if (component)
+    {
+        form = component;
+        while (form.tagName !== "FORM")
+        {
+            form = form.parentNode;
+        }
+    }
+
+    const length = errors.length;
+    const errorIdList = new Array(length);
+
+    for (let i = 0; i < length; i++)
+    {
+        const {path, errorMessages} = errors[i];
+
+        errorIdList[i] = {
+            fieldId: getFieldId(form, path),
+            path,
+            errorMessages
+        }
+    }
+
+    return errorIdList;
+}
+
+
 /**
  * Renders a global list of current errors or nothing.
  *
  * The error labels are cross-linked with the input fields by name attribute after mount.
  */
-class GlobalErrors extends React.Component {
+const GlobalErrors = props => {
 
-    state = {
-        instance: this
-    };
+    const formConfig = useFormConfig();
 
-    static propTypes = {
-        /**
-         * Text to use as heading (empty = no heading).
-         */
-        headingText: PropTypes.string,
-        /**
-         * Additional text below the headline
-         */
-        text: PropTypes.string,
-        /**
-         * Tag to surround the errors heading with
-         */
-        heading: PropTypes.string
-    };
+    const [ counter, setCounter ] = useState(0);
 
-    static defaultProps = {
-        headingText: "Errors",
-        text: null,
-        heading: "h3"
-    };
+    const globalErrorsRef = useRef(null);
 
+    const { errors } = formConfig;
+    
+    const errorIdList = globalErrorsRef.current ? findFieldIds(errors, globalErrorsRef.current) : [];
 
-    static getDerivedStateFromProps(nextProps, prevState)
-    {
-        //console.log("GlobalErrors.getDerivedStateFromProps", {nextProps, prevState});
-
-        const current = prevState.errors;
-        const {errors: nextErrors} = nextProps.formConfig;
-
-        if (!nextErrors || (current === nextErrors))
-        {
-            return null;
-        }
-
-        //console.log("Linearize errors", next);
-
-        const errorIdList = GlobalErrors.findFieldIds(nextErrors, prevState.instance._listElem);
-
-        return {
-            errorIdList,
-            errors: nextErrors
-        }
-
-    }
-
-    componentDidMount()
-    {
-        const { errors } = this.props.formConfig;
-
-        // if we have initial errors
-        if (errors)
-        {
-            // we need to update extra once to update the target field ids of our error list
-            const errorList = GlobalErrors.findFieldIds(errors, this._listElem);
-            this.setState({
-                errorList
-            });
-        }
-    }
-
-    static findFieldIds(errors, component)
-    {
-        let form = null;
-        if (component)
-        {
-            form = component;
-            while (form.tagName !== "FORM")
+    useEffect(
+        () => {
+            if (errors && !errorIdList.length)
             {
-                form = form.parentNode;
+                // this only happens if we have form errors in the very first render
+                // so we trigger a rerender so that our <label for=""> references are right even in that case
+                setCounter(counter + 1);
             }
         }
+    );
 
-        const length = errors.length;
-        const errorIdList = new Array(length);
+    const { heading, headingText, text} = props;
 
-        for (let i = 0; i < length; i++)
+    const errorElements = [];
+
+    errorIdList.forEach(entry => {
+        const { fieldId, path, errorMessages } = entry;
+
+        // the first error is the preserved user input
+        for (let i = 1; i < errorMessages.length; i++)
         {
-            const { path, errorMessages } = errors[i];
-
-            errorIdList[i] = {
-                fieldId: getFieldId(form, path),
-                path,
-                errorMessages
-            }
+            const err = errorMessages[i];
+            errorElements.push(
+                <li key={ path + i }>
+                    <label
+                        className="text-danger"
+                        htmlFor={ fieldId }
+                        data-path={ fieldId ? null : path }
+                    >
+                        {
+                            err
+                        }
+                    </label>
+                </li>
+            );
         }
 
-        return errorIdList;
-    }
+    });
 
+    //console.log({ errorState });
 
-    render()
-    {
-        const { heading, headingText, text } = this.props;
-        const { errorIdList } = this.state;
-
-        //console.log({ errorIdList });
-
-        const errors = [];
-
-        errorIdList.forEach(entry => {
-            const { fieldId, path, errorMessages } = entry;
-
-            // the first error is the preserved user input
-            for (let i = 1; i < errorMessages.length; i++)
-            {
-                const err = errorMessages[i];
-                errors.push(
-                    <li key={ path + i }>
-                        <label
-                            className="text-danger"
-                            htmlFor={ fieldId }
-                            data-path={ fieldId ? null : path }
-                        >
-                            {
-                                err
-                            }
-                        </label>
-                    </li>
-                );
-            }
-
-        });
-
-        return (
-            <div className="global-errors" style={{
-                display: !errorIdList.length ? "none" : null
-            }}>
+    return (
+        <div
+            ref={ globalErrorsRef }
+            className="global-errors"
+        >
+            <div
+                style={{
+                    display: !errorElements.length ? "none" : null
+                }}>
                 {
                     headingText && React.createElement(heading, null, headingText)
                 }
@@ -171,17 +131,35 @@ class GlobalErrors extends React.Component {
                         }
                     </p>
                 }
-                <ul
-                    ref={ elem => this._listElem = elem }
-                >
+                <ul>
                     {
-                        errors
+                        errorElements
                     }
                 </ul>
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
 
+GlobalErrors.propTypes = {
+    /**
+     * Text to use as heading (empty = no heading).
+     */
+    headingText: PropTypes.string,
+    /**
+     * Additional text below the headline
+     */
+    text: PropTypes.string,
+    /**
+     * Tag to surround the errors heading with
+     */
+    heading: PropTypes.string
+};
 
-export default withFormConfig(GlobalErrors)
+GlobalErrors.defaultProps = {
+    headingText: "Errors",
+    text: "",
+    heading: "h3"
+};
+
+export default GlobalErrors

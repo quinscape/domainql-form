@@ -5,11 +5,10 @@ import assert from "power-assert"
 
 import getSchema from "./util/getSchema"
 
-import { mount } from "enzyme"
 import sinon from "sinon"
 import Form from "../src/Form";
 import FormBlock from "../src/FormBlock";
-import FormConfig, { DEFAULT_OPTIONS } from "../src/FormConfig";
+import FormConfig, { FormConfigContext } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import { observable } from "mobx";
 import dumpUsage from "./util/dumpUsage";
@@ -35,7 +34,7 @@ describe("FormBlock", function () {
                 <FormBlock
                     labelColumnClass={ "foo" }
                 >
-                    <FormConfig.Consumer>{ consumerSpy }</FormConfig.Consumer>
+                    <FormConfigContext.Consumer>{ consumerSpy }</FormConfigContext.Consumer>
 
                 </FormBlock>
             </Form>
@@ -66,7 +65,7 @@ describe("FormBlock", function () {
                 <FormBlock
                     basePath={ "foo.bar" }
                 >
-                    <FormConfig.Consumer>{ consumerSpy }</FormConfig.Consumer>
+                    <FormConfigContext.Consumer>{ consumerSpy }</FormConfigContext.Consumer>
 
                 </FormBlock>
             </Form>

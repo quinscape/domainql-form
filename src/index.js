@@ -4,6 +4,7 @@ import Field from "./Field"
 import FieldMode from "./FieldMode"
 import Form from "./Form"
 import FormBlock from "./FormBlock"
+import FormConfig from "./FormConfig"
 import FormConfigProvider from "./FormConfigProvider"
 import FormGroup from "./FormGroup"
 import GlobalConfig from "./GlobalConfig"
@@ -14,12 +15,12 @@ import TextArea from "./TextArea"
 import StaticText from "./StaticText"
 import UserFormControl from "./UserFormControl"
 import withForm from "./withForm"
-import withFormConfig from "./withFormConfig"
 import WireFormat from "./WireFormat"
 import Icon from "./util/Icon"
-import ListHelper from "./util/ListHelper"
 import getDisplayName from "./util/getDisplayName"
 import { DEFAULT_OPTIONS } from "./FormConfig"
+import useFormConfig from "./useFormConfig"
+import usePrevious from "./usePrevious"
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -29,6 +30,7 @@ export {
     FieldMode,
     Form,
     FormBlock,
+    FormConfig,
     FormConfigProvider,
     FormGroup,
     GlobalConfig,
@@ -39,10 +41,10 @@ export {
     StaticText,
     UserFormControl,
     withForm,
-    withFormConfig,
+    useFormConfig,
     WireFormat,
     Icon,
     getDisplayName,
-    ListHelper,
-    DEFAULT_OPTIONS
+    DEFAULT_OPTIONS,
+    usePrevious
 }

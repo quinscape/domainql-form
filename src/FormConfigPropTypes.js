@@ -2,7 +2,6 @@ import FieldMode from "./FieldMode";
 import PropTypes from "prop-types"
 
 export default {
-
     /**
      * True to use "horizontal" bootstrap form groups
      */
@@ -25,11 +24,6 @@ export default {
      * True if the currency addon is on the right side of the input component.
      */
     currencyAddonRight: PropTypes.bool,
-
-    /**
-     * True if disabled fields should be disabled by setting the readonly flag instead of
-     */
-    useReadOnlyAttribute: PropTypes.bool,
 
     /**
      * Optional function to look up a form field label based on formConfig and field name / path.

@@ -62,7 +62,7 @@ const DEFAULT_RENDERERS =
 
             render: (formConfig, ctx) =>  {
 
-                const { fieldType, mode, fieldId, inputClass, label, labelClass, title, path, qualifiedName, fieldInstance } = ctx;
+                const { fieldType, mode, fieldId, inputClass, label, labelClass, title, path, qualifiedName, handleChange, handleBlur } = ctx;
 
                 // no need to convert
                 const fieldValue =  formConfig.getValue(path);
@@ -102,8 +102,8 @@ const DEFAULT_RENDERERS =
                                 type="checkbox"
                                 title={ title }
                                 checked={ fieldValue }
-                                onChange={ fieldInstance.onChange }
-                                onBlur={ fieldInstance.onBlur }
+                                onChange={ handleChange }
+                                onBlur={ handleBlur }
                                 disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
                             />
                             <label
@@ -146,7 +146,8 @@ const DEFAULT_RENDERERS =
                     title,
                     path,
                     qualifiedName,
-                    fieldInstance
+                    handleChange,
+                    handleBlur
                 } = ctx;
 
                 const errorMessages = formConfig.getErrors(path);
@@ -171,8 +172,8 @@ const DEFAULT_RENDERERS =
                             title={ title }
                             disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
                             value={ fieldValue }
-                            onChange={ fieldInstance.onChange }
-                            onBlur={ fieldInstance.onBlur }
+                            onChange={ handleChange }
+                            onBlur={ handleBlur }
                         >
                             {
                                 enumType.enumValues.map(enumValue =>
@@ -223,7 +224,8 @@ const DEFAULT_RENDERERS =
                     fieldType,
                     path,
                     qualifiedName,
-                    fieldInstance,
+                    handleChange,
+                    handleBlur,
                     autoFocus
                 } = ctx;
 
@@ -252,8 +254,8 @@ const DEFAULT_RENDERERS =
                             disabled={ mode === FieldMode.DISABLED }
                             readOnly={ mode === FieldMode.READ_ONLY }
                             value={ fieldValue }
-                            onChange={ fieldInstance.onChange }
-                            onBlur={ fieldInstance.onBlur }
+                            onChange={ handleChange }
+                            onBlur={ handleBlur }
                             autoFocus={ autoFocus ? true : null }
                         />
                     );

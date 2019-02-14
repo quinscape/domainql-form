@@ -1,78 +1,47 @@
-import React from "react"
+import React, { useCallback } from "react"
 import PropTypes from "prop-types"
 import { comparer } from "mobx"
-import withFormConfig from "./withFormConfig";
 
 import debounce from "lodash.debounce"
-import isEqual from "lodash.isequal"
-
+import useFormConfig from "./useFormConfig";
+import usePrevious from "./usePrevious";
 
 /**
  * A component that renders no output but causes a debounced auto-submit of the form whenever its content changes.
  * 
  */
-class AutoSubmit extends React.Component {
+const AutoSubmit = props => {
 
-    static propTypes = {
-        /**
-         * Debounce timeout in milliseconds.
-         */
-        timeout: PropTypes.number
-    };
+    const formConfig = useFormConfig();
+    const { timeout } = props;
 
-    static defaultProps = {
-        timeout: 300
-    };
 
-    static getDerivedStateFromProps(nextProps, prevState)
+    const triggerSubmit = useCallback( () => debounce( () => formConfig.submitForm(), timeout), [
+        formConfig,
+        timeout
+    ]);
+
+    const root = formConfig.root;
+    const prevRoot = usePrevious(root);
+
+    if (!comparer.structural(prevRoot, root))
     {
-        const { formConfig } = nextProps;
-
-        //console.log("AutoSubmit.getDerivedStateFromProps", nextProps, prevState);
-
-        if (!prevState.formConfig)
-        {
-            //console.log("NO prevState or config, set ", formConfig);
-
-            return {
-                formConfig
-            };
-        }
-
-        if (prevState.formConfig !== formConfig)
-        {
-            const { formConfig : oldConfig, instance } = prevState;
-
-            const { value : prevValue } = oldConfig;
-            const { value } = formConfig;
-
-            if (!comparer.structural(prevValue, value))
-            {
-                //console.log("triggerSubmit");
-                instance.triggerSubmit();
-            }
-
-            //console.log("Update ", prevValues, values, formConfig);
-
-            return {
-                formConfig
-            }
-        }
-
-        return null;
+        triggerSubmit();
     }
+    
+    // render nothing
+    return false;
+};
 
-    state = {
-        instance: this
-    };
+AutoSubmit.propTypes = {
+    /**
+     * Debounce timeout in milliseconds.
+     */
+    timeout: PropTypes.number
+};
 
-    triggerSubmit = debounce( () => this.props.formConfig.submitForm(), this.props.timeout);
+AutoSubmit.defaultProps = {
+    timeout: 300
+};
 
-    render()
-    {
-        // render nothing
-        return false;
-    }
-}
-
-export default withFormConfig(AutoSubmit)
+export default AutoSubmit
