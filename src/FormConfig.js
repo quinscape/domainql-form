@@ -8,6 +8,10 @@ import get from "lodash.get"
 import set from "lodash.set"
 
 import { action } from "mobx"
+import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
+import unwrapType from "./util/unwrapType";
+import { NON_NULL } from "./kind";
+
 
 export const DEFAULT_OPTIONS = {
     horizontal: true,
@@ -19,9 +23,6 @@ export const DEFAULT_OPTIONS = {
     lookupLabel: GlobalConfig.lookupLabel,
     validation: null
 };
-
-import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
-import unwrapType from "./util/unwrapType";
 
 export const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
 
@@ -66,7 +67,6 @@ const setFormValueAction = action(
         set(root,name,value);
     }
 );
-
 
 /**
  * Encapsulates the complete configuration of a form field and is provided via React Context.
@@ -296,19 +296,27 @@ class FormConfig
             const unwrapped = unwrapType(fieldType);
 
             // COLLECT
-            let errorsForField;
+            let errorsForField = [ value ];
 
             const isScalar = unwrapped.kind === "SCALAR";
             const error = isScalar ? InputSchema.validate(unwrapped.name, value) : null;
             let converted;
+
+            // type error?
             if (error)
             {
-                errorsForField = [ value, error ];
+                // yes -> we stop validation here and report that error
+                errorsForField.push(error);
             }
             else
             {
-                const { validation } = this.options;
+                // handle NON_NULL fields
+                if (fieldType.kind === NON_NULL && value === "")
+                {
+                    errorsForField.push(this.type + "." + fieldContext.qualifiedName + ":Field Required");
+                }
 
+                const { validation } = this.options;
                 if (validation && validation.validateField)
                 {
                     const highLevelResult = validation.validateField(fieldContext, value);
@@ -317,30 +325,32 @@ class FormConfig
                     {
                         if (Array.isArray(highLevelResult))
                         {
-                            errorsForField = [value, ... highLevelResult];
+                            errorsForField = errorsForField.concat(highLevelResult);
                         }
                         else
                         {
-                            errorsForField = [ value, highLevelResult ];
+                            errorsForField.push(highLevelResult);
                         }
                     }
                 }
 
-                if (!errorsForField)
-                {
-                    converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
-                }
+            }
+
+            // errors contains more than just our value
+            const haveErrors = errorsForField.length > 1;
+            if (!haveErrors)
+            {
+                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
             }
 
             // UPDATE
-
             const { errors : currentErrors } = this;
 
             let changedErrors;
             const index =  findError(currentErrors, qualifiedName);
             if (index < 0)
             {
-                if (errorsForField)
+                if (haveErrors)
                 {
                     // ADD ERRORS
                     changedErrors = currentErrors.concat({
@@ -351,7 +361,7 @@ class FormConfig
             }
             else
             {
-                if (errorsForField)
+                if (haveErrors)
                 {
                     // UPDATE ERRORS
                     changedErrors = currentErrors.slice();
@@ -369,7 +379,7 @@ class FormConfig
             }
 
 
-            if (!errorsForField)
+            if (!haveErrors)
             {
                 //console.log("SET FIELD VALUE", this.root, name, converted);
                 setFormValueAction(this.root, qualifiedName, converted);

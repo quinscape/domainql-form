@@ -351,6 +351,68 @@ describe("Field", function () {
 
     });
 
+    it("handles required fields", function () {
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "MyField",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+
+        const renderSpy = sinon.spy();
+
+        const {container} = render(
+            <Form
+                schema={getSchema()}
+                type={"DomainFieldInput"}
+                value={formRoot}
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field name="name"/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        const nameInput = queryByLabelText(container, "name");
+        assert(nameInput.value === "MyField");
+
+
+        fireEvent.change(nameInput, {
+            target: {
+                value: ""
+            }
+        });
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(nameInput.value === "");
+        // value is *not* written back into view model
+        assert(formConfig.root.name === "MyField");
+        // it's kept as first error followed by the actual first error
+        assert.deepEqual(formConfig.getErrors("name"), ["","DomainFieldInput.name:Field Required"]);
+
+    });
+
     // make sure to de-register our label lookup to not disturb other tests
     after(() => GlobalConfig.registerLabelLookup(null));
 
