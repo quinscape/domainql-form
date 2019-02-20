@@ -11,7 +11,7 @@ import useFormConfig from "./useFormConfig";
  */
 const FormBlock = props => {
 
-    const { className, style, children } = props;
+    const { className, style, basePath, children } = props;
 
     const parentConfig = useFormConfig();
 
@@ -23,23 +23,18 @@ const FormBlock = props => {
                 throw new Error("<FormBlock/> should only be used inside a <Form/>");
             }
 
-            const formConfig = new FormConfig(
-                FormConfig.mergeOptions(
-                    parentConfig.options,
-                    props
-                ),
-                parentConfig.schema
+            const formConfig = parentConfig.copy();
+
+            formConfig.options = FormConfig.mergeOptions(
+                parentConfig.options,
+                props
             );
 
-            formConfig.setFormContext(
-                parentConfig.type,
-                props.basePath || parentConfig.basePath,
-                parentConfig.root,
-                parentConfig.setRoot,
-                parentConfig.errors,
-                parentConfig.setErrors
-            );
-
+            if (basePath)
+            {
+                formConfig.basePath = basePath;
+            }
+            
             return formConfig
         },
         []

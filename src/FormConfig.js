@@ -101,8 +101,6 @@ class FormConfig
 
         this.options = FormConfig.mergeOptions(DEFAULT_OPTIONS, opts);
 
-        this.button = "";
-
         // clear form context
         this.setFormContext();
     }
@@ -111,35 +109,27 @@ class FormConfig
     /**
      * Sets the form context part of the current form config
      *
-     * @param {String} [type]               name of the form base input type
-     * @param {String} [basePath]           current base path within the form
-     * @param {object} [root]               mobx input model
-     * @param {function} [setRoot]          change handler for root
-     * @param {Array<String>} [errors]      current form errors
-     * @param {function} [setErrors]        change handler for root
+     * @param {String} [type]                   name of the form base input type
+     * @param {String} [basePath]               current base path within the form
+     * @param {object} [root]                   mobx input model
+     * @param {Array<String>} [errors]          current form errors
+     * @param {InternalContext} [internal]      internal context object (see Form.js)
      */
-    setFormContext(type = "", basePath = "", root = null, setRoot = null, errors = EMPTY, setErrors = null)
+    setFormContext(type = "", basePath = "", root = null, errors = EMPTY, internal)
     {
-        //console.log("setFormContext", { type, basePath, value, setRoot, errors, setErrors } );
+        //console.log("setFormContext", { type, basePath, root, errors, internal} );
 
         this.type = type;
         this.basePath = basePath;
         this.root = root;
-        this.setRoot = setRoot;
         this.errors = errors;
-        this.setErrors = setErrors;
+        this.ctx = internal;
     }
 
     copy()
     {
         const copy = new FormConfig(this.options, this.schema);
-        copy.setFormContext(this.type, this.basePath, this.root);
-        copy.button = this.button;
-        copy.errors = this.errors;
-        copy.root = this.root;
-        copy.setRoot = this.setRoot;
-        copy.errors = this.errors;
-        copy.setErrors = this.setErrors;
+        copy.setFormContext(this.type, this.basePath, this.root, this.errors, this.ctx);
         return copy;
     }
     
@@ -387,7 +377,7 @@ class FormConfig
 
             if (changedErrors)
             {
-                this.setErrors(changedErrors);
+                this.ctx.setErrors(changedErrors);
             }
         }
         catch(e)

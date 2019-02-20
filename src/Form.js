@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react"
+import React, { useState, useMemo, useCallback } from "react"
 import cx from "classnames"
 import { createViewModel } from "mobx-utils"
 
@@ -24,6 +24,23 @@ function getSchema(formConfig, props)
     return schema;
 }
 
+
+/**
+ * Internal context object used between Form and FormConfig
+ *
+ * @param setRoot           changes the form root object (type must match!)
+ * @param setErrors         changes the form errors
+ * @param handleSubmit      triggers a Form submit
+ * @constructor
+ */
+export function InternalContext(setRoot, setErrors, handleSubmit)
+{
+    this.setRoot = setRoot;
+    this.setErrors = setErrors;
+    this.handleSubmit = handleSubmit;
+}
+
+
 /**
  * Form description
  */
@@ -31,11 +48,29 @@ const Form  = props =>  {
 
     const parentConfig = useFormConfig();
 
-    const { children, onClick, value, type } = props;
+    const { children, onClick, value, type, onSubmit } = props;
 
     const [ errors, setErrors] = useState([]);
     const [ root, setRoot] = useState( () => createViewModel(value) );
 
+
+    const handleSubmit = useCallback(
+        ev => {
+
+            ev && ev.preventDefault();
+
+
+            if (onSubmit)
+            {
+                onSubmit(formConfig)
+            }
+            else
+            {
+                formConfig.root.submit();
+            }
+        },
+        [ root, onSubmit ]
+    );
 
     let didRecreate = true;
     const formConfig = useMemo( () => {
@@ -63,29 +98,14 @@ const Form  = props =>  {
             );
         }
 
-        formConfig.setFormContext(type, "", root, setRoot, errors, setErrors);
+        formConfig.setFormContext(type, "", root, errors, new InternalContext(setRoot, setErrors, handleSubmit));
 
         return formConfig;
 
-    }, [parentConfig, root, errors, ... extractFormPropValues(props)]);
+    }, [parentConfig, root, errors, onSubmit, ... extractFormPropValues(props)]);
     
     //console.log("RENDER FORM", formConfig);
 
-    const handleSubmit = ev => {
-
-        ev && ev.preventDefault();
-
-        const { onSubmit } = props;
-
-        if (onSubmit)
-        {
-            onSubmit(formConfig)
-        }
-        else
-        {
-            formConfig.root.submit();
-        }
-    };
 
     const handleReset = ev => {
 
