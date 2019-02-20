@@ -1,6 +1,6 @@
 {
     "name": "domainql-form",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "Form and conversion helpers for GraphQL and mobx",
     "main": "lib/index.js",
     "esnext": "src/index.js",
@@ -58,8 +58,8 @@
     },
     "peerDependencies": {
         "mobx": "^5.5.0",
-        "mobx-react-lite": "^1.0.0",
         "mobx-react": "^5.2.8",
+        "mobx-react-lite": "^1.0.0",
         "mobx-utils": "^5.0.4",
         "prop-types": "^15.6.1",
         "react": "^16.6.3"
