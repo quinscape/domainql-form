@@ -67,15 +67,3 @@ import FooForm from "./FooForm"
 />
 ```
 
-
-### withFormConfig()
-
-withFormConfig() is a HOC useful if you have a component that wants to receive the 
-current formConfig (which includes the current formik state), but which is not
-a field in itself.
-
-If you want to implement a new field type, look at [Customization](./customization.md).
-
-withFormConfig provides the current formConfig object as prop to the wrapped component.
-
-

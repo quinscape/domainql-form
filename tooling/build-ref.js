@@ -19,6 +19,7 @@ const COMPONENTS = [
             // "../src/FormSelector.js",
             "../src/GlobalErrors.js",
             "../src/AutoSubmit.js",
+            "./snippets/hooks.md",
             "./snippets/HighOrderComponents.md"
         ]
     },
@@ -69,6 +70,7 @@ const FORM_CONFIG_PROPS_SOURCE = (function () {
 function generateConfigPseudoComponent()
 {
     return (
+        "import PropTypes from 'prop-types'" + BREAK +
         "/** " +
         "These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;FormConfigProvider/&gt; and are inherited from the &lt;Field/&gt; components." +
         "*/" +
@@ -80,18 +82,6 @@ function generateConfigPseudoComponent()
     );
 }
 
-/**
- * Quick and dirty way to make react-docgen handle our ... FORM_CONFIG_PROP_TYPES constructs.
- *
- * We simply inline them via regexp.
- *
- * @param source
- * @return {*}
- */
-function handleFormConfig(source)
-{
-    return source.replace(/\.\.\. FORM_CONFIG_PROP_TYPES/, "/** See \"Form Config Props\" below */" + BREAK + "\"\u2026\" : PropTypes.oneOf(FORM_CONFIG_PROP_TYPES)");
-}
 
 function renderType(type)
 {
@@ -130,6 +120,10 @@ function renderType(type)
     {
         return "instance of " + value;
     }
+    else if (name === "shape" && value === "import FORM_CONFIG_PROP_TYPES from \"./FormConfigPropTypes\"")
+    {
+        return "Form options";
+    }
     else
     {
         return name;
@@ -153,7 +147,7 @@ function renderComponentName(displayName)
 {
     if (displayName === "FormConfigProps")
     {
-        return "Form Config Props";
+        return "Form Options";
     }
     return  "&lt;" + displayName + "/&gt;";
 }
@@ -182,7 +176,7 @@ function renderComponent(component)
         }
         else
         {
-            const info = reactDocGen.parse( handleFormConfig(content));
+            const info = reactDocGen.parse( content);
 
             out += "## " + renderComponentName(info.displayName) + DOUBLE_BREAK;
             out += info.description + DOUBLE_BREAK;
@@ -242,10 +236,17 @@ function main()
 
         for (let j = 0; j < components.length; j++)
         {
-            out += renderComponent(components[j]);
+            const componentName = components[j];
+            try
+            {
+                out += renderComponent(componentName);
+            }
+            catch(e)
+            {
+                console.log("Error rendering '" + componentName + "'", e);
+            }
         }
     }
-
     fs.writeFileSync(path.resolve(__dirname, "../docs/component-reference.md"), out);
 }
 

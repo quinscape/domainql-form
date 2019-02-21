@@ -30,7 +30,7 @@ const AutoSubmit = props => {
     }
     
     // render nothing
-    return false;
+    return <span/>;
 };
 
 AutoSubmit.propTypes = {

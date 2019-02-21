@@ -14,7 +14,8 @@ import useFormConfig from "./useFormConfig";
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
  * field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form Customization"](./customization.md) for details)
  */
-const Field = props => {
+
+const Field = fnObserver(props => {
 
     const formConfig = useFormConfig();
 
@@ -102,15 +103,22 @@ const Field = props => {
 
     if (typeof children === "function")
     {
-        return children(formConfig, fieldContext);
+        return (
+            <React.Fragment>
+                {
+                    children(formConfig, fieldContext)
+                }
+            </React.Fragment>
+        );
     }
     else
     {
         const renderFn = GlobalConfig.getRenderFn(formConfig,fieldContext);
         return renderFn(formConfig, fieldContext);
+
     }
 
-};
+});
 
 Field.propTypes = {
     /**
@@ -163,6 +171,6 @@ Field.propTypes = {
      */
     autoFocus: PropTypes.bool
 };
-                    
 
-export default fnObserver(Field)
+
+export default Field;

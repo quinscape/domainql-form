@@ -21,7 +21,11 @@ being available in all lifecycle methods etc pp.
   Name       | Type                   | Description
 -------------|------------------------|------------------------------------------------------
  type        | string                 | Name of the base input type of the form. Only defined within a &lt;Form/&gt;.
- formikProps | Formik context         | Formik context object. Only defined within a &lt;Form/&gt;.
  schema      | InputSchema instance   | input schema
  options     | object                 | current set of default options
  basePath    | string                 | Current prefix for field names/paths
+ root        | Mobx view model        | Current form base value (is not set outside of <Form/>)
+ errors      | Array                  | Current form errors
+ ctx         | InternalContext        | Contains some internal functions (setRoot, setErrors, submit)
+ 
+ 

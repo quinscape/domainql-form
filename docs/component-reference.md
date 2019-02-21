@@ -8,15 +8,14 @@ Form description
 
  Name | Type | Description 
 ------|------|-------------
-initialValues | func | Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object. Might also be invalid (See isInitialValid)
-isInitialValid | bool | true if the initial value is valid
 onClick | func | Optional onClick handler for the form element.
-onSubmit | func | Submit handler handling the final typed GraphQL result
+onReset | func | Reset handler. If you define an `onReset` handler, you have to execute `formConfig.root.reset()` yourself. The default behaviour without `onReset` property is to reset the root observable.
+onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. If you define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()` yourself. The default behaviour without `onSubmit` property is to submit the root observable.
+options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
 schema | instance of InputSchema or object | schema to use for this form
 **type** (required) | string | form base type
-validate | func | Optional validate function. Note that the values object received here is *not* typed, i.e. it contains the raw formik string/boolean values. If you need all values to be converted to a typed GraphQL object, you need to invoke InputSchema.fromValues(type, values) manually on the received values object.
+validation | object | High-level validation configuration object
 **value** (required) | any | initial value (typed GraphQL object)
-… | config props | See "Form Config Props" below
 ### Simple Form Example
 
 ```js
@@ -24,17 +23,14 @@ validate | func | Optional validate function. Note that the values object receiv
         type="FooInput"
         value={ foo }
         horizontal={ true }
-        onSubmit={ (foo, actions) => {
-    
-            // ... your submit code, 
-            // foo will have been converted to GraphQL types
-        } }
     >
         <Field name="name"/>
         <Field name="num"/>
         <Field name="flag"/>
     </Form>
 ```
+
+`foo` must be an object containing mobx observable values corresponding to the given type within the input schema.  
 
 ### Advanced Form Example
 
@@ -48,11 +44,6 @@ object as `formConfig.formikProps`
         type="FooInput"
         value={ foo }
         horizontal={ true }
-        onSubmit={ (foo, actions) => {
-    
-            // ... your submit code, 
-            // foo will have been converted to GraphQL types
-        } }
     >
         formConfig => (
             <Field name="name"/>
@@ -60,7 +51,7 @@ object as `formConfig.formikProps`
             <Field 
                 name="num" 
                 disabled={ 
-                    !formConfig.formikProps.values.flag 
+                    !formConfig.root.flag 
                 }
             />
         )
@@ -149,11 +140,6 @@ title | string | Title attribute
     type="FooInput"
     value={ foo }
     horizontal={ true }
-    onSubmit={ (foo, actions) => {
-
-        // ... your submit code, 
-        // foo.name will be the current selection
-    } }
 >
     <Select 
         name="name" 
@@ -189,6 +175,10 @@ A component that renders no output but causes a debounced auto-submit of the for
  Name | Type | Description 
 ------|------|-------------
 timeout | number | Debounce timeout in milliseconds.
+# useFormConfig Hook
+
+The preferred form of react component is now a functional component. To receive the current form config object we added
+a `useFormConfig()` hook.
 ## High Order Components
 
 The library comes with two high order components.
@@ -258,18 +248,6 @@ import FooForm from "./FooForm"
 />
 ```
 
-
-### withFormConfig()
-
-withFormConfig() is a HOC useful if you have a component that wants to receive the 
-current formConfig (which includes the current formik state), but which is not
-a field in itself.
-
-If you want to implement a new field type, look at [Customization](./customization.md).
-
-withFormConfig provides the current formConfig object as prop to the wrapped component.
-
-
 # Form Config Components
 
 ## &lt;FormConfigProvider/&gt;
@@ -280,8 +258,8 @@ Allows the definition defaults for form config options and schema at the top of 
 
  Name | Type | Description 
 ------|------|-------------
+options | Form options | ...
 schema | instance of InputSchema or object | ...
-… | config props | See "Form Config Props" below
 ### &lt;FormConfigProvider/&gt; Example
 
 ```js
@@ -305,9 +283,9 @@ contained within.
 ------|------|-------------
 basePath | string | Optional property to define a common base path for the fields contained within. (e.g. basePath="foos.12" would prefix all fields' name attributes so that &lt;Field name="name"/&gt; would end up being &lt;Field name="foos.12.name"/&gt;
 className | string | Additional HTML class for this form block
+options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
 style | object | Additional CSS styles for this form block.
-… | config props | See "Form Config Props" below
-## Form Config Props
+## Form Options
 
 These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;FormConfigProvider/&gt; and are inherited from the &lt;Field/&gt; components.
 
@@ -315,13 +293,14 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 
  Name | Type | Description 
 ------|------|-------------
-currency | custom | Currency ISO code for Currency fields
-currencyAddonRight | custom | True if the currency addon is on the right side of the input component.
-horizontal | custom | True to use "horizontal" bootstrap form groups
-labelColumnClass | custom | Additional label column class to use if in horizontal mode.
-lookupLabel | custom | Optional function to look up a form field label based on formConfig and field name / path.
-mode | custom | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
-wrapperColumnClass | custom | Additional wrapper column class to use if in horizontal mode.
+currency | string | Currency ISO code for Currency fields
+currencyAddonRight | bool | True if the currency addon is on the right side of the input component.
+horizontal | bool | True to use "horizontal" bootstrap form groups
+labelColumnClass | string | Additional label column class to use if in horizontal mode.
+lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
+mode | FieldMode value | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
+validation | object | High-level validation configuration object
+wrapperColumnClass | string | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
 
 The FormConfig class encapsulates the current form config state within the 
@@ -345,10 +324,14 @@ being available in all lifecycle methods etc pp.
   Name       | Type                   | Description
 -------------|------------------------|------------------------------------------------------
  type        | string                 | Name of the base input type of the form. Only defined within a &lt;Form/&gt;.
- formikProps | Formik context         | Formik context object. Only defined within a &lt;Form/&gt;.
  schema      | InputSchema instance   | input schema
  options     | object                 | current set of default options
  basePath    | string                 | Current prefix for field names/paths
+ root        | Mobx view model        | Current form base value (is not set outside of <Form/>)
+ errors      | Array                  | Current form errors
+ ctx         | InternalContext        | Contains some internal functions (setRoot, setErrors, submit)
+ 
+ 
 # Helper Components
 
 ## &lt;FormGroup/&gt;

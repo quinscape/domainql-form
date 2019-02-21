@@ -29,14 +29,14 @@ function getSchema(formConfig, props)
  *
  * @param setRoot           changes the form root object (type must match!)
  * @param setErrors         changes the form errors
- * @param handleSubmit      triggers a Form submit
+ * @param submit      triggers a Form submit
  * @constructor
  */
-export function InternalContext(setRoot, setErrors, handleSubmit)
+export function InternalContext(setRoot, setErrors, submit)
 {
     this.setRoot = setRoot;
     this.setErrors = setErrors;
-    this.handleSubmit = handleSubmit;
+    this.submit = submit;
 }
 
 
@@ -109,7 +109,6 @@ const Form  = props =>  {
 
     const handleReset = ev => {
 
-        ev.preventDefault();
 
         const { onReset } = props;
 
@@ -146,9 +145,21 @@ const Form  = props =>  {
 
 Form.propTypes = {
     /**
-     * Submit handler handling the final typed GraphQL result
+     * Submit handler to receive the current formConfig with the root observable as-is. If you
+     * define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()`
+     * yourself.
+     *
+     * The default behaviour without `onSubmit` property is to submit the root observable.
      */
     onSubmit: PropTypes.func,
+
+    /**
+     * Reset handler. If you define an `onReset` handler, you have to execute `formConfig.root.reset()`
+     * yourself.
+     *
+     * The default behaviour without `onReset` property is to reset the root observable.
+     */
+    onReset: PropTypes.func,
 
     /**
      * schema to use for this form
@@ -167,17 +178,6 @@ Form.propTypes = {
      * initial value (typed GraphQL object)
      */
     value: PropTypes.any.isRequired,
-
-    /**
-     * true if the initial value is valid
-     */
-    isInitialValid: PropTypes.bool,
-
-    /**
-     * Optional function to provide the initialValues for Formik without converting them from the typed GraphQL object.
-     * Might also be invalid (See isInitialValid)
-     */
-    initialValues: PropTypes.func,
 
     /**
      * High-level validation configuration object

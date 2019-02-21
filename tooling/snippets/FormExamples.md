@@ -5,17 +5,14 @@
         type="FooInput"
         value={ foo }
         horizontal={ true }
-        onSubmit={ (foo, actions) => {
-    
-            // ... your submit code, 
-            // foo will have been converted to GraphQL types
-        } }
     >
         <Field name="name"/>
         <Field name="num"/>
         <Field name="flag"/>
     </Form>
 ```
+
+`foo` must be an object containing mobx observable values corresponding to the given type within the input schema.  
 
 ### Advanced Form Example
 
@@ -29,11 +26,6 @@ object as `formConfig.formikProps`
         type="FooInput"
         value={ foo }
         horizontal={ true }
-        onSubmit={ (foo, actions) => {
-    
-            // ... your submit code, 
-            // foo will have been converted to GraphQL types
-        } }
     >
         formConfig => (
             <Field name="name"/>
@@ -41,7 +33,7 @@ object as `formConfig.formikProps`
             <Field 
                 name="num" 
                 disabled={ 
-                    !formConfig.formikProps.values.flag 
+                    !formConfig.root.flag 
                 }
             />
         )
