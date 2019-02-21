@@ -8,7 +8,6 @@ import InputSchema from "./InputSchema";
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import useFormConfig from "./useFormConfig";
-import { extractFormPropValues } from "./FormConfigProvider";
 
 function getSchema(formConfig, props)
 {
@@ -48,7 +47,7 @@ const Form  = props =>  {
 
     const parentConfig = useFormConfig();
 
-    const { children, onClick, value, type, onSubmit } = props;
+    const { children, onClick, value, type, onSubmit, options } = props;
 
     const [ errors, setErrors] = useState([]);
     const [ root, setRoot] = useState( () => createViewModel(value) );
@@ -83,17 +82,18 @@ const Form  = props =>  {
         if (parentConfig)
         {
             formConfig = new FormConfig(
-                FormConfig.mergeOptions(
-                    parentConfig.options,
-                    props
-                ),
+                options ?
+                {
+                    ... parentConfig.options,
+                    ... options
+                } : parentConfig.options,
                 schema
             );
         }
         else
         {
             formConfig = new FormConfig(
-                props,
+                options,
                 schema
             );
         }
@@ -102,7 +102,7 @@ const Form  = props =>  {
 
         return formConfig;
 
-    }, [parentConfig, root, errors, onSubmit, ... extractFormPropValues(props)]);
+    }, [parentConfig, root, errors, onSubmit, options]);
     
     //console.log("RENDER FORM", formConfig);
 
@@ -189,8 +189,10 @@ Form.propTypes = {
      */
     onClick: PropTypes.func,
 
-    ... FORM_CONFIG_PROP_TYPES
-
+    /**
+     * Form options. Options here overwrite options inherited from a FormConfigProvider
+     */
+    options: PropTypes.shape(FORM_CONFIG_PROP_TYPES)
 };
 
 export default Form

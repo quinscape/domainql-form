@@ -11,7 +11,7 @@ import useFormConfig from "./useFormConfig";
  */
 const FormBlock = props => {
 
-    const { className, style, basePath, children } = props;
+    const { className, style, basePath, options, children } = props;
 
     const parentConfig = useFormConfig();
 
@@ -25,10 +25,10 @@ const FormBlock = props => {
 
             const formConfig = parentConfig.copy();
 
-            formConfig.options = FormConfig.mergeOptions(
-                parentConfig.options,
-                props
-            );
+            formConfig.options = options ? {
+                ... parentConfig.options,
+                ... options
+            }: parentConfig.options;
 
             if (basePath)
             {
@@ -69,7 +69,11 @@ FormBlock.propTypes = {
      * Additional CSS styles for this form block.
      */
     style: PropTypes.object,
-    ... FORM_CONFIG_PROP_TYPES
+
+    /**
+     * Form options. Options here overwrite options inherited from a FormConfigProvider
+     */
+    options: PropTypes.shape(FORM_CONFIG_PROP_TYPES)
 };
 
 export default FormBlock

@@ -326,7 +326,9 @@ describe("Select", function (){
             <Form
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
-                mode={ loc === ModeLocation.INHERITED ? mode : null }
+                options={{
+                    mode: loc === ModeLocation.INHERITED ? mode : null
+                }}
                 value={ formRoot }
             >
                 {

@@ -13,6 +13,7 @@ import { observable } from "mobx";
 import userEvent from "user-event";
 
 import itParam from "mocha-param"
+import ModeLocation from "./util/ModeLocation";
 
 describe("High-Level Validation", function () {
 
@@ -71,17 +72,20 @@ describe("High-Level Validation", function () {
             <Form
                 schema={ getSchema() }
                 type={ "DomainTypeInput" }
-                validation={{
-                    validateField: (ctx, value) => {
+                options={{
+                    validation: {
+                        validateField: (ctx, value) => {
 
-                        if (ctx.qualifiedName === "name" && value === "aaa")
-                        {
-                            return err;
+                            if (ctx.qualifiedName === "name" && value === "aaa")
+                            {
+                                return err;
+                            }
+
+                            return null;
                         }
-
-                        return null;
                     }
                 }}
+
                 value={
                     // we only edit the second field of the domain type
                     formRoot
@@ -155,14 +159,16 @@ describe("High-Level Validation", function () {
             <Form
                 schema={ getSchema() }
                 type={ "DomainTypeInput" }
-                validation={{
-                    fieldContext: (ctx) => {
+                options={{
+                    validation: {
+                        fieldContext: (ctx) => {
 
-                        if (ctx.qualifiedName === "name")
-                        {
-                            ctx.mode = FieldMode.READ_ONLY
-                        }
-                    },
+                            if (ctx.qualifiedName === "name")
+                            {
+                                ctx.mode = FieldMode.READ_ONLY
+                            }
+                        },
+                    }
                 }}
                 value={
                     // we only edit the second field of the domain type

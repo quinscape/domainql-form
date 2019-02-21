@@ -32,7 +32,9 @@ describe("FormBlock", function () {
                 value={ formRoot }
             >
                 <FormBlock
-                    labelColumnClass={ "foo" }
+                    options={{
+                        labelColumnClass:  "foo" 
+                    }}
                 >
                     <FormConfigContext.Consumer>{ consumerSpy }</FormConfigContext.Consumer>
 

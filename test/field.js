@@ -47,7 +47,9 @@ describe("Field", function () {
                 <Form
                     schema={getSchema()}
                     type={"EnumTypeInput"}
-                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    options={{
+                        mode: loc === ModeLocation.INHERITED ? mode : null
+                    }}
                     value={
                         formRoot
                     }
@@ -141,7 +143,9 @@ describe("Field", function () {
                 <Form
                     schema={getSchema()}
                     type={"DomainFieldInput"}
-                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    options={{
+                        mode: loc === ModeLocation.INHERITED ? mode : null
+                    }}
                     value={
                         formRoot
                     }
@@ -230,7 +234,9 @@ describe("Field", function () {
                 <Form
                     schema={getSchema()}
                     type={"DomainFieldInput"}
-                    mode={loc === ModeLocation.INHERITED ? mode : null}
+                    options={{
+                        mode: loc === ModeLocation.INHERITED ? mode : null
+                    }}
                     value={
                         formRoot
                     }

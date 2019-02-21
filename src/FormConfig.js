@@ -8,7 +8,6 @@ import get from "lodash.get"
 import set from "lodash.set"
 
 import { action } from "mobx"
-import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import unwrapType from "./util/unwrapType";
 import { NON_NULL } from "./kind";
 
@@ -23,8 +22,6 @@ export const DEFAULT_OPTIONS = {
     lookupLabel: GlobalConfig.lookupLabel,
     validation: null
 };
-
-export const FORM_OPTION_NAMES = keys(FORM_CONFIG_PROP_TYPES);
 
 /**
  * React context for the current FormConfig object
@@ -99,7 +96,10 @@ class FormConfig
             this.schema = schema && new InputSchema(schema);
         }
 
-        this.options = FormConfig.mergeOptions(DEFAULT_OPTIONS, opts);
+        this.options = {
+            ... DEFAULT_OPTIONS,
+            ... opts
+        };
 
         // clear form context
         this.setFormContext();
@@ -149,72 +149,6 @@ class FormConfig
             }
             return name;
         }
-    }
-
-    /**
-     * Merges two option objects and returns a new merged options object. The returned object will be filtered so
-     * that it only contains option keys defined in FORM_PROPTYPES.
-     *
-     * @param a     options A
-     * @param b     options B
-     */
-    static mergeOptions(a,b)
-    {
-        if (!b)
-        {
-            return a;
-        }
-
-        const newOptions = { };
-
-        const len = FORM_OPTION_NAMES.length;
-        for (let i = 0; i < len; i++)
-        {
-            const name = FORM_OPTION_NAMES[i];
-            let value = b[name];
-            newOptions[name] = value !== undefined ? value : a[name];
-        }
-        return newOptions;
-    }
-    
-    /**
-     * Compares this form config to another form config
-     *
-     * @param {FormConfig} other     other config
-     *
-     * @return {boolean} true if both configs are equal
-     */
-    equals(other)
-    {
-        if (other instanceof FormConfig)
-        {
-            if (
-                this.schema !== other.schema ||
-                this.type !== other.type ||
-                this.basePath !== other.basePath ||
-                this.errors !== other.errors ||
-                this.root !== other.root
-            )
-            {
-                return false;
-            }
-
-            const { options } = this;
-            const { options: otherOptions } = other;
-
-
-            const len = FORM_OPTION_NAMES.length;
-            for (let i = 0; i < len; i++)
-            {
-                const name = FORM_OPTION_NAMES[i];
-                if (options[name] !== otherOptions[name])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-        return false;               
     }
 
     getErrors(path)

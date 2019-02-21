@@ -204,7 +204,9 @@ describe("Form", function () {
         const {  } = render(
             <FormConfigProvider
                 schema={getSchema() }
-                horizontal={ !DEFAULT_OPTIONS.horizontal }
+                options={{
+                    horizontal:  !DEFAULT_OPTIONS.horizontal 
+                }}
 
             >
                 <Form

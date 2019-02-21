@@ -1,30 +1,10 @@
 import React, { useMemo } from "react"
 import PropTypes from "prop-types"
 
-import FormConfig, { FormConfigContext, FORM_OPTION_NAMES } from "./FormConfig";
+import FormConfig, { FormConfigContext } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
-
-
-/**
- * Extracts an memo input array of all form props
- *
- * @param props         props object
- *
- * @return {Array<*>} memo inputs for all form props
- */
-export function extractFormPropValues(props)
-{
-    const numOpts = FORM_OPTION_NAMES.length;
-    const list = new Array(numOpts);
-
-    for (let i = 0; i < numOpts; i++)
-    {
-        list[i] = props[FORM_OPTION_NAMES[i]];
-    }
-    return list;
-}
 
 
 /**
@@ -32,11 +12,11 @@ export function extractFormPropValues(props)
  */
 const FormConfigProvider = props => {
 
-    const { children } = props;
+    const { options, schema, children } = props;
 
     const formConfig = useMemo(() => {
-        return new FormConfig(props, props.schema);
-    }, extractFormPropValues(props));
+        return new FormConfig(options, schema);
+    }, [ options, schema ]);
 
     return (
         <FormConfigContext.Provider value={ formConfig }>
@@ -53,9 +33,9 @@ FormConfigProvider.propTypes = {
         PropTypes.instanceOf(InputSchema),
         PropTypes.object
     ]),
-    // default Form configaration properties for all child <Form/> components.
-    ... FORM_CONFIG_PROP_TYPES
+    options: PropTypes.shape(
+        FORM_CONFIG_PROP_TYPES
+    )
 };
-
 
 export default FormConfigProvider

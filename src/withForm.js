@@ -9,7 +9,7 @@ import getDisplayName from "./util/getDisplayName";
  * it with the form config as props
  *
  * @param {React.Element} Component      component to enhance
- * @param {object} formProps            props for the <Form/> 
+ * @param {object} formProps             props for the <Form/>
  *
  * @return {function} Component that will automatically receive a "formConfig" prop
  */
@@ -17,23 +17,21 @@ export default function(Component, formProps)
 {
     //console.log("withForm", Component, formProps);
 
-    const enhanced = props => {
+    const EnhancedComponent = props => {
 
-        const { value, onSubmit } = props;
-
-        const options = FormConfig.mergeOptions({}, props);
+        const { value, options, onSubmit, ... restProps } = props;
 
         return (
             <Form
-                { ... options }
                 { ... formProps}
                 onSubmit={ onSubmit }
                 value={ value }
+                options={ options }
             >
                 {
                     formConfig => (
                         <Component
-                            { ... props }
+                            { ... restProps }
                             formConfig={ formConfig }
                         />
                     )
@@ -42,7 +40,7 @@ export default function(Component, formProps)
         );
     };
 
-    enhanced.displayName = getDisplayName(Component);
+    EnhancedComponent.displayName = getDisplayName(Component);
 
-    return enhanced;
+    return EnhancedComponent;
 }
