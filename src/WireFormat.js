@@ -1,4 +1,5 @@
-import { NON_NULL, LIST, OBJECT, SCALAR } from "./kind";
+import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT } from "./kind";
+import { observable } from "mobx";
 
 function getType(type, obj)
 {
@@ -108,12 +109,32 @@ const DEFAULT_FROM_WIRE = {
 };
 
 
+const DEFAULT_OPTS = {
+    /**
+     * True if values converted from wire-format should always be wrapped as observables.
+     */
+    wrapAsObservable: false
+};
+
 
 
 export default class WireFormat {
 
-    constructor(inputSchema, classes = {})
+    /**
+     * Creates a new wire format instance.
+     *
+     * @param {InputSchema} inputSchema         input schema
+     * @param {Object} classes                  map of domain class implementations to use
+     * @param {Object} opts                     options
+     * @param {boolean} opts.wrapAsObservable   True if values converted from wire-format should always be wrapped as observables.
+     */
+    constructor(inputSchema, classes = {}, opts)
     {
+        this.opts = {
+            ... DEFAULT_OPTS,
+            ... opts
+        };
+
         if (!inputSchema)
         {
             throw new Error("Need inputSchema")
@@ -128,6 +149,8 @@ export default class WireFormat {
         this.FromWireConverters = {
             ... DEFAULT_FROM_WIRE
         };
+
+        //console.log("Created", this);
     }
 
 
@@ -220,25 +243,42 @@ export default class WireFormat {
             //console.log("CONVERT SCALAR", scalarName, value);
             return fn ? fn(value) : value;
         }
-        else if (typeRef.kind === OBJECT)
+        else if (typeRef.kind === OBJECT || typeRef.kind === INPUT_OBJECT)
         {
             if (value)
             {
                 let out;
                 const typeName = typeRef.name;
+
+                let needsWrapping = false;
                 if (fromWire)
                 {
                     const TypeClass = this.classes[typeName];
-                    out = TypeClass ? new TypeClass() : {};
+                    if (TypeClass)
+                    {
+                        out = new TypeClass();
+                    }
+                    else
+                    {
+                        out = {};
+                        needsWrapping = true;
+                    }
                 }
                 else
                 {
                     out = {};
+                    needsWrapping = true;
                 }
 
                 if (fromWire)
                 {
                     out._type = typeName;
+
+                    if (needsWrapping && this.opts.wrapAsObservable)
+                    {
+                        //console.log("Wrap as observable", out)
+                        out = observable(out);
+                    }
                 }
 
                 const typeDef = this.inputSchema.getType(typeName);
@@ -274,7 +314,11 @@ export default class WireFormat {
             if (value)
             {
                 const elementType = typeRef.ofType;
-                const out = new Array(value.length);
+                let out = new Array(value.length);
+                if (fromWire && this.opts.wrapAsObservable)
+                {
+                    out = observable(out);
+                }
 
                 for (let j = 0; j < value.length; j++)
                 {
