@@ -619,6 +619,153 @@
             "possibleTypes": null
         },
         {
+            "kind": "OBJECT",
+            "name": "Foo",
+            "description": "Generated for de.quinscape.eamodern.service.Foo",
+            "fields": [
+                {
+                    "name": "date",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Date",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "longNum",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Long",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "flag",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Boolean",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "num",
+                    "description": null,
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Int",
+                            "ofType": null
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "name",
+                    "description": null,
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        }
+                    },
+                    "defaultValue": null
+                },
+                {
+                    "name": "moneys",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Currency",
+                        "ofType": null
+                    },
+                    "defaultValue": "0"
+                },
+                {
+                    "name": "timestamp",
+                    "description": null,
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Timestamp",
+                        "ofType": null
+                    },
+                    "defaultValue": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": null,
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "Wrapper",
+            "description": "Generated for de.quinscape.eamodern.service.Foo",
+            "inputFields": null,
+            "fields": [
+                {
+                    "name": "foos",
+                    "description": null,
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "Foo",
+                                "ofType": null
+                            }
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ],
+            "interfaces": null,
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "INPUT_OBJECT",
+            "name": "WrapperInput",
+            "description": "Generated for de.quinscape.eamodern.service.Foo",
+            "fields": null,
+            "inputFields": [
+                {
+                    "name": "foos",
+                    "description": null,
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "FooInput",
+                                "ofType": null
+                            }
+                        }
+                    },
+                    "defaultValue": null
+                }
+            ],
+            "interfaces": null,
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
             "kind": "ENUM",
             "name": "__TypeKind",
             "description": "An enum describing what kind of type a given __Type is",
