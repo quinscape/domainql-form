@@ -127,10 +127,44 @@ describe("Wire Format", function () {
             "foos.timestamp" : "f2"
         });
 
-        assert(converted.foos[0].name === "Foo #1");
-        assert(converted.foos[0].timestamp instanceof Date);
+        assert(converted.foos[0].f1 === "Foo #1");
+        assert(converted.foos[0].f2 instanceof Date);
+
+    });
 
 
+    it("does not instantiate classes if they contain aliases", function () {
+
+        class Foo
+        {
+            name;
+            foos;
+        }
+
+        const schema = getSchema();
+
+        const wireFormat = new WireFormat(schema, {
+            Foo
+        }, { wrapAsObservable: true })
+
+        const converted = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "f1" : "Foo #1",
+                "f2":  "2018-11-16T00:00:00.000Z"
+            }]
+        },true,{
+            "foos.name" : "f1",
+            "foos.timestamp" : "f2"
+        });
+
+
+        // objects with alias are not instanciated as class
+        assert(!(converted.foos[0] instanceof Foo));
+        // but still enjoy field conversion and reassignment
+        assert(converted.foos[0].f2 instanceof Date);
 
     });
 

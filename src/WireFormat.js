@@ -117,6 +117,36 @@ const DEFAULT_OPTS = {
 };
 
 
+function join(path, segment)
+{
+    if (path)
+    {
+        return path + "." + segment;
+    }
+    return segment;
+}
+
+
+function hasAliases(aliases, objectPath)
+{
+    if (aliases)
+    {
+        for (let name in aliases)
+        {
+            if (
+                aliases.hasOwnProperty(name) &&
+                name.charAt(objectPath.length) === '.' &&
+                name.indexOf(objectPath) === 0 &&
+                name.lastIndexOf('.') === objectPath.length
+            )
+            {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 
 export default class WireFormat {
 
@@ -219,10 +249,12 @@ export default class WireFormat {
      * @param {Object} typeRef      GraphQL schema type reference
      * @param {*} value             value
      * @param {boolean} fromWire    true if the value is to be converted from wire format into JavaScript, false otherwise
+     * @param {object} [aliases]    Map with aliases mapping path names to their original name
+     * @param {String} [path]       current path
      *
      * @return {*} JavaScript value
      */
-    convert(typeRef, value, fromWire)
+    convert(typeRef, value, fromWire, aliases, path = "")
     {
         if (typeRef.kind === NON_NULL)
         {
@@ -231,7 +263,7 @@ export default class WireFormat {
                 throw new Error("NON_NULL value is null: typeRef = " + JSON.stringify(typeRef) + ", value = " + JSON.stringify(value));
             }
 
-            return this.convert(typeRef.ofType, value, fromWire);
+            return this.convert(typeRef.ofType, value, fromWire, aliases, path);
         }
 
         if (typeRef.kind === SCALAR)
@@ -250,11 +282,24 @@ export default class WireFormat {
                 let out;
                 const typeName = typeRef.name;
 
+                const typeDef = this.inputSchema.getType(typeName);
+                if (!typeDef)
+                {
+                    throw new Error("Could not find type '" + typeName + "' in schema");
+                }
+
+                const fields = fromWire ? typeDef.fields : typeDef.inputFields;
+
+                if (!fields)
+                {
+                    throw new Error("Type '" + typeName + "' has no fields: " + JSON.stringify(typeDef));
+                }
+
                 let needsWrapping = false;
                 if (fromWire)
                 {
                     const TypeClass = this.classes[typeName];
-                    if (TypeClass)
+                    if (TypeClass && !hasAliases(aliases, path))
                     {
                         out = new TypeClass();
                     }
@@ -281,28 +326,21 @@ export default class WireFormat {
                     }
                 }
 
-                const typeDef = this.inputSchema.getType(typeName);
-                if (!typeDef)
-                {
-                    throw new Error("Could not find type '" + typeName + "' in schema");
-                }
-
-                const fields = fromWire ? typeDef.fields : typeDef.inputFields;
-
-                if (!fields)
-                {
-                    throw new Error("Type '" + typeName + "' has no fields: " + JSON.stringify(typeDef));
-                }
 
                 for (let i = 0; i < fields.length; i++)
                 {
                     const { name, type } = fields[i];
+                    const pathForField = join(path, name);
 
-                    const fieldValue = value[name];
+                    const alias = aliases && aliases[pathForField];
+
+                    const propName = alias ? alias : name;
+
+                    const fieldValue = value[propName];
                     if (fieldValue !== undefined)
                     {
                         //console.log("CONVERT FIELD", name, type, fieldValue, fromWire)
-                        out[name] = this.convert(type, fieldValue, fromWire);
+                        out[propName] = this.convert(type, fieldValue, fromWire, aliases, pathForField);
                     }
                 }
                 return out;
@@ -323,7 +361,7 @@ export default class WireFormat {
                 for (let j = 0; j < value.length; j++)
                 {
                     //console.log("CONVERT ELEMENT", elementType, value[j], fromWire);
-                    out[j] = this.convert(elementType, value[j], fromWire);
+                    out[j] = this.convert(elementType, value[j], fromWire, aliases, path);
                 }
                 return out;
             }
