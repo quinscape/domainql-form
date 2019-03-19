@@ -281,6 +281,10 @@ class InputSchema
         const path = typeof name === "string" ? toPath(name) : name;
 
         const currentType = this.getType(typeName);
+        if (!currentType)
+        {
+            throw new Error("Cannot resolve " + typeName + "."  + name  + ": Type '" + typeName + "' does not exist.");
+        }
 
         return resolve(this, currentType, path, 0);
     }
