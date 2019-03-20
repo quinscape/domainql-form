@@ -22,7 +22,9 @@ validation | object | High-level validation configuration object
     <Form
         type="FooInput"
         value={ foo }
-        horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
     >
         <Field name="name"/>
         <Field name="num"/>
@@ -43,7 +45,9 @@ object as `formConfig.formikProps`
     <Form
         type="FooInput"
         value={ foo }
-        horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
     >
         formConfig => (
             <Field name="name"/>
@@ -139,7 +143,9 @@ title | string | Title attribute
 <Form
     type="FooInput"
     value={ foo }
-    horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
 >
     <Select 
         name="name" 
@@ -295,8 +301,8 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 ------|------|-------------
 currency | string | Currency ISO code for Currency fields
 currencyAddonRight | bool | True if the currency addon is on the right side of the input component.
-horizontal | bool | True to use "horizontal" bootstrap form groups
 labelColumnClass | string | Additional label column class to use if in horizontal mode.
+layout | enum | Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - label to the left of input in layout column "INLINE" - inline field elements without form group element
 lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
 mode | FieldMode value | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
 validation | object | High-level validation configuration object

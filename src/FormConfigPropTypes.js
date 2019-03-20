@@ -1,11 +1,13 @@
 import FieldMode from "./FieldMode";
 import PropTypes from "prop-types"
+import FormLayout from "./FormLayout";
 
 export default {
     /**
-     * True to use "horizontal" bootstrap form groups
+     * Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - label to the left of input in layout column
+     * "INLINE" - inline field elements without form group element
      */
-    horizontal: PropTypes.bool,
+    layout: PropTypes.oneOf([FormLayout.DEFAULT, FormLayout.HORIZONTAL, FormLayout.INLINE]),
     /**
      * Additional label column class to use if in horizontal mode.
      */

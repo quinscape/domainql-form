@@ -80,7 +80,9 @@ This of course being part of a larger GraphQL schema.
     <Form
         type="FooInput"
         value={ foo }
-        horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
         onSubmit={ (foo, actions) => {
     
             // ... your submit code, 
@@ -102,7 +104,7 @@ handles the conversion to string needed for fomik.
 The `onSubmit` arrow function prop then receives the submit result again
 as typed GraphQL data.   
 
-The `horizontal` flag puts the whole form into horizontal mode and makes
+The setting the layout to FormLayout.HORIZONTAL puts the whole form into horizontal mode and makes
 all fields render horizontally. 
 
 ## &lt;Field/&gt; abstraction

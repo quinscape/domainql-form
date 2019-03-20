@@ -1,19 +1,21 @@
 import React from "react"
-import InputSchema from "./InputSchema";
+import InputSchema, { findNamed } from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
 import keys from "./util/keys";
 
+import toPath from "lodash.topath"
 import get from "lodash.get"
 import set from "lodash.set"
 
 import { action } from "mobx"
 import unwrapType from "./util/unwrapType";
-import { NON_NULL } from "./kind";
+import { INPUT_OBJECT, LIST, NON_NULL } from "./kind";
+import FormLayout from "./FormLayout";
 
 
 export const DEFAULT_OPTIONS = {
-    horizontal: true,
+    layout: FormLayout.DEFAULT,
     labelColumnClass: "col-md-5",
     wrapperColumnClass: "col-md-7",
     mode: FieldMode.NORMAL,

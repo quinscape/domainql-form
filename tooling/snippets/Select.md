@@ -4,7 +4,9 @@
 <Form
     type="FooInput"
     value={ foo }
-    horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
 >
     <Select 
         name="name" 

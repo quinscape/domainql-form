@@ -8,6 +8,7 @@ import InputSchema from "./InputSchema";
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import useFormConfig from "./useFormConfig";
+import FormLayout from "./FormLayout";
 
 function getSchema(formConfig, props)
 {
@@ -127,9 +128,7 @@ const Form  = props =>  {
     return (
         <form
             className={
-                cx(
-                    "form"
-                )
+                formConfig.options.layout === FormLayout.INLINE ? "form-inline" : "form"
             }
             onSubmit={ handleSubmit }
             onReset={ handleReset }

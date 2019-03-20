@@ -1,5 +1,7 @@
 import React from "react"
 import FieldMode from "./FieldMode";
+import FormLayout from "./FormLayout";
+
 
 const UserFormControl = props => {
 
@@ -62,15 +64,49 @@ const UserFormControl = props => {
                 </label>
             </div>
             <div className="form-check mr-sm-2">
-                <input className="form-check-input" type="checkbox" id="inlineFormCheck"
-                       checked={control.horizontal}
-                       onChange={ev => changeControl("horizontal", !control.horizontal)}
-                />
-                <label className="form-check-label" htmlFor="inlineFormCheck">
-                    horizontal
-                </label>
+                <div className="form-check">
+                    <input
+                        className="form-check-input mr-1"
+                        type="radio"
+                        name="formLayout"
+                        id="formLayoutDefault"
+                        value={FormLayout.DEFAULT}
+                        checked={control.layout === FormLayout.DEFAULT}
+                        onChange={ev => changeControl("layout", FormLayout.DEFAULT)}
+                    />
+                    <label className="form-check-label" htmlFor="formLayoutDefault">
+                        DEFAULT
+                    </label>
+                </div>
+                <div className="form-check">
+                    <input
+                        className="form-check-input mr-1"
+                        type="radio"
+                        name="formLayout"
+                        id="formLayoutHorizontal"
+                        value={FormLayout.HORIZONTAL}
+                        checked={control.layout === FormLayout.HORIZONTAL}
+                        onChange={ev => changeControl("layout", FormLayout.HORIZONTAL)}
+                    />
+                    <label className="form-check-label" htmlFor="formLayoutHorizontal">
+                        HORIZONTAL
+                    </label>
+                </div>
+                <div className="form-check">
+                    <input
+                        className="form-check-input  mr-1"
+                        type="radio"
+                        name="formLayout"
+                        id="formLayoutInline"
+                        value={FormLayout.INLINE}
+                        checked={control.layout === FormLayout.INLINE}
+                        onChange={ev => changeControl("layout", FormLayout.INLINE)}
+                    />
+                    <label className="form-check-label" htmlFor="formLayoutInline">
+                        INLINE
+                    </label>
+                </div>
             </div>
-
         </div>
     )
 };

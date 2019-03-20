@@ -4,7 +4,9 @@
     <Form
         type="FooInput"
         value={ foo }
-        horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
     >
         <Field name="name"/>
         <Field name="num"/>
@@ -25,7 +27,9 @@ object as `formConfig.formikProps`
     <Form
         type="FooInput"
         value={ foo }
-        horizontal={ true }
+        options={{
+            layout: FormLayout.HORIZONTAL
+        }}
     >
         formConfig => (
             <Field name="name"/>

@@ -207,7 +207,7 @@ describe("Form", function () {
             <FormConfigProvider
                 schema={getSchema() }
                 options={{
-                    horizontal:  !DEFAULT_OPTIONS.horizontal 
+                    layout: FormLayout.INLINE
                 }}
 
             >
@@ -227,7 +227,7 @@ describe("Form", function () {
 
         assert(renderSpy.called);
         assert(renderSpy.lastCall.args[0] instanceof FormConfig);
-        assert(renderSpy.lastCall.args[0].options.horizontal  === !DEFAULT_OPTIONS.horizontal);
+        assert(renderSpy.lastCall.args[0].options.layout  === FormLayout.INLINE);
 
 
     });

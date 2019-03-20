@@ -2,6 +2,7 @@ import React from "react"
 import PropTypes from "prop-types"
 import cx from "classnames"
 import FieldMode from "./FieldMode"
+import FormLayout from "./FormLayout";
 
 /**
  * Renders a .form-group wrapper from our standard render context. Is used by internally the default field renderers
@@ -29,21 +30,23 @@ const FormGroup = props => {
         return false;
     }
 
-    const { horizontal, labelColumnClass, wrapperColumnClass } = formConfig.options;
+    const { layout, labelColumnClass, wrapperColumnClass } = formConfig.options;
 
     //console.log("RENDER FormGroup", { horizontal, labelColumnClass, wrapperColumnClass });
 
+    const horizontal = layout === FormLayout.HORIZONTAL;
+
     const labelElement = label ? (
-                       <label
-        className={
-            cx(
-                horizontal ? labelColumnClass : null,
-            horizontal ? "col-form-label" : null,
-            labelClass
-    )
-    }
-        htmlFor={fieldId}
-            >
+        <label
+            className={
+                cx(
+                    horizontal ? labelColumnClass : null,
+                    horizontal ? "col-form-label" : null,
+                    labelClass
+                )
+            }
+            htmlFor={fieldId}
+        >
             {label}
         </label>) : (
             horizontal &&
@@ -56,7 +59,6 @@ const FormGroup = props => {
 
     const haveErrors = errorMessages && errorMessages.length > 0;
 
-
     const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];
 
     if (formText)
@@ -67,6 +69,19 @@ const FormGroup = props => {
             </p>
         )
     }
+
+    if (layout === FormLayout.INLINE)
+    {
+        return (
+            <React.Fragment>
+                { labelElement }
+                { children }
+                { helpBlock }
+            </React.Fragment>
+        )
+
+    }
+
 
     return (
         <div className={
@@ -79,12 +94,15 @@ const FormGroup = props => {
 
             { labelElement }
             {
-                horizontal ? (
-                    <div className={ wrapperColumnClass || "col-md-9" }>
-                        { children }
-                        { helpBlock }
+                horizontal && (
+                    <div className={wrapperColumnClass || "col-md-9"}>
+                        {children}
+                        {helpBlock}
                     </div>
-                ) : (
+                )
+            }
+            {
+                layout === FormLayout.DEFAULT && (
                     children
                 )
             }

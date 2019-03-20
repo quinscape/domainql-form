@@ -50,5 +50,6 @@ export {
     getDisplayName,
     DEFAULT_OPTIONS,
     usePrevious,
-    Types
+    Types,
+    FormLayout
 }

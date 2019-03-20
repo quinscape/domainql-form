@@ -9,6 +9,7 @@ import get from "lodash.get"
 
 import FormGroup from "./FormGroup"
 import unwrapType from "./util/unwrapType";
+import FormLayout from "./FormLayout";
 
 
 function renderStatic(ctx, fieldValue)
@@ -94,7 +95,12 @@ const DEFAULT_RENDERERS =
                 {
 
                     checkBoxElement = (
-                        <div className="form-check">
+                        <div className={
+                            cx(
+                                "form-check",
+                                formConfig.options.layout === FormLayout.INLINE && "form-check-inline"
+                            )
+                        }>
                             <input
                                 id={ fieldId }
                                 name={ qualifiedName }
