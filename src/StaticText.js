@@ -18,7 +18,7 @@ const StaticText = props => {
     if (name)
     {
         const path = formConfig.getPath(name);
-        resultType = schema.resolveType(formConfig.type, path);
+        resultType = formConfig.resolveType(path);
         result = get(value, path);
     }
     else

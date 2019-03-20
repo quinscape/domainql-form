@@ -32,7 +32,7 @@ const Field = fnObserver(props => {
 
             let fieldId;
             let effectiveLabel;
-            const fieldType = formConfig.schema.resolveType(formConfig.type, path);
+            const fieldType = formConfig.resolveType(path);
 
             if (name && name.length)
             {

@@ -13,7 +13,7 @@ onReset | func | Reset handler. If you define an `onReset` handler, you have to 
 onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. If you define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()` yourself. The default behaviour without `onSubmit` property is to submit the root observable.
 options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
 schema | instance of InputSchema or object | schema to use for this form
-**type** (required) | string | form base type
+**type** (required) | string or object | form base type (Schema type name or runtime created type structure)
 validation | object | High-level validation configuration object
 **value** (required) | any | initial value (typed GraphQL object)
 ### Simple Form Example

@@ -21,6 +21,9 @@ import getDisplayName from "./util/getDisplayName"
 import { DEFAULT_OPTIONS } from "./FormConfig"
 import useFormConfig from "./useFormConfig"
 import usePrevious from "./usePrevious"
+import FormLayout from "./FormLayout"
+
+import * as Types from "./util/runtimeType"
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -46,5 +49,6 @@ export {
     Icon,
     getDisplayName,
     DEFAULT_OPTIONS,
-    usePrevious
+    usePrevious,
+    Types
 }

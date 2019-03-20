@@ -52,6 +52,8 @@ const Form  = props =>  {
     const [ errors, setErrors] = useState([]);
     const [ root, setRoot] = useState( () => createViewModel(value) );
 
+    const isLocalType = typeof type === "object";
+
 
     const handleSubmit = useCallback(
         ev => {
@@ -71,12 +73,9 @@ const Form  = props =>  {
         [ root, onSubmit ]
     );
 
-    let didRecreate = true;
     const formConfig = useMemo( () => {
 
         const schema = getSchema(parentConfig, props);
-
-        didRecreate = false;
 
         let formConfig;
         if (parentConfig)
@@ -87,22 +86,24 @@ const Form  = props =>  {
                     ... parentConfig.options,
                     ... options
                 } : parentConfig.options,
-                schema
+                schema,
+                isLocalType ? type : null
             );
         }
         else
         {
             formConfig = new FormConfig(
                 options,
-                schema
+                schema,
+                isLocalType ? type : null
             );
         }
 
-        formConfig.setFormContext(type, "", root, errors, new InternalContext(setRoot, setErrors, handleSubmit));
+        formConfig.setFormContext(isLocalType ? type.name : type, "", root, errors, new InternalContext(setRoot, setErrors, handleSubmit));
 
         return formConfig;
 
-    }, [parentConfig, root, errors, onSubmit, options]);
+    }, [ parentConfig, root, errors, onSubmit, options ]);
     
     //console.log("RENDER FORM", formConfig);
 
@@ -170,9 +171,12 @@ Form.propTypes = {
     ]),
 
     /**
-     * form base type
+     * form base type (Schema type name or runtime created type structure)
      */
-    type: PropTypes.string.isRequired,
+    type: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.object
+    ]).isRequired,
 
     /**
      * initial value (typed GraphQL object)

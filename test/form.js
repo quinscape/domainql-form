@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, prettyDOM } from "react-testing-library"
+import { cleanup, fireEvent, render, prettyDOM, act } from "react-testing-library"
 
 import assert from "power-assert"
 
@@ -14,6 +14,8 @@ import { observable } from "mobx";
 import viewModelToJs from "./util/viewModelToJs";
 import userEvent from "user-event";
 import dumpUsage from "./util/dumpUsage";
+import { inputField, inputObjectType, nonNull, scalar } from "../src/util/runtimeType";
+import FormLayout from "../src/FormLayout";
 
 
 describe("Form", function () {
@@ -67,7 +69,7 @@ describe("Form", function () {
         assert(formConfig.root.description === "");
         assert(formConfig.root.name === "");
         assert(formConfig.root.values === null);
-        
+
     });
 
     it("validates the initial values", function () {
@@ -494,6 +496,129 @@ describe("Form", function () {
         );
 
         assert(formRoot.fields[1].name === "AnotherName");
+
+    });
+
+    it("works based on runtime generated types", function () {
+
+        let renderSpy = sinon.spy();
+
+        const adHocType = inputObjectType(
+            "AdHocType",
+            [
+                inputField(
+                    "field1", nonNull( scalar("String"))
+                ),
+                inputField(
+                    "field2", scalar("Int")
+                )
+            ]
+        );
+
+        //console.log("AD HOC TYPE", JSON.stringify(adHocType, null, 4));
+
+        const formRoot = observable({
+            field1: "String Field Content",
+            field2: 12345,
+        });
+        let container, getByLabelText;
+
+        act(() => {
+            const result = render(
+                <Form
+                    schema={ getSchema() }
+                    type={ adHocType }
+                    value={ formRoot }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="field1" />
+                                    <Field name="field2" />
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            container = result.container;
+            getByLabelText = result.getByLabelText;
+
+        })
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig instanceof FormConfig);
+
+        assert(formConfig.type === "AdHocType");
+        assert(formConfig.root.field1 === "String Field Content");
+        assert(formConfig.root.field2 === 12345);
+
+        const input1 = getByLabelText("field1");
+        const input2 = getByLabelText("field2");
+
+        assert(input1.value === "String Field Content");
+        assert(input2.value === "12345");
+
+        act( () => {
+            fireEvent.change(input1, {
+                target: {
+                    value: ""
+                }
+            });
+        })
+
+        //console.log(prettyDOM(container))
+
+        const formConfig2 = renderSpy.lastCall.args[0];
+
+        assert.deepEqual(
+            formConfig2.getErrors("field1"),
+            [
+                "",
+                "AdHocType.field1:Field Required"
+            ]
+        );
+
+        act( () => {
+            userEvent.type(input1, "Changed");
+        });
+
+        const formConfig3 = renderSpy.lastCall.args[0];
+        assert(formConfig3.root.field1 === "Changed");
+
+
+        act( () => {
+            userEvent.type(input2, "abc");
+        });
+
+        const formConfig4 = renderSpy.lastCall.args[0];
+        assert.deepEqual(
+            formConfig4.getErrors("field2"),
+            [
+                "abc",
+                "Invalid Integer"
+            ]
+        );
+
+        act( () => {
+            userEvent.type(input2, "98765");
+        });
+
+        const formConfig5 = renderSpy.lastCall.args[0];
+        assert(formConfig5.root.field2 === 98765);
+
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        assert(formRoot.field1 === "Changed");
+        assert(formRoot.field2 === 98765);
 
     });
 
