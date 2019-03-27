@@ -14,7 +14,8 @@
         "lodash.isequal": "^4.5.0",
         "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
-        "prop-types": "^15.7.1"
+        "prop-types": "^15.7.1",
+        "use-debounce": "^1.1.1"
     },
     "devDependencies": {
         "babel-cli": "^6.26.0",

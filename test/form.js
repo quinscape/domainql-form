@@ -622,5 +622,100 @@ describe("Form", function () {
 
     });
 
-    // field validation and submission tested in field.js, text-area.js, select.js etc
+    it("supports auto-submit", function (done) {
+
+        let renderSpy = sinon.spy();
+
+
+        //console.log("AD HOC TYPE", JSON.stringify(adHocType, null, 4));
+
+        const formRoot = observable( {
+            name: "MYENUM",
+            description: "",
+            values: ["AA","BB","CC"]
+        });
+        let container, getByLabelText;
+
+        act(() => {
+            const result = render(
+                <Form
+                    schema={ getSchema() }
+                    type={ "EnumTypeInput" }
+                    value={ formRoot }
+                    options={{
+                        autoSubmit: true,
+                        submitTimeOut: 50
+                    }}
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="name" />
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            container = result.container;
+            getByLabelText = result.getByLabelText;
+        });
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig instanceof FormConfig);
+
+        assert(formConfig.type === "EnumTypeInput");
+        assert(formConfig.root.name === "MYENUM");
+
+        const input = getByLabelText("name");
+
+        assert(input.value === "MYENUM");
+
+        act( () => {
+            userEvent.type(input, "New Name");
+        });
+
+        setTimeout(() => {
+            //console.log(prettyDOM(container))
+
+            assert(formRoot.name === "New Name");
+
+            act( () => {
+                fireEvent.change(input, {
+                    target: {
+                        value: ""
+                    }
+                });
+            });
+
+            const formConfig2 = renderSpy.lastCall.args[0];
+
+            assert.deepEqual(
+                formConfig2.getErrors("name"),
+                [
+                    "",
+                    "EnumTypeInput.name:Field Required"
+                ]
+            );
+
+            setTimeout(() => {
+                //console.log(prettyDOM(container))
+
+                // error not auto-submitted, still old value
+                assert(formRoot.name === "New Name");
+
+
+                done();
+
+            }, 100);
+
+        }, 100);
+
+    });
+
 });

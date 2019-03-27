@@ -22,7 +22,9 @@ export const DEFAULT_OPTIONS = {
     currency: "EUR",
     currencyAddonRight: true,
     lookupLabel: GlobalConfig.lookupLabel,
-    validation: null
+    validation: null,
+    autoSubmit: false,
+    submitTimeOut: 500
 };
 
 /**
@@ -312,12 +314,18 @@ class FormConfig
             {
                 //console.log("SET FIELD VALUE", this.root, name, converted);
                 setFormValueAction(this.root, qualifiedName, converted);
+
+                if (this.options.autoSubmit)
+                {
+                    this.ctx.debouncedSubmit();
+                }
             }
 
             if (changedErrors)
             {
                 this.ctx.setErrors(changedErrors);
             }
+
         }
         catch(e)
         {

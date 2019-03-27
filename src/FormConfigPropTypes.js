@@ -41,6 +41,15 @@ export default {
     /**
      * High-level validation configuration object
      */
-    validation: PropTypes.object
+    validation: PropTypes.object,
 
+    /**
+     * Whether the form automatically does a (debounced) submit on every change.
+     */
+    autoSubmit: PropTypes.bool,
+
+    /**
+     * Timeout in milliseconds for submit debouncing.
+     */
+    submitTimeOut: PropTypes.number
 }

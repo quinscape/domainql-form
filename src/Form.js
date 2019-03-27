@@ -3,12 +3,14 @@ import cx from "classnames"
 import { createViewModel } from "mobx-utils"
 
 import PropTypes from "prop-types"
-import FormConfig, { FormConfigContext } from "./FormConfig";
+import FormConfig, { DEFAULT_OPTIONS, FormConfigContext } from "./FormConfig";
 import InputSchema from "./InputSchema";
 
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import useFormConfig from "./useFormConfig";
 import FormLayout from "./FormLayout";
+
+import useDebouncedCallback from "use-debounce/lib/callback"
 
 function getSchema(formConfig, props)
 {
@@ -28,16 +30,50 @@ function getSchema(formConfig, props)
 /**
  * Internal context object used between Form and FormConfig
  *
- * @param setRoot           changes the form root object (type must match!)
- * @param setErrors         changes the form errors
- * @param submit      triggers a Form submit
+ * @param {Function} setRoot                    changes the form root object (type must match!)
+ * @param {Function} setErrors                  changes the form errors
+ * @param {Function} submit                     triggers a Form submit
+ * @param {Function} debouncedSubmit            debounced submission
+ * @param {Function} cancelDebouncedSubmit      cancels any outstanding submissions
+ * 
  * @constructor
  */
-export function InternalContext(setRoot, setErrors, submit)
+export function InternalContext(setRoot, setErrors, submit, debouncedSubmit, cancelDebouncedSubmit)
 {
     this.setRoot = setRoot;
     this.setErrors = setErrors;
     this.submit = submit;
+
+    this.debouncedSubmit = debouncedSubmit;
+    this.cancelDebouncedSubmit = cancelDebouncedSubmit;
+}
+
+
+/**
+ * Evaluates the value of the given options from the given options, parent options or if neither of them provides an option
+ * from DEFAULT_OPTIONS.
+ *
+ * This awkward method is needed in some cases to prevent a cyclic dependency between hooks.
+ *
+ * @param {String} name                 option name
+ * @param {Object} [options]            optional options object
+ * @param {Object} [parentOptions]      optional parent options object
+ * @return {number}
+ */
+function getOption(name, options, parentOptions)
+{
+    if (options && options[name] !== undefined)
+    {
+        return options[name];
+    }
+    else if (parentOptions && parentOptions[name] !== undefined)
+    {
+        return parentOptions[name];
+    }
+    else
+    {
+        return DEFAULT_OPTIONS[name];
+    }
 }
 
 
@@ -55,12 +91,10 @@ const Form  = props =>  {
 
     const isLocalType = typeof type === "object";
 
-
     const handleSubmit = useCallback(
         ev => {
-
+            
             ev && ev.preventDefault();
-
 
             if (onSubmit)
             {
@@ -74,6 +108,16 @@ const Form  = props =>  {
         [ root, onSubmit ]
     );
 
+    const submitTimeOut = getOption("submitTimeOut", options, parentConfig && parentConfig.options);
+
+    const [ debouncedSubmit, cancelDebouncedSubmit ] = useDebouncedCallback(
+        handleSubmit,
+        submitTimeOut,
+        [
+            handleSubmit,
+            submitTimeOut
+        ]
+    );
     const formConfig = useMemo( () => {
 
         const schema = getSchema(parentConfig, props);
@@ -100,7 +144,19 @@ const Form  = props =>  {
             );
         }
 
-        formConfig.setFormContext(isLocalType ? type.name : type, "", root, errors, new InternalContext(setRoot, setErrors, handleSubmit));
+        formConfig.setFormContext(
+            isLocalType ? type.name : type,
+            "",
+            root,
+            errors,
+            new InternalContext(
+                setRoot,
+                setErrors,
+                handleSubmit,
+                debouncedSubmit,
+                cancelDebouncedSubmit
+            )
+        );
 
         return formConfig;
 
