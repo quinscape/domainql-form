@@ -37,6 +37,11 @@ function expectProps(desc, arrayOrObj, propNames)
  */
 export function scalar(name)
 {
+    if (!name)
+    {
+        throw new Error("Need name");
+    }
+
     return (
         {
             "kind": "SCALAR",
