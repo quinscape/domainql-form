@@ -18,7 +18,6 @@ const COMPONENTS = [
             // "../src/FormList.js",
             // "../src/FormSelector.js",
             "../src/GlobalErrors.js",
-            "../src/AutoSubmit.js",
             "./snippets/hooks.md",
             "./snippets/HighOrderComponents.md"
         ]

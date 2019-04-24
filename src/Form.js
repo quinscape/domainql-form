@@ -89,8 +89,6 @@ const Form  = props =>  {
     const [ errors, setErrors] = useState([]);
     const [ root, setRoot] = useState( () => createViewModel(value) );
 
-    const isLocalType = typeof type === "object";
-
     const handleSubmit = useCallback(
         ev => {
             
@@ -118,9 +116,12 @@ const Form  = props =>  {
             submitTimeOut
         ]
     );
+    let didRecreate = true;
     const formConfig = useMemo( () => {
 
         const schema = getSchema(parentConfig, props);
+
+        didRecreate = false;
 
         let formConfig;
         if (parentConfig)
@@ -131,21 +132,19 @@ const Form  = props =>  {
                     ... parentConfig.options,
                     ... options
                 } : parentConfig.options,
-                schema,
-                isLocalType ? type : null
+                schema
             );
         }
         else
         {
             formConfig = new FormConfig(
                 options,
-                schema,
-                isLocalType ? type : null
+                schema
             );
         }
 
         formConfig.setFormContext(
-            isLocalType ? type.name : type,
+            type,
             "",
             root,
             errors,
@@ -160,7 +159,7 @@ const Form  = props =>  {
 
         return formConfig;
 
-    }, [ parentConfig, root, errors, onSubmit, options ]);
+    }, [parentConfig, root, errors, onSubmit, options]);
     
     //console.log("RENDER FORM", formConfig);
 
@@ -226,12 +225,9 @@ Form.propTypes = {
     ]),
 
     /**
-     * form base type (Schema type name or runtime created type structure)
+     * form base type. If it is not defined, a type prop must be given on all Fields.
      */
-    type: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.object
-    ]).isRequired,
+    type: PropTypes.string,
 
     /**
      * initial value (typed GraphQL object)

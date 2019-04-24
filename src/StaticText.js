@@ -14,22 +14,23 @@ const StaticText = props => {
 
     const { name, value, type, schema } = props;
 
-    let result, resultType;
     if (name)
     {
         const path = formConfig.getPath(name);
-        resultType = formConfig.resolveType(path);
-        result = get(value, path);
+        const typeName = type ? type : schema.resolveType(formConfig.type, path).name;
+        const result = get(value, path);
+
+        return (
+            GlobalConfig.renderStatic(typeName, result)
+        );
     }
     else
     {
-        resultType = schema.getType(type);
-        result = value;
+        return (
+            GlobalConfig.renderStatic( type, value)
+        );
     }
 
-    return (
-        GlobalConfig.renderStatic(resultType.name, result)
-    );
 };
 
 StaticText.propTypes = {

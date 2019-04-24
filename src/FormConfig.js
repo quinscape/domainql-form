@@ -88,9 +88,8 @@ class FormConfig
      *
      * @param {Object} opts                     form config options
      * @param {InputSchema|Object} [schema]     Schema (raw data or InputSchema instance)
-     * @param {Object} [localType]              local GraphQL input object definition
      */
-    constructor(opts, schema = null, localType = null)
+    constructor(opts, schema = null)
     {
         if (schema instanceof InputSchema)
         {
@@ -100,8 +99,6 @@ class FormConfig
         {
             this.schema = schema && new InputSchema(schema);
         }
-
-        this.localType = localType;
 
         this.options = {
             ... DEFAULT_OPTIONS,
@@ -244,7 +241,7 @@ class FormConfig
                 // handle NON_NULL fields
                 if (fieldType.kind === NON_NULL && value === "")
                 {
-                    errorsForField.push(this.type + "." + fieldContext.qualifiedName + ":Field Required");
+                    errorsForField.push((this.type || "NONE") + "." + fieldContext.qualifiedName + ":Field Required");
                 }
 
                 const { validation } = this.options;
@@ -333,64 +330,6 @@ class FormConfig
         }
 
     };
-
-
-    /**
-     * Resolves the type of the given name / path expression within the current form.
-     *
-     * @param {String|Array} name   path expression (e.g. "name", "elements.0.name") or array (["name"] or ["elements", 0, "name"])
-     * 
-     * @return {Object} type reference
-     */
-    resolveType(name)
-    {
-        if (this.localType)
-        {
-            const path = toPath(name);
-
-            const inputField = findNamed(this.localType.inputFields, path[0]);
-            if (!inputField)
-            {
-                throw new Error("No field '" + path[0] + "' in local type");
-            }
-
-            if (path.length === 1)
-            {
-                return inputField.type;
-            }
-            
-            const type = unwrapType(inputField.type);
-
-            if (type.kind === LIST)
-            {
-                const elementType = type.ofType;
-                if (path.length === 2)
-                {
-                    return elementType;
-                }
-
-                if (elementType.kind !== INPUT_OBJECT)
-                {
-                    throw new Error("Cannot resolve '" + name + "' from local type: List element type at " + path.slice( 0, 2).join(".") + " is not an input object type");
-                }
-                return this.schema.resolveType(elementType.name, path.slice(2))
-            }
-            else
-            {
-                if (elementType.kind !== INPUT_OBJECT)
-                {
-                    throw new Error("Cannot resolve '" + name + "' from local type: Object type at " + path[0] + " is not an input object type");
-                }
-
-                return this.schema.resolveType(elementType.name, path.slice(1))
-            }
-        }
-        else
-        {
-            return this.schema.resolveType(this.type, name);
-        }
-    }
-
 
     handleBlur = (fieldContext, value) => {
         try

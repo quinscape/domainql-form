@@ -10,6 +10,33 @@ import FieldMode from "./FieldMode"
 import { observer as fnObserver } from "mobx-react-lite"
 import useFormConfig from "./useFormConfig";
 
+import { NON_NULL, SCALAR} from "./kind"
+
+function buildType(type)
+{
+    const nonNull = type.indexOf("!") === type.length - 1;
+
+    if (nonNull)
+    {
+        return {
+            kind: NON_NULL,
+            ofType: {
+                kind: SCALAR,
+                name: type.substr(0, type.length - 1)
+            }
+        };
+    }
+    else
+    {
+        return {
+            kind: SCALAR,
+            name: type
+        };
+    }
+
+}
+
+
 /**
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
  * field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form Customization"](./customization.md) for details)
@@ -23,7 +50,7 @@ const Field = fnObserver(props => {
 
     const fieldContext = useMemo(
         () => {
-            const { id, label, autoFocus, tooltip, placeholder } = props;
+            const { id, label, autoFocus, tooltip, placeholder, type } = props;
 
             const qualifiedName = formConfig.getPath(name);
             const effectiveMode = mode || formConfig.options.mode;
@@ -32,7 +59,7 @@ const Field = fnObserver(props => {
 
             let fieldId;
             let effectiveLabel;
-            const fieldType = formConfig.resolveType(path);
+            const fieldType = type ? buildType(type) : formConfig.schema.resolveType(formConfig.type, path);
 
             if (name && name.length)
             {

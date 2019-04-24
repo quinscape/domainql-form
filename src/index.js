@@ -1,4 +1,3 @@
-import AutoSubmit from "./AutoSubmit"
 import CustomGroup from "./CustomGroup"
 import Field from "./Field"
 import FieldMode from "./FieldMode"
@@ -23,11 +22,8 @@ import useFormConfig from "./useFormConfig"
 import usePrevious from "./usePrevious"
 import FormLayout from "./FormLayout"
 
-import * as Types from "./util/runtimeType"
-
 // noinspection JSUnusedGlobalSymbols
 export {
-    AutoSubmit,
     CustomGroup,
     Field,
     FieldMode,
@@ -50,6 +46,5 @@ export {
     getDisplayName,
     DEFAULT_OPTIONS,
     usePrevious,
-    Types,
     FormLayout
 }

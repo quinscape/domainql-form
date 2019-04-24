@@ -13,7 +13,7 @@ onReset | func | Reset handler. If you define an `onReset` handler, you have to 
 onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. If you define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()` yourself. The default behaviour without `onSubmit` property is to submit the root observable.
 options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
 schema | instance of InputSchema or object | schema to use for this form
-**type** (required) | string or object | form base type (Schema type name or runtime created type structure)
+type | string | form base type. If it is not defined, a type prop must be given on all Fields.
 validation | object | High-level validation configuration object
 **value** (required) | any | initial value (typed GraphQL object)
 ### Simple Form Example
@@ -172,15 +172,6 @@ The error labels are cross-linked with the input fields by name attribute after 
 heading | string | Tag to surround the errors heading with
 headingText | string | Text to use as heading (empty = no heading).
 text | string | Additional text below the headline
-## &lt;AutoSubmit/&gt;
-
-A component that renders no output but causes a debounced auto-submit of the form whenever its content changes.
-
-### Props
-
- Name | Type | Description 
-------|------|-------------
-timeout | number | Debounce timeout in milliseconds.
 # useFormConfig Hook
 
 The preferred form of react component is now a functional component. To receive the current form config object we added
@@ -299,12 +290,14 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 
  Name | Type | Description 
 ------|------|-------------
+autoSubmit | bool | Whether the form automatically does a (debounced) submit on every change.
 currency | string | Currency ISO code for Currency fields
 currencyAddonRight | bool | True if the currency addon is on the right side of the input component.
 labelColumnClass | string | Additional label column class to use if in horizontal mode.
 layout | enum | Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - label to the left of input in layout column "INLINE" - inline field elements without form group element
 lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
 mode | FieldMode value | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
+submitTimeOut | number | Timeout in milliseconds for submit debouncing.
 validation | object | High-level validation configuration object
 wrapperColumnClass | string | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
