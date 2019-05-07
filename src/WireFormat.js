@@ -59,7 +59,6 @@ const DEFAULT_TO_WIRE = {
     //     return null
     // },
     "Timestamp": function (v) {
-        normDate(v);
         return v && v.toISOString();
     }
 
