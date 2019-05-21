@@ -133,7 +133,6 @@ labelClass | string | Additional HTML classes for the label element.
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
 onChange | func | Local change handler. can call ev.preventDefault() to cancel change.
-placeholder | string | Placeholder text to render for the empty text area.
 required | bool | If true, the user must select one of the given values, if false, the user will also be given an empty option.
 title | string | Title attribute
 **values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option. The values can be either a string or an object with `name` and `value` property.
