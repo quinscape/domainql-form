@@ -20,6 +20,7 @@ const FormGroup = props => {
         label,
         helpText,
         labelClass,
+        formGroupClass,
         errorMessages,
         mode,
         children
@@ -88,7 +89,8 @@ const FormGroup = props => {
             cx(
                 "form-group",
                 horizontal ? "form-row" : null,
-                haveErrors && "has-error"
+                haveErrors && "has-error",
+                formGroupClass
             )
         }>
 

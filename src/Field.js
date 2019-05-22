@@ -46,7 +46,7 @@ const Field = fnObserver(props => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, children } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, children } = props;
 
     const fieldContext = useMemo(
         () => {
@@ -87,6 +87,7 @@ const Field = fnObserver(props => {
                 placeholder,
                 inputClass,
                 labelClass,
+                formGroupClass,
                 tooltip,
 
                 mode: effectiveMode,
@@ -182,6 +183,11 @@ Field.propTypes = {
      * Additional HTML classes for the label element.
      */
     labelClass: PropTypes.string,
+
+    /**
+     * Additional HTML classes for the form group element.
+     */
+    formGroupClass: PropTypes.string,
 
     /**
      * Optional change handler to use

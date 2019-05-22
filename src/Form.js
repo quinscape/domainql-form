@@ -187,7 +187,7 @@ const Form  = props =>  {
             }
             onSubmit={ handleSubmit }
             onReset={ handleReset }
-            onClick={ onClick }
+            onClick={ onClick || null }
         >
             <FormConfigContext.Provider value={ formConfig }>
                 {
