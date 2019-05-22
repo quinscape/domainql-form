@@ -596,7 +596,7 @@ describe("Form", function () {
     });
 
 
-    it("works based on runtime generated types", function () {
+    it("works without predefined type", function () {
 
         let renderSpy = sinon.spy();
 
