@@ -1,5 +1,5 @@
 import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT } from "./kind";
-import { observable } from "mobx";
+import { observable, action } from "mobx";
 
 function getType(type, obj)
 {
@@ -253,7 +253,15 @@ export default class WireFormat {
      *
      * @return {*} JavaScript value
      */
+    @action
     convert(typeRef, value, fromWire, aliases, path = "")
+    {
+        //console.log({typeRef, value, fromWire, aliases, path});
+
+        return this._convert(typeRef, value, fromWire, aliases, path);
+    }
+    
+    _convert(typeRef, value, fromWire, aliases, path)
     {
         if (typeRef.kind === NON_NULL)
         {
@@ -262,7 +270,7 @@ export default class WireFormat {
                 throw new Error("NON_NULL value is null: typeRef = " + JSON.stringify(typeRef) + ", value = " + JSON.stringify(value));
             }
 
-            return this.convert(typeRef.ofType, value, fromWire, aliases, path);
+            return this._convert(typeRef.ofType, value, fromWire, aliases, path);
         }
 
         if (typeRef.kind === SCALAR)
@@ -360,7 +368,7 @@ export default class WireFormat {
                 for (let j = 0; j < value.length; j++)
                 {
                     //console.log("CONVERT ELEMENT", elementType, value[j], fromWire);
-                    out[j] = this.convert(elementType, value[j], fromWire, aliases, path);
+                    out[j] = this._convert(elementType, value[j], fromWire, aliases, path);
                 }
                 return out;
             }
