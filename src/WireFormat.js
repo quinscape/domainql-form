@@ -309,6 +309,7 @@ export default class WireFormat {
                     if (TypeClass && !hasAliases(aliases, path))
                     {
                         out = new TypeClass();
+                        //console.log("Create new instance of ", TypeClass, "=>", out);
                     }
                     else
                     {
@@ -325,12 +326,6 @@ export default class WireFormat {
                 if (fromWire)
                 {
                     out._type = typeName;
-
-                    if (needsWrapping && this.opts.wrapAsObservable)
-                    {
-                        //console.log("Wrap as observable", out)
-                        out = observable(out);
-                    }
                 }
 
 
@@ -347,9 +342,19 @@ export default class WireFormat {
                     if (fieldValue !== undefined)
                     {
                         //console.log("CONVERT FIELD", name, type, fieldValue, fromWire)
-                        out[propName] = this.convert(type, fieldValue, fromWire, aliases, pathForField);
+                        out[propName] = this._convert(type, fieldValue, fromWire, aliases, pathForField);
                     }
                 }
+
+                if (fromWire && this.opts.wrapAsObservable)
+                {
+                    if (needsWrapping)
+                    {
+                        // console.log("Wrap as observable", out)
+                        out = observable(out);
+                    }
+                }
+
                 return out;
             }
             return null;
