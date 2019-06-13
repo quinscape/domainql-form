@@ -98,9 +98,9 @@ TextArea.propTypes = {
      */
     helpText: PropTypes.string,
     /**
-     * Title attribute
+     * Tooltip / title attribute
      */
-    title: PropTypes.string,
+    tooltip: PropTypes.string,
     /**
      * Label for the field.
      */

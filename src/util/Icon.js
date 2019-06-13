@@ -8,11 +8,12 @@ import PropTypes from "prop-types"
  */
 const Icon = props =>  {
     
-    const { className, brand , ... rest} = props;
+    const { className, brand, tooltip, ... rest} = props;
 
     return (
         <i
             { ... rest }
+            title={ tooltip }
             className={
                 cx( brand ? "fab" : "fas", className)
             }
@@ -22,7 +23,7 @@ const Icon = props =>  {
 
 Icon.propTypes = {
     className: PropTypes.string.isRequired,
-    title: PropTypes.string,
+    tooltip: PropTypes.string,
     brand: PropTypes.bool
 };
 

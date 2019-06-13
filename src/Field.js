@@ -162,9 +162,9 @@ Field.propTypes = {
      */
     helpText: PropTypes.string,
     /**
-     * Title attribute
+     * Tooltip / title attribute for the input element
      */
-    title: PropTypes.string,
+    tooltip: PropTypes.string,
     /**
      * Label for the field.
      */

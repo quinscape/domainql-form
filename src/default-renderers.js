@@ -63,7 +63,7 @@ const DEFAULT_RENDERERS =
 
             render: (formConfig, ctx) =>  {
 
-                const { fieldType, mode, fieldId, inputClass, label, labelClass, title, path, qualifiedName, handleChange, handleBlur } = ctx;
+                const { fieldType, mode, fieldId, inputClass, label, labelClass, tooltip, path, qualifiedName, handleChange, handleBlur } = ctx;
 
                 // no need to convert
                 const fieldValue =  formConfig.getValue(path);
@@ -106,7 +106,7 @@ const DEFAULT_RENDERERS =
                                 name={ qualifiedName }
                                 className={ cx(inputClass, "form-check-input") }
                                 type="checkbox"
-                                title={ title }
+                                title={ tooltip }
                                 checked={ fieldValue }
                                 onChange={ handleChange }
                                 onBlur={ handleBlur }
@@ -149,7 +149,7 @@ const DEFAULT_RENDERERS =
                     mode,
                     inputClass,
                     fieldType,
-                    title,
+                    tooltip,
                     path,
                     qualifiedName,
                     handleChange,
@@ -175,7 +175,7 @@ const DEFAULT_RENDERERS =
                             id={ fieldId }
                             name={ qualifiedName }
                             className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
-                            title={ title }
+                            title={ tooltip }
                             disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
                             value={ fieldValue }
                             onChange={ handleChange }

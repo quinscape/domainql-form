@@ -74,6 +74,7 @@ field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form C
  Name | Type | Description 
 ------|------|-------------
 autoFocus | bool | Pass-through autoFocus attribute for text inputs
+formGroupClass | string | Additional HTML classes for the form group element.
 helpText | string | Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
 inputClass | string | Additional HTML classes for the input element.
 label | string | Label for the field.
@@ -83,7 +84,7 @@ mode | FieldMode value | Mode for this field. If not set or set to null, the mod
 onBlur | func | Optional blur handler to use
 onChange | func | Optional change handler to use
 placeholder | string | Placeholder text to render for text inputs.
-title | string | Title attribute
+tooltip | string | Tooltip / title attribute for the input element
 ### FieldMode
 
 FieldMode is a Javascript enum that controls the render mode of all fields
@@ -117,7 +118,7 @@ mode | FieldMode value | Mode for this field. If not set or set to null, the mod
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
 placeholder | string | Placeholder text to render for the empty text area.
 rows | number | Rows attribute for the textarea element (default is 3)
-title | string | Title attribute
+tooltip | string | Tooltip / title attribute
 ## &lt;Select/&gt;
 
 Allows selection from a list of string values for a target field.
@@ -134,7 +135,7 @@ mode | FieldMode value | Mode for this field. If not set or set to null, the mod
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
 onChange | func | Local change handler. can call ev.preventDefault() to cancel change.
 required | bool | If true, the user must select one of the given values, if false, the user will also be given an empty option.
-title | string | Title attribute
+tooltip | string | Title attribute
 **values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option. The values can be either a string or an object with `name` and `value` property.
 ### &lt;Select/&gt; example
 

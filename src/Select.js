@@ -65,7 +65,7 @@ const Select = props => {
                 (formConfig, fieldContext) => {
                     //console.log("render Select", fieldContext);
 
-                    const { fieldId, fieldType, mode, path, qualifiedName, onBlur, autoFocus } = fieldContext;
+                    const { fieldId, fieldType, mode, path, qualifiedName, onBlur, autoFocus, tooltip } = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
                     const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
@@ -106,6 +106,7 @@ const Select = props => {
                                         onChange={ev => handleChange(fieldContext, ev)}
                                         onBlur={onBlur}
                                         autoFocus={autoFocus}
+                                        title={ tooltip }
                                     >
                                         {
                                             !required && <option key="" value="">{noneText}</option>
@@ -168,7 +169,7 @@ Select.propTypes = {
     /**
      * Title attribute
      */
-    title: PropTypes.string,
+    tooltip: PropTypes.string,
 
     /**
      * Label for the field.
