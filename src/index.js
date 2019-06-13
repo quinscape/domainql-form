@@ -21,6 +21,8 @@ import { DEFAULT_OPTIONS } from "./FormConfig"
 import useFormConfig from "./useFormConfig"
 import usePrevious from "./usePrevious"
 import FormLayout from "./FormLayout"
+import unwrapType from "./util/unwrapType";
+
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -46,5 +48,6 @@ export {
     getDisplayName,
     DEFAULT_OPTIONS,
     usePrevious,
-    FormLayout
+    FormLayout,
+    unwrapType
 }
