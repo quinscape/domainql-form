@@ -18,7 +18,6 @@
         "use-debounce": "^1.1.1"
     },
     "devDependencies": {
-        "@babel/cli": "^7.4.4",
         "@babel/core": "^7.4.5",
         "@babel/plugin-proposal-class-properties": "^7.4.4",
         "@babel/plugin-proposal-decorators": "^7.4.4",
@@ -29,19 +28,16 @@
         "babel-plugin-espower": "^3.0.1",
         "babel-plugin-transform-decorators-legacy": "^1.3.5",
         "babel-plugin-transform-imports": "^1.5.1",
-
         "bignumber.js": "^8.0.2",
         "cross-env": "^5.1.4",
         "formik": "^1.5.0",
         "jsdom": "^13.2.0",
         "jsdom-global": "^3.0.2",
-
         "mobx": "^5.9.4",
         "mobx-react": "^5.4.4",
         "mobx-react-devtools": "^6.1.1",
         "mobx-react-lite": "^1.3.2",
         "mobx-utils": "^5.4.0",
-
         "mocha": "^5.1.1",
         "mocha-param": "^2.0.0",
         "power-assert": "^1.5.0",
@@ -58,7 +54,7 @@
         "prepublish": "cross-env NODE_ENV=production babel src --out-dir lib",
         "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir lib",
         "test": "cross-env BABEL_ENV=test mocha -r @babel/register -r ./test/setup.js -R spec test/",
-        "build-docs": "babel-node tooling/build-ref.js"
+        "build-docs": "node -r @babel/register tooling/build-ref.js"
     },
     "peerDependencies": {
         "mobx": "^5.9.4",
@@ -66,7 +62,6 @@
         "mobx-react-devtools": "^6.1.1",
         "mobx-react-lite": "^1.3.2",
         "mobx-utils": "^5.4.0",
-
         "prop-types": "^15.6.1",
         "react": "^16.8.3"
     }
