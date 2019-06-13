@@ -241,7 +241,7 @@ class FormConfig
                 // handle NON_NULL fields
                 if (fieldType.kind === NON_NULL && value === "")
                 {
-                    errorsForField.push((this.type || "NONE") + "." + fieldContext.qualifiedName + ":Field Required");
+                    errorsForField.push((this.type ? this.type + "." : "") + fieldContext.qualifiedName + ":Field Required");
                 }
 
                 const { validation } = this.options;

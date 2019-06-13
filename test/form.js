@@ -663,7 +663,7 @@ describe("Form", function () {
             formConfig2.getErrors("field1"),
             [
                 "",
-                "NONE.field1:Field Required"
+                "field1:Field Required"
             ]
         );
 
