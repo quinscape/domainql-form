@@ -291,12 +291,22 @@ class InputSchema
 
     static validate(scalarType, value)
     {
+        if (value === "")
+        {
+            return "";
+        }
+
         const fn = handlerFn(scalarType, "validate");
         return fn ? fn(value) : ""
     }
 
     static scalarToValue(scalarType, value)
     {
+        if (value === null)
+        {
+            return "";
+        }
+
         const fn = handlerFn(scalarType, "scalarToValue");
         const result = (fn ? fn(value) : value);
         return result || ""
@@ -304,6 +314,12 @@ class InputSchema
 
     static valueToScalar(scalarType, value)
     {
+        if (value === "")
+        {
+
+            return null;
+        }
+
         const fn = handlerFn(scalarType, "valueToScalar");
         return fn ? fn(value) : value
     }

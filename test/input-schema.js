@@ -44,7 +44,7 @@ describe("InputSchema", function () {
         //console.log(converted);
 
         assert( converted.name === "Address");
-        assert( converted.description === "");
+        assert( converted.description === null);
         assert( converted.fields.length === 6);
         assert( converted.fields[0].name === "id");
         assert( converted.primaryKey.fields.length === 1);
