@@ -36,7 +36,7 @@ export const FormConfigContext = React.createContext(null);
 const EMPTY = [];
 
 /**
- @typedef Error
+ @typedef FormError
  @type {object}
  @property {string} path                    name/path
  @property {Array<String>} errorMessages    error messages, first value is original user-provided value
@@ -45,7 +45,7 @@ const EMPTY = [];
 /**
  * Finds the error with the given path
  *
- * @param {Array<Error>} errors     errors
+ * @param {Array<FormError>} errors     errors
  * @param {String} path             name/path
  * @return {number} index of the error
  */
@@ -196,7 +196,7 @@ class FormConfig
      * field with error.
      *
      * @param {String} path     name/path
-     * @param {Array<Error>} errorMessages
+     * @param {Array<FormError>} errorMessages
      * @return {*}
      */
     getValue(path, errorMessages = this.getErrors(path))
