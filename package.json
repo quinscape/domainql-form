@@ -7,6 +7,7 @@
     "author": "Sven Helmberger",
     "license": "Apache-2.0",
     "dependencies": {
+        "@babel/cli": "^7.4.4",
         "cartesian": "^1.0.1",
         "classnames": "^2.2.5",
         "lodash.debounce": "^4.0.8",
