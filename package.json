@@ -7,18 +7,18 @@
     "author": "Sven Helmberger",
     "license": "Apache-2.0",
     "dependencies": {
-        "@babel/cli": "^7.4.4",
-        "cartesian": "^1.0.1",
         "classnames": "^2.2.5",
         "lodash.debounce": "^4.0.8",
         "lodash.get": "^4.4.2",
         "lodash.isequal": "^4.5.0",
         "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
-        "prop-types": "^15.7.1",
-        "use-debounce": "^1.1.1"
+        "prop-types": "^15.7.2  ",
+        "use-debounce": "^2.1.0"
     },
     "devDependencies": {
+        "cartesian": "^1.0.1",
+        "@babel/cli": "^7.4.4",
         "@babel/core": "^7.4.5",
         "@babel/plugin-proposal-class-properties": "^7.4.4",
         "@babel/plugin-proposal-decorators": "^7.4.4",
@@ -34,15 +34,15 @@
         "formik": "^1.5.0",
         "jsdom": "^13.2.0",
         "jsdom-global": "^3.0.2",
-        "mobx": "^5.9.4",
+        "mobx": "^5.10.1",
         "mobx-react": "^5.4.4",
         "mobx-react-devtools": "^6.1.1",
-        "mobx-react-lite": "^1.3.2",
-        "mobx-utils": "^5.4.0",
+        "mobx-react-lite": "^1.4.0",
+        "mobx-utils": "^5.4.1",
+        "react": "^16.8.6",
         "mocha": "^5.1.1",
         "mocha-param": "^2.0.0",
         "power-assert": "^1.5.0",
-        "react": "^16.8.3",
         "react-docgen": "^3.0.0",
         "react-dom": "^16.8.3",
         "react-reconciler": "^0.19.1",
@@ -58,12 +58,12 @@
         "build-docs": "node -r @babel/register tooling/build-ref.js"
     },
     "peerDependencies": {
-        "mobx": "^5.9.4",
+        "mobx": "^5.10.1",
         "mobx-react": "^5.4.4",
         "mobx-react-devtools": "^6.1.1",
-        "mobx-react-lite": "^1.3.2",
-        "mobx-utils": "^5.4.0",
-        "prop-types": "^15.6.1",
-        "react": "^16.8.3"
+        "mobx-react-lite": "^1.4.0",
+        "mobx-utils": "^5.4.1",
+        "prop-types": "^15.7.2",
+        "react": "^16.8.6"
     }
 }
