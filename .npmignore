@@ -1,7 +1,6 @@
 .babelrc
 .idea
 docs
-src
 synch.sh
 test
 tooling
