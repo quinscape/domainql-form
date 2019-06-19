@@ -11,6 +11,7 @@ import cx from "classnames";
 import { resolveStaticRenderer } from "./GlobalConfig"
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
+import { useFormConfig } from "./index";
 
 
 function findLabelForValue(values, value)
@@ -32,11 +33,42 @@ function findLabelForValue(values, value)
     return GlobalConfig.none();
 }
 
+function findOptionValue(selectElem, stringValue, values)
+{
+    let index = 0;
+    let elem = selectElem.firstChild;
+    while(elem)
+    {
+        if (elem.value !== "")
+        {
+            if (elem.value === stringValue)
+            {
+                const listOption = values[index];
+                if (typeof listOption === "string")
+                {
+                    return listOption;
+                }
+                else
+                {
+                    return listOption.value;
+                }
+            }
+            index++;
+        }
+        elem = elem.nextSibling;
+    }
+    return null;
+}
+
 
 /**
  * Allows selection from a list of string values for a target field.
  */
 const Select = props => {
+
+    const { values, inputClass, required, ... fieldProps} = props;
+
+    const formConfig = useFormConfig();
 
     const handleChange = (fieldContext, ev) => {
 
@@ -49,11 +81,19 @@ const Select = props => {
 
         if (!ev.isDefaultPrevented())
         {
-            return fieldContext.handleChange(ev);
+            const { value } = ev.target;
+
+
+            const scalarValue = findOptionValue(ev.target, value, values);
+
+            const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue);
+
+            //console.log("Select handleChange", scalarValue, "=>", converted);
+
+            return formConfig.handleChange(fieldContext, converted);
         }
     };
 
-    const { values, inputClass, required, ... fieldProps} = props;
 
 
     return (
@@ -73,6 +113,8 @@ const Select = props => {
                     const noneText = GlobalConfig.none();
 
                     const isPlainText = mode === FieldMode.PLAIN_TEXT;
+
+                    //console.log("SELECT", qualifiedName, fieldValue, typeof fieldValue);
 
                     return (
                         <FormGroup

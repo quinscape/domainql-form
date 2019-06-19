@@ -1,10 +1,9 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM, getByLabelText, queryByLabelText } from "react-testing-library"
+import { cleanup, fireEvent, getByLabelText, queryByLabelText, render } from "react-testing-library"
 
 import assert from "power-assert"
 
 import getSchema from "./util/getSchema"
-import InputSchema from "../src/InputSchema";
 
 import sinon from "sinon"
 import Form from "../src/Form";
@@ -16,9 +15,8 @@ import { observable } from "mobx";
 import itParam from "mocha-param"
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
-import Field from "./field";
-import userEvent from "user-event";
 import dumpUsage from "./util/dumpUsage";
+
 
 describe("Select", function (){
 
@@ -393,4 +391,238 @@ describe("Select", function (){
 
     });
 
+
+    it("supports boolean values", function() {
+
+        GlobalConfig.registerNoneText("---");
+
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                value={ formRoot }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select name="required" values={
+                                [
+                                    {
+                                        name: "True",
+                                        value: true
+                                    },
+                                    {
+                                        name: "False",
+                                        value: false
+                                    }
+                                ]
+                            }/>
+                        );
+                    }
+                }
+            </Form>
+        );
+        //console.log(prettyDOM(container))
+
+        const select = getByLabelText(container, "required");
+        assert(select.value === "true");
+        assert(!select.disabled);
+
+        // select to false
+
+        fireEvent.change(select, {
+            target: {
+                value : "false"
+            }
+        });
+
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  opt => opt.innerHTML + "=" + opt.value);
+
+        assert.deepEqual(options, ["---=","True=true","False=false"]);
+
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig.root.required === false);
+
+        // back to true
+
+        fireEvent.change(select, {
+            target: {
+                value : "true"
+            }
+        });
+
+        const fc2 = renderSpy.lastCall.args[0];
+
+        assert(fc2.root.required === true);
+
+
+        // XXX: Setting the value back to "" does not seem to work in jsdom.
+        //  the commented code below fails because required stays true. works fine in browsers.
+        // // to "---"
+        //
+        // fireEvent.change(select, {
+        //     target: {
+        //         value : ""
+        //     }
+        // });
+        //
+        // const fc3 = renderSpy.lastCall.args[0];
+        //
+        // assert(fc3.root.required === null);
+
+        // back to false
+
+        fireEvent.change(select, {
+            target: {
+                value : "false"
+            }
+        });
+        const fc4 = renderSpy.lastCall.args[0];
+
+        assert(fc4.root.required === false);
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        assert(formRoot.required === false);
+    });
+
+
+    it("supports number values", function() {
+
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "AAA",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                value={ formRoot }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Select name="maxLength" values={
+                                [
+                                    {
+                                        name: "Not set",
+                                        value: -1
+                                    },
+                                    {
+                                        name: "100",
+                                        value: 100
+                                    },
+                                    {
+                                        name: "255",
+                                        value: 255
+                                    }
+                                ]
+                            }
+                            required={ true }
+                            />
+                        );
+                    }
+                }
+            </Form>
+        );
+        //console.log(prettyDOM(container))
+
+        const select = getByLabelText(container, "maxLength");
+        assert(select.value === "-1");
+        assert(!select.disabled);
+
+        // select 100
+
+        fireEvent.change(select, {
+            target: {
+                value : "100"
+            }
+        });
+
+        const options = Array.prototype.map.call( select.querySelectorAll("option"),  opt => opt.innerHTML + "=" + opt.value);
+
+        assert.deepEqual(options, ["Not set=-1","100=100","255=255"]);
+
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig.root.maxLength === 100);
+
+
+        // back to -1
+
+        fireEvent.change(select, {
+            target: {
+                value : "-1"
+            }
+        });
+
+        const fc2 = renderSpy.lastCall.args[0];
+
+        assert(fc2.root.maxLength === -1);
+
+
+        fireEvent.change(select, {
+            target: {
+                value : "255"
+            }
+        });
+        const fc4 = renderSpy.lastCall.args[0];
+
+        assert(fc4.root.maxLength === 255);
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        assert(formRoot.maxLength === 255);
+    })
 });

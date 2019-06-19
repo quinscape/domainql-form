@@ -3,6 +3,7 @@ import toPath from "lodash.topath"
 import DEFAULT_CONVERTERS from "./default-converters"
 import { INPUT_OBJECT, LIST, NON_NULL, SCALAR } from "./kind";
 
+
 export function findNamed(array, name)
 {
     for (let i = 0; i < array.length; i++)
@@ -308,8 +309,7 @@ class InputSchema
         }
 
         const fn = handlerFn(scalarType, "scalarToValue");
-        const result = (fn ? fn(value) : value);
-        return result || ""
+        return fn ? fn(value) : value
     }
 
     static valueToScalar(scalarType, value)
