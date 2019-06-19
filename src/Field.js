@@ -205,5 +205,6 @@ Field.propTypes = {
     autoFocus: PropTypes.bool
 };
 
+Field.displayName = "Field";
 
 export default Field;
