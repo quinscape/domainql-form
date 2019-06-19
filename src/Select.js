@@ -14,7 +14,17 @@ import unwrapType from "./util/unwrapType";
 import { useFormConfig } from "./index";
 
 
-function findLabelForValue(values, value)
+/**
+ * Finds the display name for the given value.
+ *
+ * @param {Array<object>} values        row objects
+ * @param value                         value
+ * @param {String} nameProperty         name property
+ * @param {String} valueProperty        value property
+ * 
+ * @return {string} display name
+ */
+function findDisplayNameForValue(values, value, nameProperty, valueProperty)
 {
     for (let i = 0; i < values.length; i++)
     {
@@ -23,25 +33,39 @@ function findLabelForValue(values, value)
         {
             return v;
         }
-        else if (v.value === value)
+        else if (v[valueProperty] === value)
         {
 
-            return v.name;
+            return v[nameProperty];
         }
     }
 
     return GlobalConfig.none();
 }
 
-function findOptionValue(selectElem, stringValue, values)
+
+/**
+ * Finds the original scalar value from the row objects based on the
+ * current string value of the select element.
+ *
+ * @param {HTMLElement} selectElem      select element
+ * @param {Array<object>} values        row objects
+ * @param {String} valueProperty        value property
+ *
+ * @return {*} row object value
+ */
+function findOptionValue(selectElem, values, valueProperty)
 {
+
+    const { value } = selectElem;
+
     let index = 0;
-    let elem = selectElem.firstChild;
-    while(elem)
+    let optionElem = selectElem.firstChild;
+    while(optionElem)
     {
-        if (elem.value !== "")
+        if (optionElem.value !== "")
         {
-            if (elem.value === stringValue)
+            if (optionElem.value === value)
             {
                 const listOption = values[index];
                 if (typeof listOption === "string")
@@ -50,12 +74,12 @@ function findOptionValue(selectElem, stringValue, values)
                 }
                 else
                 {
-                    return listOption.value;
+                    return listOption[valueProperty];
                 }
             }
             index++;
         }
-        elem = elem.nextSibling;
+        optionElem = optionElem.nextSibling;
     }
     return null;
 }
@@ -66,7 +90,7 @@ function findOptionValue(selectElem, stringValue, values)
  */
 const Select = props => {
 
-    const { values, inputClass, required, ... fieldProps} = props;
+    const { values, inputClass, required, nameProperty, valueProperty, ... fieldProps} = props;
 
     const formConfig = useFormConfig();
 
@@ -81,10 +105,7 @@ const Select = props => {
 
         if (!ev.isDefaultPrevented())
         {
-            const { value } = ev.target;
-
-
-            const scalarValue = findOptionValue(ev.target, value, values);
+            const scalarValue = findOptionValue(ev.target, values, valueProperty);
 
             const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue);
 
@@ -129,7 +150,7 @@ const Select = props => {
                                         className="form-control-plaintext"
                                     >
                             {
-                                findLabelForValue(values, fieldValue)
+                                findDisplayNameForValue(values, fieldValue, nameProperty, valueProperty)
                             }
                         </span>
                                 ) : (
@@ -164,8 +185,8 @@ const Select = props => {
                                                 }
                                                 else
                                                 {
-                                                    name = v.name;
-                                                    value = v.value;
+                                                    name = v[nameProperty];
+                                                    value = v[valueProperty];
                                                 }
 
                                                 return (
@@ -243,11 +264,23 @@ Select.propTypes = {
     /**
      * If true, the user must select one of the given values, if false, the user will also be given an empty option.
      */
-    required: PropTypes.bool
+    required: PropTypes.bool,
+
+    /**
+     * Property of the row values to use as display name (default: "name")
+     */
+    nameProperty: PropTypes.string,
+
+    /**
+     * Property of the row values to use as value. Values can be string, number or boolean.  (default: "value")
+     */
+    valueProperty: PropTypes.string
 };
 
 Select.defaultProps = {
-    required: false
+    required: false,
+    nameProperty: "name",
+    valueProperty: "value"
 };
 
 export default Select

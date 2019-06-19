@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, getByLabelText, queryByLabelText, render } from "react-testing-library"
+import { cleanup, fireEvent, getByLabelText, queryByLabelText, getBySelectText, render } from "react-testing-library"
 
 import assert from "power-assert"
 
@@ -517,6 +517,7 @@ describe("Select", function (){
 
     it("supports number values", function() {
 
+
         const renderSpy = sinon.spy();
 
         /*
@@ -557,11 +558,11 @@ describe("Select", function (){
                                         value: -1
                                     },
                                     {
-                                        name: "100",
+                                        name: "M:100",
                                         value: 100
                                     },
                                     {
-                                        name: "255",
+                                        name: "M:255",
                                         value: 255
                                     }
                                 ]
@@ -589,11 +590,12 @@ describe("Select", function (){
 
         const options = Array.prototype.map.call( select.querySelectorAll("option"),  opt => opt.innerHTML + "=" + opt.value);
 
-        assert.deepEqual(options, ["Not set=-1","100=100","255=255"]);
+        assert.deepEqual(options, ["Not set=-1","M:100=100","M:255=255"]);
 
 
         const formConfig = renderSpy.lastCall.args[0];
 
+        assert(getBySelectText(container, "M:100"));
         assert(formConfig.root.maxLength === 100);
 
 
@@ -607,6 +609,7 @@ describe("Select", function (){
 
         const fc2 = renderSpy.lastCall.args[0];
 
+        assert(getBySelectText(container, "Not set"));
         assert(fc2.root.maxLength === -1);
 
 
@@ -617,6 +620,7 @@ describe("Select", function (){
         });
         const fc4 = renderSpy.lastCall.args[0];
 
+        assert(getBySelectText(container, "M:255"));
         assert(fc4.root.maxLength === 255);
 
         fireEvent.submit(
