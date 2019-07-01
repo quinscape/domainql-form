@@ -214,6 +214,17 @@ const GlobalConfig = {
 
     none: function () {
         return noneText;
+    },
+
+    /**
+     * Returns the given value or the current none configuration.
+     *
+     * @param value     value
+     * @return {string} value or none() if the value was null, undefined or an empty string
+     */
+    valueOrNone: function(value)
+    {
+        return String(value === null || value === undefined || value === "" ? noneText : value)
     }
 };
 
