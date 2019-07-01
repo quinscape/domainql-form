@@ -57,9 +57,4 @@ CustomGroup.propTypes = {
     labelClass: PropTypes.string
 };
 
-CustomGroup.defaultProps = {
-    rows: 5,
-    columns: 60
-};
-
 export default CustomGroup
