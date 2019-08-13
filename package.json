@@ -1,6 +1,6 @@
 {
     "name": "domainql-form",
-    "version": "2.2.6",
+    "version": "2.2.7",
     "description": "Form and conversion helpers for GraphQL and mobx",
     "main": "lib/index.js",
     "esnext": "src/index.js",
@@ -13,14 +13,14 @@
         "lodash.isequal": "^4.5.0",
         "lodash.set": "^4.3.2",
         "lodash.topath": "^4.5.2",
-        "use-debounce": "^2.1.0",
         "mobx": "^5.13.0",
         "mobx-react": "^5.4.4",
         "mobx-react-devtools": "^6.1.1",
         "mobx-react-lite": "^1.4.1",
         "mobx-utils": "^5.4.1",
         "prop-types": "^15.7.2",
-        "react": "^16.9.0"
+        "react": "^16.9.0",
+        "use-debounce": "^2.1.0"
     },
     "devDependencies": {
         "@babel/cli": "^7.5.5",
