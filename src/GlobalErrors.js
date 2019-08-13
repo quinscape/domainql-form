@@ -72,13 +72,15 @@ const GlobalErrors = props => {
 
     useEffect(
         () => {
-            if (errors && !errorIdList.length)
+            if (errors.length && !errorIdList.length)
             {
+                console.log("ERRORS", errors);
                 // this only happens if we have form errors in the very first render
                 // so we trigger a rerender so that our <label for=""> references are right even in that case
                 setCounter(counter + 1);
             }
-        }
+        },
+        []
     );
 
     const { heading, headingText, text} = props;
