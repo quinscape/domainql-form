@@ -34,10 +34,10 @@ const FormBlock = props => {
             {
                 formConfig.basePath = basePath;
             }
-            
+
             return formConfig
         },
-        []
+        [ parentConfig ]
     );
 
 
