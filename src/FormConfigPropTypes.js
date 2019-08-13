@@ -51,5 +51,10 @@ export default {
     /**
      * Timeout in milliseconds for submit debouncing.
      */
-    submitTimeOut: PropTypes.number
+    submitTimeOut: PropTypes.number,
+
+    /**
+     * Render no label in inline mode at all. 
+     */
+    suppressLabels: PropTypes.bool
 }

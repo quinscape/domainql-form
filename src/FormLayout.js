@@ -1,7 +1,7 @@
 const FormLayout = {
     DEFAULT : "DEFAULT",
     HORIZONTAL : "HORIZONTAL",
-    INLINE : "INLINE",
+    INLINE : "INLINE"
 };
 
 

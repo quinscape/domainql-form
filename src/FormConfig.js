@@ -24,7 +24,8 @@ export const DEFAULT_OPTIONS = {
     lookupLabel: GlobalConfig.lookupLabel,
     validation: null,
     autoSubmit: false,
-    submitTimeOut: 350
+    submitTimeOut: 350,
+    suppressLabels: false
 };
 
 /**

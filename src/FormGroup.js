@@ -4,6 +4,27 @@ import cx from "classnames"
 import FieldMode from "./FieldMode"
 import FormLayout from "./FormLayout";
 
+
+
+
+export function renderHelpBlock(haveErrors, errorMessages, helpText)
+{
+    let helpBlock = false;
+
+    const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];
+
+    if (formText)
+    {
+        helpBlock = (
+            <p className={cx(haveErrors ? "invalid-feedback" : "text-muted")}>
+                {formText.map((txt, idx) => <span key={idx}> {txt} </span>)}
+            </p>
+        )
+    }
+    return helpBlock;
+}
+
+
 /**
  * Renders a .form-group wrapper from our standard render context. Is used by internally the default field renderers
  * and can be used for implementing custom fields.
@@ -56,33 +77,20 @@ const FormGroup = props => {
             </div>
     );
 
-    let helpBlock = false;
-
     const haveErrors = errorMessages && errorMessages.length > 0;
 
-    const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];
-
-    if (formText)
-    {
-        helpBlock = (
-            <p className={ cx("form-group", haveErrors ? "invalid-feedback" : "text-muted") }>
-                { formText.map( (txt, idx) => <span key={ idx }> { txt } </span>) }
-            </p>
-        )
-    }
+    let helpBlock = renderHelpBlock(haveErrors, errorMessages, helpText);
 
     if (layout === FormLayout.INLINE)
     {
         return (
             <React.Fragment>
-                { labelElement }
+                { !formConfig.options.suppressLabels && labelElement }
                 { children }
                 { helpBlock }
             </React.Fragment>
         )
-
     }
-
 
     return (
         <div className={
@@ -115,7 +123,7 @@ const FormGroup = props => {
 
 FormGroup.propTypes = {
     /**
-     * Marker class for the form group, (default is "form-group")
+     * Additional classes the form group
      */
     formGroupClass: PropTypes.string,
 
@@ -123,10 +131,6 @@ FormGroup.propTypes = {
      * Error messages to render for this form group.
      */
     errorMessages: PropTypes.array
-};
-
-FormGroup.defaultProps = {
-    formGroupClass : "form-group"
 };
 
 export default FormGroup;

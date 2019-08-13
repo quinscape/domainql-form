@@ -22,6 +22,7 @@ import useFormConfig from "./useFormConfig"
 import usePrevious from "./usePrevious"
 import FormLayout from "./FormLayout"
 import unwrapType from "./util/unwrapType";
+import FieldGroup from "./FieldGroup";
 
 
 // noinspection JSUnusedGlobalSymbols
@@ -49,5 +50,6 @@ export {
     DEFAULT_OPTIONS,
     usePrevious,
     FormLayout,
-    unwrapType
+    unwrapType,
+    FieldGroup
 }
