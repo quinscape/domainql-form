@@ -1,6 +1,6 @@
 import React from "react"
 
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "react-testing-library"
 
 import assert from "power-assert"
 
@@ -21,6 +21,7 @@ import FieldMode from "../src/FieldMode";
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import dumpUsage from "./util/dumpUsage";
+import Addon from "../src/Addon";
 
 describe("Field", function () {
 
@@ -504,5 +505,77 @@ describe("Field", function () {
         assert(formConfig.root.name === "From Button");
         assert(formConfig.root.model.name === "MyField");
 
+    })
+
+    it("optionally renders field addons", function () {
+
+        const schema = getSchema();
+
+        const formRoot = observable({
+            name: "MyField",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+
+        {
+
+            const { container } = render(
+                <Form
+                    schema={schema}
+                    type={"DomainFieldInput"}
+                    value={formRoot}
+                >
+                    {
+                        ctx => {
+
+                            return (
+                                <Field name="description">
+                                    <Addon placement={ Addon.LEFT} text={ true}>LEFT</Addon>
+                                    <Addon placement={ Addon.RIGHT} text={ false}>RIGHT</Addon>
+                                </Field>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            const addonLeft = getByText(container, "LEFT");
+            const addonRight = getByText(container, "RIGHT");
+
+            assert(addonLeft.className === "input-group-text");
+            assert(addonLeft.parentNode.className === "input-group-prepend");
+            assert(addonRight.className === "input-group-append");
+        }
+
+        {
+
+            const { container } = render(
+                <Form
+                    schema={schema}
+                    type={"DomainFieldInput"}
+                    value={formRoot}
+                >
+                    {
+                        ctx => {
+
+                            return (
+                                <Field name="description" addons={ [ <Addon placement={ Addon.LEFT} text={ true}>PROP-ADDON</Addon> ] }>
+                                    <Addon placement={ Addon.RIGHT} text={ false}>RIGHT</Addon>
+                                </Field>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            const propAddon = getByText(container, "PROP-ADDON");
+            const addonRight = queryByText(container, "RIGHT");
+
+            // addons array prop works and has precedence over child addons
+            assert(propAddon.className === "input-group-text");
+            assert(propAddon.parentNode.className === "input-group-prepend");
+            assert(!addonRight);
+        }
     })
 });

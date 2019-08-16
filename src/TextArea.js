@@ -9,6 +9,7 @@ import cx from "classnames";
 import { resolveStaticRenderer } from "./GlobalConfig"
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
+import Addon from "./Addon";
 
 
 /**
@@ -18,13 +19,12 @@ import unwrapType from "./util/unwrapType";
  */
 const TextArea = props => {
 
-    const { rows, cols, inputClass, ...fieldProps } = props;
+    const { rows, cols, inputClass, children, ...fieldProps } = props;
 
     return (
         <Field
-            {...fieldProps}
-            rows={null}
-            cols={null}
+            { ...fieldProps }
+            addons={ Addon.filterAddons(children) }
         >
             {
                 (formConfig, fieldContext) => {
@@ -36,6 +36,47 @@ const TextArea = props => {
 
                     const isPlainText = mode === FieldMode.PLAIN_TEXT;
 
+                    let fieldElem;
+                    if (isPlainText)
+                    {
+                        fieldElem = (
+                            <span
+                                id={fieldId}
+                                className="form-control-plaintext"
+                            >
+                                {
+                                    resolveStaticRenderer(fieldContext.fieldType)(fieldValue)
+                                }
+                            </span>
+                        );
+                    }
+                    else
+                    {
+                        fieldElem = Addon.renderWithAddons(
+                            <textarea
+                                id={fieldId}
+                                className={
+                                    cx(
+                                        inputClass,
+                                        "form-control",
+                                        errorMessages.length > 0 && "is-invalid"
+                                    )
+                                }
+                                rows={rows}
+                                cols={cols}
+                                name={qualifiedName}
+                                value={fieldValue}
+                                placeholder={placeholder}
+                                title={tooltip}
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                autoFocus={autoFocus}
+                                disabled={mode === FieldMode.DISABLED}
+                                readOnly={mode === FieldMode.READ_ONLY}
+                            />,
+                            fieldContext.addons
+                        );
+                    }
                     return (
                         <FormGroup
                             {...fieldContext}
@@ -43,38 +84,7 @@ const TextArea = props => {
                             errorMessages={errorMessages}
                         >
                             {
-                                isPlainText ? (
-                                    <span
-                                        id={fieldId}
-                                        className="form-control-plaintext"
-                                    >
-                            {
-                                resolveStaticRenderer(fieldContext.fieldType)(fieldValue)
-                            }
-                        </span>
-                                ) : (
-                                    <textarea
-                                        id={fieldId}
-                                        className={
-                                            cx(
-                                                inputClass,
-                                                "form-control",
-                                                errorMessages.length > 0 && "is-invalid"
-                                            )
-                                        }
-                                        rows={rows}
-                                        cols={cols}
-                                        name={qualifiedName}
-                                        value={fieldValue}
-                                        placeholder={placeholder}
-                                        title={tooltip}
-                                        onChange={handleChange}
-                                        onBlur={handleBlur}
-                                        autoFocus={autoFocus}
-                                        disabled={mode === FieldMode.DISABLED}
-                                        readOnly={mode === FieldMode.READ_ONLY}
-                                    />
-                                )
+                                fieldElem
                             }
                         </FormGroup>
                     )
@@ -127,7 +137,7 @@ TextArea.propTypes = {
     /**
      * Cols attribute for the textarea element (default is 60)
      */
-    cols: PropTypes.number,
+    cols: PropTypes.number
 };
 
 TextArea.defaultProps = {

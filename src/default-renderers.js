@@ -4,13 +4,10 @@ import cx from "classnames"
 import FieldMode from "./FieldMode"
 import InputSchema, { unwrapNonNull } from "./InputSchema"
 import { resolveStaticRenderer } from "./GlobalConfig"
-
-import get from "lodash.get"
-
 import FormGroup from "./FormGroup"
 import unwrapType from "./util/unwrapType";
 import FormLayout from "./FormLayout";
-
+import Addon from "./Addon";
 
 function renderStatic(ctx, fieldValue)
 {
@@ -266,44 +263,21 @@ const DEFAULT_RENDERERS =
                         />
                     );
 
-                    if (fieldType.name === "Currency")
+                    if (fieldType.name === "Currency" && !ctx.addons.length)
                     {
-                        if (currencyAddonRight)
-                        {
-                            fieldElement = (
-                                <div className="input-group mb-3">
-                                    {
-                                        fieldElement
-                                    }
-                                    <span className="input-group-append">
-                                                                          <span className="input-group-text">
-                            {
-                                currency
-                            }
-                                                                                          </span>
-                                                                                          </span>
-                                </div>
-                            );
-                        }
-                        else
-                        {
-
-                            fieldElement = (
-                                <div className="input-group mb-3">
-                                                          <span className="input-group-prepend">
-                                                                          <span className="input-group-text">
-                            {
-                                currency
-                            }
-                                                                                          </span>
-                                                                                          </span>
-                                    {
-                                        fieldElement
-                                    }
-                                </div>
-                            );
-                        }
+                        fieldElement = Addon.renderWithAddons(fieldElement, [
+                            <Addon placement={ currencyAddonRight ? Addon.RIGHT : Addon.LEFT} text={ true}>
+                                {
+                                    currency
+                                }
+                            </Addon>
+                        ]);
                     }
+                    else if ( ctx.addons.length)
+                    {
+                        fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons);
+                    }
+
                 }
 
                 return (

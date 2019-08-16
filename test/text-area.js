@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "react-testing-library"
 
 import assert from "power-assert"
 
@@ -18,6 +18,7 @@ import itParam from "mocha-param"
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import Field from "./field";
+import Addon from "../src/Addon";
 
 describe("TextArea", function (){
 
@@ -173,6 +174,60 @@ describe("TextArea", function (){
                 assert(container.querySelectorAll(".form-group").length === 0)
                 break;
         }
+    });
+
+    it(
+        "optionally renders with addons", function() {
+
+        const renderSpy = sinon.spy();
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "MyField",
+            description: "XXX",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+        const { container } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainFieldInput" }
+                value={ formRoot }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <TextArea
+                                name="description"
+                            >
+                                <Addon placement={ Addon.LEFT }>TA-ADDON</Addon>
+                            </TextArea>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        const addon = getByText(container, "TA-ADDON");
+
+        assert(addon.className === "input-group-prepend")
+
+
     });
 
 });

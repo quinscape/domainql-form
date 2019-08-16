@@ -11,6 +11,7 @@ import { observer as fnObserver } from "mobx-react-lite"
 import useFormConfig from "./useFormConfig";
 
 import { NON_NULL, SCALAR} from "./kind"
+import Addon from "./Addon";
 
 function buildType(type)
 {
@@ -37,6 +38,8 @@ function buildType(type)
 }
 
 
+
+
 /**
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
  * field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form Customization"](./customization.md) for details)
@@ -46,7 +49,7 @@ const Field = fnObserver(props => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps } = props;
 
     const fieldContext = useMemo(
         () => {
@@ -112,7 +115,8 @@ const Field = fnObserver(props => {
                     //console.log("Field.handleBlur", fieldType, name, value);
                     
                     formConfig.handleBlur(newFieldContext, value);
-                }
+                },
+                addons: addonsFromProps || Addon.filterAddons(children)
             };
 
             const { validation } = formConfig.options;
@@ -203,7 +207,13 @@ Field.propTypes = {
     /**
      * Pass-through autoFocus attribute for text inputs
      */
-    autoFocus: PropTypes.bool
+    autoFocus: PropTypes.bool,
+
+    /**
+     * Array of addons as props instead of as children. Only useful if you're writing a component wrapping Field and want
+     * to render your addons as field addons while using the render function form.
+     */
+    addons: PropTypes.array
 };
 
 Field.displayName = "Field";
