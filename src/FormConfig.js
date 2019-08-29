@@ -120,7 +120,7 @@ class FormConfig
      * @param {Array<String>} [errors]          current form errors
      * @param {InternalContext} [internal]      internal context object (see Form.js)
      */
-    setFormContext(type = "", basePath = "", root = null, errors = EMPTY, internal)
+        setFormContext(type = "", basePath = "", root = null, errors = EMPTY, internal)
     {
         //console.log("setFormContext", { type, basePath, root, errors, internal} );
 
@@ -170,6 +170,54 @@ class FormConfig
         }
 
         return EMPTY;
+    }
+
+    addError(path, msg, value)
+    {
+
+        const { errors } = this;
+
+        const newErrors = [];
+
+        let i, existing;
+        for (i = 0; i < errors.length; i++)
+        {
+            existing = errors[i];
+            if (existing.path === path)
+            {
+                break;
+            }
+        }
+
+        if (!existing || i < errors.length)
+        {
+            newErrors.push({
+                    path,
+                    errorMessages: [ value !== undefined ? value : get(this.root, path), msg]
+                }
+            )
+        }
+        else
+        {
+            newErrors[i] = {
+                path,
+                errorMessages: existing.errorMessages.concat(msg)
+            };
+        }
+
+        this.ctx.setErrors(newErrors);
+    }
+
+    removeErrors(path)
+    {
+        const newErrors = this.errors.filter(
+            err => err.path !== path
+        );
+
+        if (newErrors.length < this.errors.length)
+        {
+            this.ctx.setErrors(newErrors);
+        }
     }
 
     listAllErrors()
