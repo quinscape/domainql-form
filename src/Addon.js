@@ -54,6 +54,11 @@ Addon.propTypes = {
      *  if true, the input group children will be additionally wrapped in a <span className="input-group-text">
      */
     text: PropTypes.bool,
+
+    /**
+     * Additional classes to add to the addon element.
+     */
+    className: PropTypes.string,
     /**
      * Placement of the addon relative to the input field.
      */
