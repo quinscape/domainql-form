@@ -1,9 +1,7 @@
 import React from "react"
 import cx from "classnames"
 import PropTypes from "prop-types"
-
-
-
+import { observer as fnObserver } from "mobx-react-lite"
 
 function addAddons(addons, elems, placementToAdd)
 {
@@ -29,7 +27,11 @@ function addAddons(addons, elems, placementToAdd)
 /**
  * Addon component meant to go inside <Field/> or <TextArea/>
  */
-const Addon = ({placement = Addon.LEFT, text, className, children}) => {
+const Addon = fnObserver(({placement = Addon.LEFT, text, className, children}) => {
+
+
+    const kids = typeof children === "function" ? children() : children;
+
     return (
         <div    
             className={
@@ -40,11 +42,11 @@ const Addon = ({placement = Addon.LEFT, text, className, children}) => {
             }
         >
             {
-                text ? ( <span className="input-group-text">{ children }</span>) : children
+                text ? ( <span className="input-group-text">{ kids }</span>) : kids
             }
         </div>
     );
-};
+});
 
 Addon.LEFT = "LEFT";
 Addon.RIGHT = "RIGHT";
