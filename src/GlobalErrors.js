@@ -74,7 +74,7 @@ const GlobalErrors = props => {
         () => {
             if (errors.length && !errorIdList.length)
             {
-                console.log("ERRORS", errors);
+                //console.log("ERRORS", errors);
                 // this only happens if we have form errors in the very first render
                 // so we trigger a rerender so that our <label for=""> references are right even in that case
                 setCounter(counter + 1);
