@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -12,7 +12,7 @@ import Form from "../src/Form";
 import TextArea from "../src/TextArea";
 import FieldMode from "../src/FieldMode";
 import { observable } from "mobx";
-import userEvent from "user-event";
+import userEvent from "@testing-library/user-event";
 
 import itParam from "mocha-param"
 import cartesian from "cartesian";

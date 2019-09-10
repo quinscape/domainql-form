@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, prettyDOM, act } from "react-testing-library"
+import { cleanup, fireEvent, render, prettyDOM, act } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -12,7 +12,7 @@ import FormConfigProvider from "../src/FormConfigProvider";
 import Field from "../src/Field";
 import { observable } from "mobx";
 import viewModelToJs from "./util/viewModelToJs";
-import userEvent from "user-event";
+import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, getByLabelText } from "react-testing-library"
+import { cleanup, fireEvent, render, getByLabelText } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -10,7 +10,7 @@ import Form from "../src/Form";
 import Field from "../src/Field";
 import FieldMode from "../src/FieldMode";
 import { observable } from "mobx";
-import userEvent from "user-event";
+import userEvent from "@testing-library/user-event";
 
 import itParam from "mocha-param"
 import ModeLocation from "./util/ModeLocation";

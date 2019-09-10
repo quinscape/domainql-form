@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM } from "@testing-library/react"
 
 import assert from "power-assert"
 

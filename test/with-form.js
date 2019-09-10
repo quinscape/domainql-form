@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -10,7 +10,7 @@ import sinon from "sinon"
 import Field from "../src/Field";
 import withForm from "../src/withForm";
 import { observable } from "mobx";
-import userEvent from "user-event";
+import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FieldMode from "../src/FieldMode";
 

@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, getByLabelText, queryByLabelText, getBySelectText, render } from "react-testing-library"
+import { cleanup, fireEvent, getByLabelText, queryByLabelText, getByText, render } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -595,7 +595,7 @@ describe("Select", function (){
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(getBySelectText(container, "M:100"));
+        assert(getByText(container, "M:100"));
         assert(formConfig.root.maxLength === 100);
 
 
@@ -609,7 +609,7 @@ describe("Select", function (){
 
         const fc2 = renderSpy.lastCall.args[0];
 
-        assert(getBySelectText(container, "Not set"));
+        assert(getByText(container, "Not set"));
         assert(fc2.root.maxLength === -1);
 
 
@@ -620,7 +620,7 @@ describe("Select", function (){
         });
         const fc4 = renderSpy.lastCall.args[0];
 
-        assert(getBySelectText(container, "M:255"));
+        assert(getByText(container, "M:255"));
         assert(fc4.root.maxLength === 255);
 
         fireEvent.submit(

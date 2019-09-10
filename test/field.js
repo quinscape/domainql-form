@@ -1,6 +1,6 @@
 import React from "react"
 
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "react-testing-library"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -12,7 +12,7 @@ import Field from "../src/Field";
 
 import { observable, runInAction } from "mobx";
 import viewModelToJs from "./util/viewModelToJs";
-import userEvent from "user-event";
+import userEvent from "@testing-library/user-event";
 import GlobalConfig from "../src/GlobalConfig";
 import { DEFAULT_OPTIONS } from "../src/FormConfig";
 
