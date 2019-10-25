@@ -73,6 +73,7 @@ field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form C
 
  Name | Type | Description 
 ------|------|-------------
+addons | array | Array of addons as props instead of as children. Only useful if you're writing a component wrapping Field and want to render your addons as field addons while using the render function form.
 autoFocus | bool | Pass-through autoFocus attribute for text inputs
 formGroupClass | string | Additional HTML classes for the form group element.
 helpText | string | Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
@@ -133,9 +134,11 @@ label | string | Label for the field.
 labelClass | string | Additional HTML classes for the label element.
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
+nameProperty | string | Property of the row values to use as display name (default: "name")
 onChange | func | Local change handler. can call ev.preventDefault() to cancel change.
 required | bool | If true, the user must select one of the given values, if false, the user will also be given an empty option.
 tooltip | string | Title attribute
+valueProperty | string | Property of the row values to use as value. Values can be string, number or boolean. (default: "value")
 **values** (required) | array | Array of values to offer to the user. If required is false, &lt;Select/&gt; will add an empty option. The values can be either a string or an object with `name` and `value` property.
 ### &lt;Select/&gt; example
 
@@ -298,6 +301,7 @@ layout | enum | Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - l
 lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
 mode | FieldMode value | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
 submitTimeOut | number | Timeout in milliseconds for submit debouncing.
+suppressLabels | bool | Render no label in inline mode at all.
 validation | object | High-level validation configuration object
 wrapperColumnClass | string | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
@@ -347,4 +351,4 @@ Read [Form Customization](./customization.md) for an usage example and make sure
  Name | Type | Description 
 ------|------|-------------
 errorMessages | array | Error messages to render for this form group.
-formGroupClass | string | Marker class for the form group, (default is "form-group")
+formGroupClass | string | Additional classes the form group
