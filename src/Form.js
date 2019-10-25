@@ -10,7 +10,7 @@ import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import useFormConfig from "./useFormConfig";
 import FormLayout from "./FormLayout";
 
-import useDebouncedCallback from "use-debounce/lib/callback"
+import { useDebouncedCallback } from 'use-debounce'
 
 function getSchema(formConfig, props)
 {
@@ -111,10 +111,6 @@ const Form  = props =>  {
     const [ debouncedSubmit, cancelDebouncedSubmit ] = useDebouncedCallback(
         handleSubmit,
         submitTimeOut,
-        [
-            handleSubmit,
-            submitTimeOut
-        ]
     );
     let didRecreate = true;
     const formConfig = useMemo( () => {
