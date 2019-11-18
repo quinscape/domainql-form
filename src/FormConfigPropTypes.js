@@ -56,5 +56,10 @@ export default {
     /**
      * Render no label in inline mode at all. 
      */
-    suppressLabels: PropTypes.bool
+    suppressLabels: PropTypes.bool,
+
+    /**
+     * Whether to protect the original observable value from changing by cloning (default: true)
+     */
+    isolation: PropTypes.bool
 }

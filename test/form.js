@@ -275,7 +275,8 @@ describe("Form", function () {
             form
         );
 
-        assert(formRoot.name === "AnotherEnum");
+        // Cloned object is isolated now
+        assert(formRoot.name === "MyEnum");
 
         done();
 
@@ -327,11 +328,10 @@ describe("Form", function () {
 
         assert(submitSpy.called);
 
-        const viewModel = submitSpy.lastCall.args[0].root;
+        const clone = submitSpy.lastCall.args[0].root;
 
-        // if a onSubmit is set, the viewModel is returned as-is and *not* committed.
-        assert(viewModel.isDirty);
-        assert(viewModelToJs(viewModel).name === "AnotherEnum");
+        // clone contains new value
+        assert(clone.name === "AnotherEnum");
 
 
 
@@ -413,7 +413,8 @@ describe("Form", function () {
             container.querySelector("form")
         );
 
-        assert(formRoot.fields[1].name === "AnotherName");
+        // Cloned object is isolated now
+        assert(formRoot.fields[1].name === "name");
 
     });
 
@@ -494,7 +495,8 @@ describe("Form", function () {
             container.querySelector("form")
         );
 
-        assert(formRoot.fields[1].name === "AnotherName");
+        // Cloned object is isolated now
+        assert(formRoot.fields[1].name === "name");
 
     });
 
@@ -560,7 +562,8 @@ describe("Form", function () {
         setTimeout(() => {
             //console.log(prettyDOM(container))
 
-            assert(formRoot.name === "New Name");
+            // Cloned object is isolated now
+            assert(formRoot.name === "MYENUM");
 
             act( () => {
                 fireEvent.change(input, {
@@ -584,7 +587,8 @@ describe("Form", function () {
                 //console.log(prettyDOM(container))
 
                 // error not auto-submitted, still old value
-                assert(formRoot.name === "New Name");
+                // Cloned object is isolated now
+                assert(formRoot.name === "MYENUM");
 
 
                 done();
@@ -700,10 +704,223 @@ describe("Form", function () {
             container.querySelector("form")
         );
 
+        // Cloned object is isolated now
+        assert(formRoot.field1 === "String Field Content");
+        assert(formRoot.field2 === 12345);
+
+    });
+
+    it("optionally works without isolation", function () {
+
+        let renderSpy = sinon.spy();
+
+        //console.log("AD HOC TYPE", JSON.stringify(adHocType, null, 4));
+
+        const formRoot = observable({
+            field1: "String Field Content",
+            field2: 12345,
+        });
+        let container, getByLabelText;
+
+        act(() => {
+            const result = render(
+                <Form
+                    schema={ getSchema() }
+                    value={ formRoot }
+                    options={ { isolation: false } }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="field1" type="String!" />
+                                    <Field name="field2" type="Int" />
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            container = result.container;
+            getByLabelText = result.getByLabelText;
+
+        })
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig instanceof FormConfig);
+
+        assert(formConfig.root.field1 === "String Field Content");
+        assert(formConfig.root.field2 === 12345);
+
+        const input1 = getByLabelText("field1");
+        const input2 = getByLabelText("field2");
+
+        assert(input1.value === "String Field Content");
+        assert(input2.value === "12345");
+
+        act( () => {
+            userEvent.type(input1, "Changed");
+        });
+
+        const formConfig3 = renderSpy.lastCall.args[0];
+        assert(formConfig3.root.field1 === "Changed");
+        assert(formRoot.field1 === "Changed");
+
+        act( () => {
+            userEvent.type(input2, "98765");
+        });
+
+        const formConfig5 = renderSpy.lastCall.args[0];
+        assert(formConfig5.root.field2 === 98765);
+        assert(formRoot.field2 === 98765);
+
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
         assert(formRoot.field1 === "Changed");
         assert(formRoot.field2 === 98765);
 
     });
 
+
+    it("works on output types", function () {
+
+        const renderSpy = sinon.spy();
+
+        /*
+            input DomainType {
+              name: String!
+              description: String
+              fields: [DomainField]!
+              primaryKey: UniqueConstraint!
+              foreignKeys: [ForeignKey]!
+              uniqueConstraints: [UniqueConstraint]!
+            }
+         */
+
+        const formRoot = observable({
+            name: "MyType",
+            fields: [
+                {
+                    name: "id",
+                    type: "UUID",
+                    maxLength: 36,
+                    required: true,
+                    unique: false
+                }, {
+                    name: "name",
+                    type: "STRING",
+                    maxLength: 100,
+                    required: true,
+                    unique: false
+                }
+            ],
+            foreignKeys: [],
+            uniqueConstraints: [],
+            primaryKey: {
+                fields: ["id"]
+            }
+        });
+
+        const { container, getByLabelText } = render(
+            <Form
+                schema={ getSchema() }
+                type={ "DomainType" }
+                value={
+                    // we only edit the second field of the domain type
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <React.Fragment>
+                                <Field name="fields.1.name"/>
+                                <Field name="fields.1.maxLength"/>
+                            </React.Fragment>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        const input = getByLabelText("name");
+        const input2 = getByLabelText("maxLength");
+
+        assert(input.value === "name");
+        assert(input2.value === "100");
+
+
+        act( () => {
+            fireEvent.change(input, {
+                target: {
+                    value: ""
+                }
+            });
+        });
+
+        //console.log(prettyDOM(container))
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert.deepEqual(
+            formConfig.getErrors("fields.1.name"),
+            [
+                "",
+                "DomainField.name:Field Required"
+            ]
+        );
+
+
+        act( () => {
+            fireEvent.change(input2, {
+                target: {
+                    value: "abc"
+                }
+            });
+        });
+
+        userEvent.type(input, "AnotherName");
+
+        //console.log(prettyDOM(container))
+
+        const formConfig2 = renderSpy.lastCall.args[0];
+
+        assert.deepEqual(
+            formConfig2.getErrors("fields.1.maxLength"),
+            [
+                "abc",
+                "Invalid Integer"
+            ]
+        );
+
+        userEvent.type(input2, "110");
+
+
+        const formConfig3 = renderSpy.lastCall.args[0];
+        assert(formConfig3.root.fields[1].name === "AnotherName");
+        assert(formConfig3.root.fields[1].maxLength === 110);
+
+
+        fireEvent.submit(
+            container.querySelector("form")
+        );
+
+        // Cloned object is isolated now
+        assert(formRoot.fields[1].name === "name");
+        assert(formRoot.fields[1].maxLength === 100);
+
+    });
 
 });

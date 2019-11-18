@@ -295,7 +295,7 @@ export default class WireFormat {
                     throw new Error("Could not find type '" + typeName + "' in schema");
                 }
 
-                const fields = fromWire ? typeDef.fields : typeDef.inputFields;
+                const fields = typeDef.kind === INPUT_OBJECT ? typeDef.inputFields : typeDef.fields;
 
                 if (!fields)
                 {

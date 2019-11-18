@@ -752,7 +752,7 @@
                             "kind": "LIST",
                             "name": null,
                             "ofType": {
-                                "kind": "OBJECT",
+                                "kind": "INPUT_OBJECT",
                                 "name": "FooInput",
                                 "ofType": null
                             }
@@ -766,171 +766,503 @@
             "possibleTypes": null
         },
         {
-            "kind": "ENUM",
-            "name": "__TypeKind",
-            "description": "An enum describing what kind of type a given __Type is",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": [
+            "kind": "OBJECT",
+            "name": "FKLayout",
+            "description": "Generated for de.quinscape.domainql.model.FKLayout",
+            "fields": [
                 {
-                    "name": "SCALAR",
-                    "description": "Indicates this type is a scalar.",
+                    "name": "x",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Float",
+                        "ofType": null
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "OBJECT",
-                    "description": "Indicates this type is an object. `fields` and `interfaces` are valid fields.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INTERFACE",
-                    "description": "Indicates this type is an interface. `fields` and `possibleTypes` are valid fields.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "UNION",
-                    "description": "Indicates this type is a union. `possibleTypes` is a valid field.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "ENUM",
-                    "description": "Indicates this type is an enum. `enumValues` is a valid field.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INPUT_OBJECT",
-                    "description": "Indicates this type is an input object. `inputFields` is a valid field.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "LIST",
-                    "description": "Indicates this type is a list. `ofType` is a valid field.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "NON_NULL",
-                    "description": "Indicates this type is a non-null. `ofType` is a valid field.",
+                    "name": "y",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Float",
+                        "ofType": null
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 }
             ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
             "possibleTypes": null
         },
         {
-            "kind": "ENUM",
-            "name": "__DirectiveLocation",
-            "description": "An enum describing valid locations where a directive can be placed",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": [
+            "kind": "OBJECT",
+            "name": "DomainType",
+            "description": "Generated for de.quinscape.domainql.model.DomainType",
+            "fields": [
                 {
-                    "name": "QUERY",
-                    "description": "Indicates the directive is valid on queries.",
+                    "name": "name",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        }
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "MUTATION",
-                    "description": "Indicates the directive is valid on mutations.",
+                    "name": "description",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "FIELD",
-                    "description": "Indicates the directive is valid on fields.",
+                    "name": "fields",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "DomainField",
+                                "ofType": null
+                            }
+                        }
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "FRAGMENT_DEFINITION",
-                    "description": "Indicates the directive is valid on fragment definitions.",
+                    "name": "primaryKey",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "UniqueConstraint",
+                            "ofType": null
+                        }
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "FRAGMENT_SPREAD",
-                    "description": "Indicates the directive is valid on fragment spreads.",
+                    "name": "foreignKeys",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "ForeignKey",
+                                "ofType": null
+                            }
+                        }
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "INLINE_FRAGMENT",
-                    "description": "Indicates the directive is valid on inline fragments.",
+                    "name": "uniqueConstraints",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "UniqueConstraint",
+                                "ofType": null
+                            }
+                        }
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 },
                 {
-                    "name": "SCHEMA",
-                    "description": "Indicates the directive is valid on a schema IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "SCALAR",
-                    "description": "Indicates the directive is valid on a scalar IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "OBJECT",
-                    "description": "Indicates the directive is valid on an object IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "FIELD_DEFINITION",
-                    "description": "Indicates the directive is valid on a field IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "ARGUMENT_DEFINITION",
-                    "description": "Indicates the directive is valid on a field argument IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INTERFACE",
-                    "description": "Indicates the directive is valid on an interface IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "UNION",
-                    "description": "Indicates the directive is valid on an union IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "ENUM",
-                    "description": "Indicates the directive is valid on an enum IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INPUT_OBJECT",
-                    "description": "Indicates the directive is valid on an input object IDL definition.",
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INPUT_FIELD_DEFINITION",
-                    "description": "Indicates the directive is valid on an input object field IDL definition.",
+                    "name": "_",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "DTLayout",
+                        "ofType": null
+                    },
                     "isDeprecated": false,
                     "deprecationReason": null
                 }
             ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "SCALAR",
+            "name": "Float",
+            "description": "Built-in Float",
+            "fields": null,
+            "inputFields": null,
+            "interfaces": null,
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "DTLayout",
+            "description": "Generated for de.quinscape.domainql.model.DTLayout",
+            "fields": [
+                {
+                    "name": "color",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "x",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Float",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "y",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Float",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "ConfigValue",
+            "description": "Generated for de.quinscape.domainql.model.ConfigValue",
+            "fields": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "value",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "UniqueConstraint",
+            "description": "Generated for de.quinscape.domainql.model.UniqueConstraint",
+            "fields": [
+                {
+                    "name": "fields",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "DomainField",
+            "description": "Generated for de.quinscape.domainql.model.DomainField",
+            "fields": [
+                {
+                    "name": "name",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "description",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "type",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "ENUM",
+                            "name": "FieldType",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "notNull",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Boolean",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "maxLength",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "Int",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "sqlType",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "config",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "LIST",
+                        "name": null,
+                        "ofType": {
+                            "kind": "OBJECT",
+                            "name": "ConfigValue",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "unique",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "Boolean",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
+            "possibleTypes": null
+        },
+        {
+            "kind": "OBJECT",
+            "name": "ForeignKey",
+            "description": "Generated for de.quinscape.domainql.model.ForeignKey",
+            "fields": [
+                {
+                    "name": "description",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "SCALAR",
+                        "name": "String",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "targetType",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "fields",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "NON_NULL",
+                        "name": null,
+                        "ofType": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "targetFields",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "LIST",
+                        "name": null,
+                        "ofType": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        }
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                },
+                {
+                    "name": "_",
+                    "description": "",
+                    "args": [],
+                    "type": {
+                        "kind": "OBJECT",
+                        "name": "FKLayout",
+                        "ofType": null
+                    },
+                    "isDeprecated": false,
+                    "deprecationReason": null
+                }
+            ],
+            "inputFields": null,
+            "interfaces": [],
+            "enumValues": null,
             "possibleTypes": null
         }
-    ],
-    "directives": []
+    ]
 }

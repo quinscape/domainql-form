@@ -84,7 +84,8 @@ describe("withForm()", function () {
             container.querySelector("form")
         );
 
-        assert(formRoot.name === "Helmut");
+        // Cloned object is isolated now
+        assert(formRoot.name === "Hans");
         assert(formRoot.num === 21);
         assert(formRoot.longNum === 999999999);
         assert(formRoot.moneys === 10000);

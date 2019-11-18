@@ -1,6 +1,4 @@
-import React, { useState, useMemo, useCallback } from "react"
-import cx from "classnames"
-import { createViewModel } from "mobx-utils"
+import React, { useCallback, useMemo, useState } from "react"
 
 import PropTypes from "prop-types"
 import FormConfig, { DEFAULT_OPTIONS, FormConfigContext } from "./FormConfig";
@@ -10,7 +8,9 @@ import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 import useFormConfig from "./useFormConfig";
 import FormLayout from "./FormLayout";
 
-import { useDebouncedCallback } from 'use-debounce'
+import { useDebouncedCallback } from "use-debounce"
+import { fallbackJSClone } from "./util/clone";
+
 
 function getSchema(formConfig, props)
 {
@@ -77,6 +77,25 @@ function getOption(name, options, parentOptions)
 }
 
 
+function cloneRoot(schema, value, options, parentConfig)
+{
+    // return as-is if isolation option is falsy
+    if (!getOption("isolation", options, parentConfig && parentConfig.options))
+    {
+        return value;
+    }
+
+    if (value._type)
+    {
+        return schema.clone(value);
+    }
+    else
+    {
+        return fallbackJSClone(value);
+    }
+}
+
+
 /**
  * Form description
  */
@@ -87,7 +106,8 @@ const Form  = props =>  {
     const { children, onClick, value, type, onSubmit, options } = props;
 
     const [ errors, setErrors] = useState([]);
-    const [ root, setRoot] = useState( () => createViewModel(value) );
+    const schema = getSchema(parentConfig, props);
+    const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
 
     const handleSubmit = useCallback(
         ev => {
@@ -97,10 +117,6 @@ const Form  = props =>  {
             if (onSubmit)
             {
                 onSubmit(formConfig)
-            }
-            else
-            {
-                formConfig.root.submit();
             }
         },
         [ root, onSubmit ]
@@ -112,12 +128,10 @@ const Form  = props =>  {
         handleSubmit,
         submitTimeOut,
     );
-    let didRecreate = true;
+    //let didRecreate = true;
     const formConfig = useMemo( () => {
 
-        const schema = getSchema(parentConfig, props);
-
-        didRecreate = false;
+        //didRecreate = false;
 
         let formConfig;
         if (parentConfig)
@@ -161,9 +175,7 @@ const Form  = props =>  {
 
 
     const handleReset = ev => {
-
-
-        const { onReset } = props;
+        const { onReset, value } = props;
 
         if (onReset)
         {
@@ -171,9 +183,23 @@ const Form  = props =>  {
         }
         else
         {
-            formConfig.model.reset();
-        }
+            const root = cloneRoot(schema, value, options, parentConfig);
+            setRoot(root);
 
+            formConfig.setFormContext(
+                type,
+                "",
+                root,
+                errors,
+                new InternalContext(
+                    setRoot,
+                    setErrors,
+                    handleSubmit,
+                    debouncedSubmit,
+                    cancelDebouncedSubmit
+                )
+            );
+        }
     };
 
     return (
@@ -196,19 +222,13 @@ const Form  = props =>  {
 
 Form.propTypes = {
     /**
-     * Submit handler to receive the current formConfig with the root observable as-is. If you
-     * define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()`
-     * yourself.
-     *
-     * The default behaviour without `onSubmit` property is to submit the root observable.
+     * Submit handler to receive the current formConfig with the root observable as-is. The default behavior is to do
+     * nothing as the (cloned) root object is already updated.
      */
     onSubmit: PropTypes.func,
 
     /**
-     * Reset handler. If you define an `onReset` handler, you have to execute `formConfig.root.reset()`
-     * yourself.
-     *
-     * The default behaviour without `onReset` property is to reset the root observable.
+     * Reset handler. The default behaviour is to do re-clone the original value
      */
     onReset: PropTypes.func,
 

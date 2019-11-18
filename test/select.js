@@ -90,7 +90,8 @@ describe("Select", function (){
             container.querySelector("form")
         );
 
-        assert(formRoot.name === "CCC");
+        // Cloned object is isolated now
+        assert(formRoot.name === "AAA");
 
     });
 
@@ -288,7 +289,8 @@ describe("Select", function (){
             container.querySelector("form")
         );
 
-        assert(formRoot.name === "CCC");
+        // Cloned object is isolated now
+        assert(formRoot.name === "AAA");
     });
 
     itParam(
@@ -416,6 +418,7 @@ describe("Select", function (){
             description: "XXX",
             type: "STRING",
             required: true,
+            unique: true,
             maxLength: -1
         });
         const { container } = render(
@@ -429,7 +432,7 @@ describe("Select", function (){
 
                         renderSpy(ctx);
                         return (
-                            <Select name="required" values={
+                            <Select name="unique" values={
                                 [
                                     {
                                         name: "True",
@@ -448,7 +451,7 @@ describe("Select", function (){
         );
         //console.log(prettyDOM(container))
 
-        const select = getByLabelText(container, "required");
+        const select = getByLabelText(container, "unique");
         assert(select.value === "true");
         assert(!select.disabled);
 
@@ -467,7 +470,7 @@ describe("Select", function (){
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.root.required === false);
+        assert(formConfig.root.unique === false);
 
         // back to true
 
@@ -479,22 +482,18 @@ describe("Select", function (){
 
         const fc2 = renderSpy.lastCall.args[0];
 
-        assert(fc2.root.required === true);
+        assert(fc2.root.unique === true);
 
+        // to "---"
+        fireEvent.change(select, {
+            target: {
+                value : ""
+            }
+        });
 
-        // XXX: Setting the value back to "" does not seem to work in jsdom.
-        //  the commented code below fails because required stays true. works fine in browsers.
-        // // to "---"
-        //
-        // fireEvent.change(select, {
-        //     target: {
-        //         value : ""
-        //     }
-        // });
-        //
-        // const fc3 = renderSpy.lastCall.args[0];
-        //
-        // assert(fc3.root.required === null);
+        const fc3 = renderSpy.lastCall.args[0];
+
+        assert(fc3.root.unique === null);
 
         // back to false
 
@@ -505,13 +504,14 @@ describe("Select", function (){
         });
         const fc4 = renderSpy.lastCall.args[0];
 
-        assert(fc4.root.required === false);
+        assert(fc4.root.unique === false);
 
         fireEvent.submit(
             container.querySelector("form")
         );
 
-        assert(formRoot.required === false);
+        // Cloned object is isolated now
+        assert(formRoot.unique === true);
     });
 
 
@@ -627,6 +627,7 @@ describe("Select", function (){
             container.querySelector("form")
         );
 
-        assert(formRoot.maxLength === 255);
+        // Cloned object is isolated now
+        assert(formRoot.maxLength === -1);
     })
 });

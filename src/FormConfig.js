@@ -1,16 +1,13 @@
 import React from "react"
-import InputSchema, { findNamed } from "./InputSchema";
+import InputSchema from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
-import keys from "./util/keys";
-
-import toPath from "lodash.topath"
 import get from "lodash.get"
 import set from "lodash.set"
 
 import { action } from "mobx"
 import unwrapType from "./util/unwrapType";
-import { INPUT_OBJECT, LIST, NON_NULL } from "./kind";
+import { NON_NULL } from "./kind";
 import FormLayout from "./FormLayout";
 
 
@@ -25,7 +22,8 @@ export const DEFAULT_OPTIONS = {
     validation: null,
     autoSubmit: false,
     submitTimeOut: 350,
-    suppressLabels: false
+    suppressLabels: false,
+    isolation: true
 };
 
 /**
@@ -290,7 +288,25 @@ class FormConfig
                 // handle NON_NULL fields
                 if (fieldType.kind === NON_NULL && value === "")
                 {
-                    errorsForField.push((this.type ? this.type + "." : "") + fieldContext.qualifiedName + ":Field Required");
+                    let parentType;
+                    const fieldName = fieldContext.path.slice(-1);
+                    if (this.type)
+                    {
+                        if (fieldContext.path.length > 1)
+                        {
+                            parentType = this.schema.resolveType(this.type, fieldContext.path.slice(0, -1)).name + "." + fieldName;
+                        }
+                        else
+                        {
+                            parentType = this.type + "." + fieldName;
+                        }
+                    }
+                    else
+                    {
+                        parentType = fieldName;
+                    }
+
+                    errorsForField.push(parentType + ":Field Required");
                 }
 
                 const { validation } = this.options;

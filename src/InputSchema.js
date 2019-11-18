@@ -1,7 +1,8 @@
 import toPath from "lodash.topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
-import { INPUT_OBJECT, LIST, NON_NULL, SCALAR } from "./kind";
+import { INPUT_OBJECT, LIST, NON_NULL, SCALAR, OBJECT } from "./kind";
+import { clone } from "./util/clone";
 
 
 export function findNamed(array, name)
@@ -51,6 +52,11 @@ export function isInputType(type)
     return type && type.kind === INPUT_OBJECT
 }
 
+function isOutputType(type)
+{
+    return type && type.kind === OBJECT
+}
+
 export function isScalarType(type)
 {
     return type && type.kind === SCALAR
@@ -77,6 +83,8 @@ export function unwrapNonNull(type)
 }
 
 
+
+
 function resolve(inputSchema, current, path, pos)
 {
     const len = path.length;
@@ -97,12 +105,12 @@ function resolve(inputSchema, current, path, pos)
 
         return resolve(inputSchema, current, path, next);
     }
-    else if (!isInputType(current))
+    else if (!isInputType(current) && !isOutputType(current))
     {
         throw new Error("Invalid type '" + current.name + "': " + JSON.stringify(current));
     }
 
-    const found = findNamed(current.inputFields, prop);
+    const found = findNamed(current.kind === INPUT_OBJECT ? current.inputFields : current.fields, prop);
 
     if (!found)
     {
@@ -358,6 +366,36 @@ class InputSchema
     getTypes()
     {
         return this.schema.types;
+    }
+
+
+    /**
+     * Clones or updates a domain object hierarchy. The given object must have a _type property specifying the domain type.
+     * Only the fields of the corresponding GraphQL type are cloned.
+     *
+     * @param {object} obj                  observable object to clone deeply, instancing custom implementations as needed
+     * @param {object} [update]             observable clone to update instead of creating a new clone
+     *
+     * @returns {object} cloned object
+     */
+    clone(obj, update)
+    {
+        return clone(obj, update, this);
+    }
+
+    /**
+     * Clones a list of domain objects instead of a single domain object.
+     *
+     * Each object must fulfill the requirements explained for clone()
+     *
+     * @param {Array<object>} array         observable object to clone deeply.
+     * @param {Array<object>} [update]      observable array clone to update instaed of creating new clones
+     *
+     * @returns {Array<object>} cloned list
+     */
+    cloneList(array, update)
+    {
+        return clone(obj, update, this);
     }
 }
 

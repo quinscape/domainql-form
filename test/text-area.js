@@ -90,7 +90,6 @@ describe("TextArea", function (){
             container.querySelector("form")
         );
 
-        assert(formRoot.description === "YYY")
 
     });
 

@@ -25,6 +25,8 @@ import unwrapType from "./util/unwrapType";
 import FieldGroup from "./FieldGroup";
 import Addon from "./Addon";
 
+import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
+
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -53,5 +55,11 @@ export {
     FormLayout,
     unwrapType,
     FieldGroup,
-    Addon
+    Addon,
+
+    clone,
+    cloneList,
+    fallbackJSClone,
+    registerDomainObjectFactory,
+    registerFallbackCloneFunction
 }
