@@ -3,14 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FormBlock.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/FormBlock.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FormConfig.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/FormConfig.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FormConfigPropTypes.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/FormConfigPropTypes.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FormGroup.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/FormGroup.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/FormLayout.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/FormLayout.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -25,12 +19,11 @@
     <other-services-enabled>true</other-services-enabled>
     <auto-save>true</auto-save>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
-    <option name="y" value="27" />
-    <option name="width" value="1920" />
-    <option name="height" value="1053" />
-  </component>
   <component name="ProjectId" id="1P9WEHun1GHLHhO4t7bi1W8aM5d" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
   <component name="PropertiesComponent">
     <property name="GoToClass.includeLibraries" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
@@ -71,28 +64,16 @@
       <recent name="$PROJECT_DIR$/test" />
     </key>
   </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
-  </component>
   <component name="RunManager" selected="Mocha.DomainQL Form Tests">
-    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
-      <Host>localhost</Host>
-      <Port>5050</Port>
-    </configuration>
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
+    </configuration>
+    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
+      <Host>localhost</Host>
+      <Port>5050</Port>
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
@@ -309,6 +290,9 @@
       <workItem from="1565286680979" duration="1319000" />
       <workItem from="1565337298279" duration="1276000" />
       <workItem from="1565349723230" duration="8812000" />
+      <workItem from="1587139010614" duration="54000" />
+      <workItem from="1587139270527" duration="532000" />
+      <workItem from="1587143141566" duration="172000" />
     </task>
     <servers />
   </component>
@@ -345,20 +329,29 @@
     </history-entry>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
+    <option name="version" value="2" />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="665" y="311" width="589" height="484" key="find.popup" timestamp="1587143209969">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="665" y="311" width="589" height="484" key="find.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1587143209969" />
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup" timestamp="1587143143317">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="623" y="259" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053@0.27.1920.1053" timestamp="1587143143317" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
