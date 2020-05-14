@@ -197,7 +197,7 @@ export default class WireFormat {
      */
     toWire(type, obj)
     {
-        type = getType(type, value);
+        type = getType(type, obj);
 
         return convert(
             this,
