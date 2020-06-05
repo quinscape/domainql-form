@@ -25,6 +25,19 @@ function normDate(dateObj){
     return dateObj;
 }
 
+function describeTypeRef(typeRef)
+{
+    if (typeRef.kind === NON_NULL)
+    {
+        return describeTypeRef(typeRef.ofType) + "!";
+    }
+    else if (typeRef.kind === LIST)
+    {
+        return "[" + describeTypeRef(typeRef.ofType) + "]";
+    }
+    return typeRef.name;
+}
+
 
 const DEFAULT_TO_WIRE = {
     // "BigDecimal": function (v) {
@@ -263,121 +276,131 @@ export default class WireFormat {
     
     _convert(typeRef, value, fromWire, aliases, path)
     {
-        if (typeRef.kind === NON_NULL)
+        try
         {
-            if (value === null)
+            if (typeRef.kind === NON_NULL)
             {
-                throw new Error("NON_NULL value is null: typeRef = " + JSON.stringify(typeRef) + ", value = " + JSON.stringify(value));
+                if (value === null)
+                {
+                    throw new Error("NON_NULL value is null: typeRef = " + JSON.stringify(typeRef) + ", value = " + JSON.stringify(value));
+                }
+
+                return this._convert(typeRef.ofType, value, fromWire, aliases, path);
             }
 
-            return this._convert(typeRef.ofType, value, fromWire, aliases, path);
-        }
-
-        if (typeRef.kind === SCALAR)
-        {
-
-            const scalarName = typeRef.name;
-
-            const fn = this[fromWire ? "FromWireConverters" : "ToWireConverters"][scalarName];
-            //console.log("CONVERT SCALAR", scalarName, value);
-            return fn ? fn(value) : value;
-        }
-        else if (typeRef.kind === OBJECT || typeRef.kind === INPUT_OBJECT)
-        {
-            if (value)
+            if (typeRef.kind === SCALAR)
             {
-                let out;
-                const typeName = typeRef.name;
 
-                const typeDef = this.inputSchema.getType(typeName);
-                if (!typeDef)
+                const scalarName = typeRef.name;
+
+                const fn = this[fromWire ? "FromWireConverters" : "ToWireConverters"][scalarName];
+                //console.log("CONVERT SCALAR", scalarName, value);
+                return fn ? fn(value) : value;
+            }
+            else if (typeRef.kind === OBJECT || typeRef.kind === INPUT_OBJECT)
+            {
+                if (value)
                 {
-                    throw new Error("Could not find type '" + typeName + "' in schema");
-                }
+                    let out;
+                    const typeName = typeRef.name;
 
-                const fields = typeDef.kind === INPUT_OBJECT ? typeDef.inputFields : typeDef.fields;
-
-                if (!fields)
-                {
-                    throw new Error("Type '" + typeName + "' has no fields: " + JSON.stringify(typeDef));
-                }
-
-                let needsWrapping = false;
-                if (fromWire)
-                {
-                    const TypeClass = this.classes[typeName];
-                    if (TypeClass && !hasAliases(aliases, path))
+                    const typeDef = this.inputSchema.getType(typeName);
+                    if (!typeDef)
                     {
-                        out = new TypeClass();
-                        //console.log("Create new instance of ", TypeClass, "=>", out);
+                        throw new Error("Could not find type '" + typeName + "' in schema");
+                    }
+
+                    const fields = typeDef.kind === INPUT_OBJECT ? typeDef.inputFields : typeDef.fields;
+
+                    if (!fields)
+                    {
+                        throw new Error("Type '" + typeName + "' has no fields: " + JSON.stringify(typeDef));
+                    }
+
+                    let needsWrapping = false;
+                    if (fromWire)
+                    {
+                        const TypeClass = this.classes[typeName];
+                        if (TypeClass && !hasAliases(aliases, path))
+                        {
+                            out = new TypeClass();
+                            //console.log("Create new instance of ", TypeClass, "=>", out);
+                        }
+                        else
+                        {
+                            out = {};
+                            needsWrapping = true;
+                        }
                     }
                     else
                     {
                         out = {};
                         needsWrapping = true;
                     }
-                }
-                else
-                {
-                    out = {};
-                    needsWrapping = true;
-                }
 
-                if (fromWire)
-                {
-                    out._type = typeName;
-                }
-
-
-                for (let i = 0; i < fields.length; i++)
-                {
-                    const { name, type } = fields[i];
-                    const pathForField = join(path, name);
-
-                    const alias = aliases && aliases[pathForField];
-
-                    const propName = alias ? alias : name;
-
-                    const fieldValue = value[propName];
-                    if (fieldValue !== undefined)
+                    if (fromWire)
                     {
-                        //console.log("CONVERT FIELD", name, type, fieldValue, fromWire)
-                        out[propName] = this._convert(type, fieldValue, fromWire, aliases, pathForField);
+                        out._type = typeName;
                     }
-                }
 
-                if (fromWire && this.opts.wrapAsObservable)
-                {
-                    if (needsWrapping)
+
+                    for (let i = 0; i < fields.length; i++)
                     {
-                        // console.log("Wrap as observable", out)
+                        const { name, type } = fields[i];
+                        const pathForField = join(path, name);
+
+                        const alias = aliases && aliases[pathForField];
+
+                        const propName = alias ? alias : name;
+
+                        const fieldValue = value[propName];
+                        if (fieldValue !== undefined)
+                        {
+                            //console.log("CONVERT FIELD", name, type, fieldValue, fromWire)
+                            out[propName] = this._convert(type, fieldValue, fromWire, aliases, pathForField);
+                        }
+                    }
+
+                    if (fromWire && this.opts.wrapAsObservable)
+                    {
+                        if (needsWrapping)
+                        {
+                            // console.log("Wrap as observable", out)
+                            out = observable(out);
+                        }
+                    }
+
+                    return out;
+                }
+                return null;
+            }
+            else if (typeRef.kind === LIST)
+            {
+                if (value)
+                {
+                    const elementType = typeRef.ofType;
+                    let out = new Array(value.length);
+                    if (fromWire && this.opts.wrapAsObservable)
+                    {
                         out = observable(out);
                     }
-                }
 
-                return out;
+                    for (let j = 0; j < value.length; j++)
+                    {
+                        //console.log("CONVERT ELEMENT", elementType, value[j], fromWire);
+                        out[j] = this._convert(elementType, value[j], fromWire, aliases, path);
+                    }
+                    return out;
+                }
+                return null;
             }
-            return null;
         }
-        else if (typeRef.kind === LIST)
+        catch(e)
         {
-            if (value)
-            {
-                const elementType = typeRef.ofType;
-                let out = new Array(value.length);
-                if (fromWire && this.opts.wrapAsObservable)
-                {
-                    out = observable(out);
-                }
-
-                for (let j = 0; j < value.length; j++)
-                {
-                    //console.log("CONVERT ELEMENT", elementType, value[j], fromWire);
-                    out[j] = this._convert(elementType, value[j], fromWire, aliases, path);
-                }
-                return out;
-            }
-            return null;
+            throw new Error(
+                "Error converting type " + describeTypeRef(typeRef) + (fromWire ? " from" : " to") + " wire format: path = " + path +
+                ":\nVALUE: " + JSON.stringify(value, null,4) +
+                "\nERROR: " +  e)
         }
     }
 }
