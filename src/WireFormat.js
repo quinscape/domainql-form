@@ -1,4 +1,4 @@
-import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT } from "./kind";
+import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT, ENUM } from "./kind";
 import { observable, action } from "mobx";
 
 function getType(type, obj)
@@ -393,6 +393,11 @@ export default class WireFormat {
                     return out;
                 }
                 return null;
+            }
+            else if (typeRef.kind === ENUM)
+            {
+                // enum wire format and js format are both simple strings
+                return value;
             }
         }
         catch(e)

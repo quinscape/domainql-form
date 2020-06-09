@@ -93,17 +93,49 @@ describe("Wire Format", function () {
 
         const now = new Date();
 
-        const converted = wireFormat.convert({
-            kind: "OBJECT",
-            name : "WrapperInput"
-        }, {
-            foos: [{
-                "name" : "Foo #1",
-                "timestamp":  now
-            }]
-        }, false);
+        {
+            const converted = wireFormat.convert({
+                kind: "OBJECT",
+                name : "WrapperInput"
+            }, {
+                foos: [{
+                    "name" : "Foo #1",
+                    "timestamp":  now
+                }]
+            }, false);
 
-        assert(converted.foos[0].timestamp === now.toISOString());
+            assert(converted.foos[0].timestamp === now.toISOString());
+        }
+
+        {
+            const converted = wireFormat.convert({
+                kind: "OBJECT",
+                name : "DomainField"
+            }, {
+                'name': "test",
+                'type': "INTEGER",
+                'notNull': false,
+                'maxLength' : -1
+            }, false);
+
+            assert(converted.name === "test");
+            assert(converted.type === "INTEGER");
+        }
+
+        {
+            const converted = wireFormat.convert({
+                kind: "OBJECT",
+                name : "DomainField"
+            }, {
+                'name': "test",
+                'type': "INTEGER",
+                'notNull': false,
+                'maxLength' : -1
+            }, true);
+
+            assert(converted.name === "test");
+            assert(converted.type === "INTEGER");
+        }
     });
 
     it("resolves aliases", function () {
