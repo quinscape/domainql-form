@@ -1,11 +1,9 @@
+import { describe, it } from "mocha";
 import getSchema from "./util/getSchema"
 import WireFormat from "../src/WireFormat";
 import { isObservableObject } from "mobx";
 
 import assert from "power-assert"
-
-import ADDRESS_OBJECT_TYPED from "./address.json"
-import ADDRESS_OBJECT_VALUES from "./address-values.json"
 
 describe("Wire Format", function () {
 
@@ -200,4 +198,53 @@ describe("Wire Format", function () {
 
     });
 
-});
+
+
+    it("converts live JS objects to GraphQL JSON wire format with _type", function () {
+
+        const schema = getSchema();
+
+        const wireFormat = new WireFormat(schema, {
+
+        });
+
+        const now = new Date();
+
+        const converted = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "name" : "Foo #1",
+                "timestamp":  now
+            }]
+        }, { fromWire: false, withType: true });
+
+
+
+        assert(converted.foos[0]._type === "Foo");
+        assert(converted.foos[0].timestamp === now.toISOString());
+    });
+
+    it("converts GraphQL JSON wire format to live JS objects (forced not-wrapped)", function () {
+
+        const schema = getSchema();
+
+        const wireFormat = new WireFormat(schema, {
+        }, { wrapAsObservable: true});
+
+
+        const converted = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "name" : "Foo #1",
+                "timestamp":  "2018-11-16T00:00:00.000Z"
+            }]
+        }, { fromWire: true, withType: true, noWrapping: true });
+
+        assert(!isObservableObject(converted));
+        assert(converted.foos[0].timestamp instanceof Date);
+
+    })});

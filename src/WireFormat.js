@@ -159,6 +159,21 @@ function hasAliases(aliases, objectPath)
     return false;
 }
 
+const CONVERT_DEFAULT_OPTS = {
+    noWrapping: false
+}
+
+const CONVERT_OPTS_FROM_WIRE = {
+    fromWire: true,
+    withType: true,
+    noWrapping: false
+}
+
+const CONVERT_OPTS_TO_WIRE = {
+    fromWire: false,
+    withType: false,
+    noWrapping: true
+}
 
 export default class WireFormat {
 
@@ -260,7 +275,7 @@ export default class WireFormat {
      *
      * @param {Object} typeRef      GraphQL schema type reference
      * @param {*} value             value
-     * @param {boolean} fromWire    true if the value is to be converted from wire format into JavaScript, false otherwise
+     * @param {boolean|Object} fromWire    true if the value is to be converted from wire format into JavaScript, false otherwise
      * @param {object} [aliases]    Map with aliases mapping path names to their original name
      * @param {String} [path]       current path
      *
@@ -271,10 +286,24 @@ export default class WireFormat {
     {
         //console.log({typeRef, value, fromWire, aliases, path});
 
-        return this._convert(typeRef, value, fromWire, aliases, path);
+        let convertOpts;
+        if (typeof fromWire === "boolean")
+        {
+            convertOpts = fromWire ? CONVERT_OPTS_FROM_WIRE : CONVERT_OPTS_TO_WIRE;
+        }
+        else
+        {
+            convertOpts = {
+                ... CONVERT_DEFAULT_OPTS,
+                ... fromWire
+            }
+        }
+
+
+        return this._convert(typeRef, value, convertOpts, aliases, path);
     }
     
-    _convert(typeRef, value, fromWire, aliases, path)
+    _convert(typeRef, value, convertOpts, aliases, path)
     {
         try
         {
@@ -285,7 +314,7 @@ export default class WireFormat {
                     throw new Error("NON_NULL value is null: typeRef = " + JSON.stringify(typeRef) + ", value = " + JSON.stringify(value));
                 }
 
-                return this._convert(typeRef.ofType, value, fromWire, aliases, path);
+                return this._convert(typeRef.ofType, value, convertOpts, aliases, path);
             }
 
             if (typeRef.kind === SCALAR)
@@ -293,7 +322,7 @@ export default class WireFormat {
 
                 const scalarName = typeRef.name;
 
-                const fn = this[fromWire ? "FromWireConverters" : "ToWireConverters"][scalarName];
+                const fn = this[convertOpts.fromWire ? "FromWireConverters" : "ToWireConverters"][scalarName];
                 //console.log("CONVERT SCALAR", scalarName, value);
                 return fn ? fn(value) : value;
             }
@@ -318,7 +347,7 @@ export default class WireFormat {
                     }
 
                     let needsWrapping = false;
-                    if (fromWire)
+                    if (convertOpts.fromWire)
                     {
                         const TypeClass = this.classes[typeName];
                         if (TypeClass && !hasAliases(aliases, path))
@@ -338,11 +367,10 @@ export default class WireFormat {
                         needsWrapping = true;
                     }
 
-                    if (fromWire)
+                    if (convertOpts.withType)
                     {
                         out._type = typeName;
                     }
-
 
                     for (let i = 0; i < fields.length; i++)
                     {
@@ -356,12 +384,12 @@ export default class WireFormat {
                         const fieldValue = value[propName];
                         if (fieldValue !== undefined)
                         {
-                            //console.log("CONVERT FIELD", name, type, fieldValue, fromWire)
-                            out[propName] = this._convert(type, fieldValue, fromWire, aliases, pathForField);
+                            //console.log("CONVERT FIELD", name, type, fieldValue, convertOpts)
+                            out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
                         }
                     }
 
-                    if (fromWire && this.opts.wrapAsObservable)
+                    if (convertOpts.fromWire && this.opts.wrapAsObservable && !convertOpts.noWrapping)
                     {
                         if (needsWrapping)
                         {
@@ -380,15 +408,15 @@ export default class WireFormat {
                 {
                     const elementType = typeRef.ofType;
                     let out = new Array(value.length);
-                    if (fromWire && this.opts.wrapAsObservable)
+                    if (convertOpts && this.opts.wrapAsObservable)
                     {
                         out = observable(out);
                     }
 
                     for (let j = 0; j < value.length; j++)
                     {
-                        //console.log("CONVERT ELEMENT", elementType, value[j], fromWire);
-                        out[j] = this._convert(elementType, value[j], fromWire, aliases, path);
+                        //console.log("CONVERT ELEMENT", elementType, value[j], convertOpts);
+                        out[j] = this._convert(elementType, value[j], convertOpts, aliases, path);
                     }
                     return out;
                 }
@@ -403,7 +431,7 @@ export default class WireFormat {
         catch(e)
         {
             throw new Error(
-                "Error converting type " + describeTypeRef(typeRef) + (fromWire ? " from" : " to") + " wire format: path = " + path +
+                "Error converting type " + describeTypeRef(typeRef) + (convertOpts ? " from" : " to") + " wire format: path = " + path +
                 ":\nVALUE: " + JSON.stringify(value, null,4) +
                 "\nERROR: " +  e)
         }
