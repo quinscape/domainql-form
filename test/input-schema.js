@@ -6,6 +6,9 @@ import assert from "power-assert"
 import ADDRESS_OBJECT_TYPED from "./address.json"
 import ADDRESS_OBJECT_VALUES from "./address-values.json"
 import dumpUsage from "./util/dumpUsage";
+import { describe, it } from "mocha";
+import { observable } from "mobx";
+
 
 describe("InputSchema", function () {
 
@@ -62,5 +65,20 @@ describe("InputSchema", function () {
 
     });
 
+    it("clones objects", function () {
+        const inputSchema = getSchema();
+
+        const orig = observable({
+            _type: "Foo",
+            name: "Test-Foo"
+
+        });
+        const clone = inputSchema.clone(orig);
+
+        assert(clone._type === "Foo")
+        assert(clone.name === "Test-Foo")
+        assert(clone.id === undefined)
+
+    })
 
 });

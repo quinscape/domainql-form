@@ -142,6 +142,8 @@ function cloneOrUpdate(typeRef, value, update, inputSchema, path)
 
         const out = update || createDomainObject(typeName, null);
 
+        out.id = value.id;
+
         for (let i = 0; i < fields.length; i++)
         {
             const { name, type } = fields[i];
@@ -198,8 +200,8 @@ let fallbackCloneFunction = value => {
         return observable(out);
 
     }
-    // XXX: the cloning algorithm is not totally satisfying although it works for our use-cases so far
-    //      the danger is that we misclassify scalar values we should copy as-is here and try to clone them as obj.
+    // XXX: the cloning algorithm is not totally satisfying although it works for our use-cases so far -- the danger is
+    //      that we misclassify scalar values we should copy as-is here and try to clone them as obj.
     //      hence the special case handling of Date. If you run into issues with cloning your untyped form objects
     //      consider turning off isolation to prevent cloning.
     else if (value && typeof value === "object" && !(value instanceof Date))
