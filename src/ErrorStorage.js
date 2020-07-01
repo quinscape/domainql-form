@@ -12,6 +12,11 @@ export default class ErrorStorage
 
     getErrors(root)
     {
+        if (!root)
+        {
+            return EMPTY;
+        }
+
         const errors = this.errorsMap.get(root);
         if (errors)
         {
