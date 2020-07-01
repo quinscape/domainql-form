@@ -5,6 +5,8 @@ import FormConfig, { FormConfigContext } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
+import ErrorStorage from "./ErrorStorage";
+
 
 
 /**
@@ -12,11 +14,11 @@ import InputSchema from "./InputSchema";
  */
 const FormConfigProvider = props => {
 
-    const { options, schema, children } = props;
+    const { options, schema, errorStorage, children } = props;
 
     const formConfig = useMemo(() => {
-        return new FormConfig(options, schema);
-    }, [ options, schema ]);
+        return new FormConfig(options, schema, errorStorage);
+    }, [ options, schema, errorStorage ]);
 
     return (
         <FormConfigContext.Provider value={ formConfig }>

@@ -24,6 +24,7 @@ import FormLayout from "./FormLayout"
 import unwrapType from "./util/unwrapType";
 import FieldGroup from "./FieldGroup";
 import Addon from "./Addon";
+import ErrorStorage from "./ErrorStorage";
 
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
 
@@ -61,5 +62,7 @@ export {
     cloneList,
     fallbackJSClone,
     registerDomainObjectFactory,
-    registerFallbackCloneFunction
+    registerFallbackCloneFunction,
+
+    ErrorStorage
 }

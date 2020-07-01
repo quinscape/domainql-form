@@ -10,6 +10,7 @@ import FormLayout from "./FormLayout";
 
 import { useDebouncedCallback } from "use-debounce"
 import { fallbackJSClone } from "./util/clone";
+import { useObserver } from "mobx-react-lite";
 
 
 function getSchema(formConfig, props)
@@ -31,17 +32,15 @@ function getSchema(formConfig, props)
  * Internal context object used between Form and FormConfig
  *
  * @param {Function} setRoot                    changes the form root object (type must match!)
- * @param {Function} setErrors                  changes the form errors
  * @param {Function} submit                     triggers a Form submit
  * @param {Function} debouncedSubmit            debounced submission
  * @param {Function} cancelDebouncedSubmit      cancels any outstanding submissions
  * 
  * @constructor
  */
-export function InternalContext(setRoot, setErrors, submit, debouncedSubmit, cancelDebouncedSubmit)
+export function InternalContext(setRoot, submit, debouncedSubmit, cancelDebouncedSubmit)
 {
     this.setRoot = setRoot;
-    this.setErrors = setErrors;
     this.submit = submit;
 
     this.debouncedSubmit = debouncedSubmit;
@@ -103,9 +102,8 @@ const Form  = props =>  {
 
     const parentConfig = useFormConfig();
 
-    const { children, onClick, value, type, onSubmit, options } = props;
+    const { children, onClick, value, type, onSubmit, errorStorage, options } = props;
 
-    const [ errors, setErrors] = useState([]);
     const schema = getSchema(parentConfig, props);
     const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
 
@@ -142,14 +140,16 @@ const Form  = props =>  {
                     ... parentConfig.options,
                     ... options
                 } : parentConfig.options,
-                schema
+                schema,
+                errorStorage || parentConfig.errorStorage
             );
         }
         else
         {
             formConfig = new FormConfig(
                 options,
-                schema
+                schema,
+            errorStorage
             );
         }
 
@@ -157,10 +157,8 @@ const Form  = props =>  {
             type,
             "",
             root,
-            errors,
             new InternalContext(
                 setRoot,
-                setErrors,
                 handleSubmit,
                 debouncedSubmit,
                 cancelDebouncedSubmit
@@ -169,7 +167,7 @@ const Form  = props =>  {
 
         return formConfig;
 
-    }, [parentConfig, root, errors, onSubmit, options]);
+    }, [parentConfig, root, onSubmit, options]);
     
     //console.log("RENDER FORM", formConfig);
 
@@ -190,10 +188,8 @@ const Form  = props =>  {
                 type,
                 "",
                 root,
-                errors,
                 new InternalContext(
                     setRoot,
-                    setErrors,
                     handleSubmit,
                     debouncedSubmit,
                     cancelDebouncedSubmit
@@ -213,7 +209,7 @@ const Form  = props =>  {
         >
             <FormConfigContext.Provider value={ formConfig }>
                 {
-                    typeof children === "function" ? children(formConfig) : children
+                    useObserver(() => typeof children === "function" ? children(formConfig) : children)
                 }
             </FormConfigContext.Provider>
         </form>

@@ -9,6 +9,7 @@ import { action } from "mobx"
 import unwrapType from "./util/unwrapType";
 import { NON_NULL } from "./kind";
 import FormLayout from "./FormLayout";
+import ErrorStorage from "./ErrorStorage";
 
 
 export const DEFAULT_OPTIONS = {
@@ -32,8 +33,6 @@ export const DEFAULT_OPTIONS = {
  */
 export const FormConfigContext = React.createContext(null);
 
-const EMPTY = [];
-
 /**
  @typedef FormError
  @type {object}
@@ -41,32 +40,17 @@ const EMPTY = [];
  @property {Array<String>} errorMessages    error messages, first value is original user-provided value
  */
 
-/**
- * Finds the error with the given path
- *
- * @param {Array<FormError>} errors     errors
- * @param {String} path             name/path
- * @return {number} index of the error
- */
-function findError(errors, path)
+let defaultErrorStorage;
+
+function getDefaultErrorStorage()
 {
-    for (let i = 0; i < errors.length; i++)
+    if (!defaultErrorStorage)
     {
-        const error = errors[i];
-        if (error.path === path)
-        {
-            return i;
-        }
+        defaultErrorStorage = new ErrorStorage();
     }
-    return -1;
+    return defaultErrorStorage;
 }
 
-const setFormValueAction = action(
-    "Set Form-Value",
-    (root, name, value) => {
-        set(root,name,value);
-    }
-);
 
 /**
  * Encapsulates the complete configuration of a form field and is provided via React Context.
@@ -87,8 +71,9 @@ class FormConfig
      *
      * @param {Object} opts                     form config options
      * @param {InputSchema|Object} [schema]     Schema (raw data or InputSchema instance)
+     * @param {ErrorStorage} errorStorage       optional error storage to use. Default is using a lazily initialized static storage.
      */
-    constructor(opts, schema = null)
+    constructor(opts, schema = null, errorStorage = getDefaultErrorStorage())
     {
         if (schema instanceof InputSchema)
         {
@@ -104,6 +89,8 @@ class FormConfig
             ... opts
         };
 
+        this.errorStorage = errorStorage;
+
         // clear form context
         this.setFormContext();
     }
@@ -115,24 +102,22 @@ class FormConfig
      * @param {String} [type]                   name of the form base input type
      * @param {String} [basePath]               current base path within the form
      * @param {object} [root]                   mobx input model
-     * @param {Array<String>} [errors]          current form errors
      * @param {InternalContext} [internal]      internal context object (see Form.js)
      */
-        setFormContext(type = "", basePath = "", root = null, errors = EMPTY, internal)
+    setFormContext(type = "", basePath = "", root = null, internal)
     {
-        //console.log("setFormContext", { type, basePath, root, errors, internal} );
+        //console.log("setFormContext", { type, basePath, root, internal} );
 
         this.type = type;
         this.basePath = basePath;
         this.root = root;
-        this.errors = errors;
         this.ctx = internal;
     }
 
     copy()
     {
-        const copy = new FormConfig(this.options, this.schema);
-        copy.setFormContext(this.type, this.basePath, this.root, this.errors, this.ctx);
+        const copy = new FormConfig(this.options, this.schema, this.errorStorage);
+        copy.setFormContext(this.type, this.basePath, this.root, this.ctx);
         return copy;
     }
     
@@ -156,85 +141,34 @@ class FormConfig
 
     getErrors(path)
     {
-        const { errors } = this;
+        const { root, errorStorage } = this;
 
-        for (let i = 0; i < errors.length; i++)
-        {
-            const error = errors[i];
-            if (error.path === path)
-            {
-                return error.errorMessages;
-            }
-        }
-
-        return EMPTY;
+        return errorStorage.findError( root, path);
     }
 
     addError(path, msg, value)
     {
-
-        const { errors } = this;
-
-        const newErrors = [];
-
-        let i, existing;
-        for (i = 0; i < errors.length; i++)
-        {
-            existing = errors[i];
-            if (existing.path === path)
-            {
-                break;
-            }
-        }
-
-        if (!existing || i < errors.length)
-        {
-            newErrors.push({
-                    path,
-                    errorMessages: [ value !== undefined ? value : get(this.root, path), msg]
-                }
-            )
-        }
-        else
-        {
-            newErrors[i] = {
-                path,
-                errorMessages: existing.errorMessages.concat(msg)
-            };
-        }
-
-        this.ctx.setErrors(newErrors);
+        const { root, errorStorage } = this;
+        errorStorage.addError(root, path, msg, value);
     }
 
     removeErrors(path)
     {
-        const newErrors = this.errors.filter(
-            err => err.path !== path
-        );
+        const { root, errorStorage } = this;
+        errorStorage.removeErrors(root, path);
 
-        if (newErrors.length < this.errors.length)
-        {
-            this.ctx.setErrors(newErrors);
-        }
     }
 
     listAllErrors()
     {
-
-        const { errors } = this;
-        const { length } = errors;
-
-        const out = new Array(length);
-        for (let i = 0; i < length; i++)
-        {
-            out[i] = errors[i];
-        }
-        return out;
+        const { root, errorStorage } = this;
+        return [ ... errorStorage.getErrors(root)];
     }
 
     hasErrors()
     {
-        return this.errors.length > 0;
+        const { root, errorStorage } = this;
+        return errorStorage.getErrors(root).length > 0;
     }
 
 
@@ -337,63 +271,12 @@ class FormConfig
             }
 
             // UPDATE
-            const { errors : currentErrors } = this;
-
-            let changedErrors;
-            const index =  findError(currentErrors, qualifiedName);
-            if (index < 0)
-            {
-                if (haveErrors)
-                {
-                    // ADD ERRORS
-                    changedErrors = currentErrors.concat({
-                        path: qualifiedName,
-                        errorMessages: errorsForField
-                    });
-                }
-            }
-            else
-            {
-                if (haveErrors)
-                {
-                    // UPDATE ERRORS
-                    changedErrors = currentErrors.slice();
-                    changedErrors[index] = {
-                        path: qualifiedName,
-                        errorMessages: errorsForField
-                    }
-                }
-                else
-                {
-                    // REMOVE ERRORS
-                    changedErrors = currentErrors.slice();
-                    changedErrors.splice(index, 1);
-                }
-            }
-
-
-            if (!haveErrors)
-            {
-                //console.log("SET FIELD VALUE", this.root, name, converted);
-                setFormValueAction(this.root, qualifiedName, converted);
-
-                if (this.options.autoSubmit)
-                {
-                    this.ctx.debouncedSubmit();
-                }
-            }
-
-            if (changedErrors)
-            {
-                this.ctx.setErrors(changedErrors);
-            }
-
+            this.updateFromChange(qualifiedName, converted, errorsForField);
         }
         catch(e)
         {
             console.error("HANDLE-CHANGE ERROR", e);
         }
-
     };
 
     handleBlur = (fieldContext, value) => {
@@ -406,6 +289,59 @@ class FormConfig
             console.error("HANDLE-BLUR ERROR", e);
         }
     };
+
+    @action
+    updateFromChange(qualifiedName, converted, errorsForField)
+    {
+        const { root, errorStorage } = this;
+
+        const haveErrors = errorsForField.length > 1;
+
+        const errors = errorStorage.getErrors(root);
+
+        const index =  errorStorage.findErrorIndex(root, qualifiedName);
+        if (index < 0)
+        {
+            if (haveErrors)
+            {
+                // ADD ERRORS
+                errors.push({
+                    path: qualifiedName,
+                    errorMessages: errorsForField
+                });
+            }
+        }
+        else
+        {
+            if (haveErrors)
+            {
+                // UPDATE ERRORS
+                errors[index] = {
+                    path: qualifiedName,
+                    errorMessages: errorsForField
+                }
+            }
+            else
+            {
+                // REMOVE ERRORS
+                const changedErrors = errors.slice();
+                changedErrors.splice(index, 1);
+
+                errors.replace(changedErrors)
+            }
+        }
+
+
+        if (!haveErrors)
+        {
+            set(root, qualifiedName, converted);
+
+            if (this.options.autoSubmit)
+            {
+                this.ctx.debouncedSubmit();
+            }
+        }
+    }
 }
 
 export default FormConfig
