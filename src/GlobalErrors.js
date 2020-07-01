@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from "react"
+import { observer as fnObserver } from "mobx-react-lite"
 import PropTypes from "prop-types"
 import useFormConfig from "./useFormConfig";
+import { toJS } from "mobx";
 
 
 /**
@@ -58,7 +60,7 @@ function findFieldIds(errors, component)
  *
  * The error labels are cross-linked with the input fields by name attribute after mount.
  */
-const GlobalErrors = props => {
+const GlobalErrors = fnObserver(props => {
 
     const formConfig = useFormConfig();
 
@@ -66,7 +68,7 @@ const GlobalErrors = props => {
 
     const globalErrorsRef = useRef(null);
 
-    const { errors } = formConfig;
+    const errors = formConfig.errorStorage.getErrors(formConfig.root);
     
     const errorIdList = globalErrorsRef.current ? findFieldIds(errors, globalErrorsRef.current) : [];
 
@@ -84,6 +86,8 @@ const GlobalErrors = props => {
     );
 
     const { heading, headingText, text} = props;
+
+    console.log("errorIdList, errors", errorIdList, toJS(errors));
 
     const errorElements = [];
 
@@ -141,7 +145,7 @@ const GlobalErrors = props => {
             </div>
         </div>
     );
-};
+});
 
 GlobalErrors.propTypes = {
     /**
