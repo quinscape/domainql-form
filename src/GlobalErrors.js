@@ -87,7 +87,7 @@ const GlobalErrors = fnObserver(props => {
 
     const { heading, headingText, text} = props;
 
-    console.log("errorIdList, errors", errorIdList, toJS(errors));
+    //console.log("errorIdList, errors", errorIdList, toJS(errors));
 
     const errorElements = [];
 
