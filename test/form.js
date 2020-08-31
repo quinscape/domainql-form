@@ -1046,4 +1046,47 @@ describe("Form", function () {
 
     });
 
+
+    it("passes through an optional id attribute", function () {
+
+        const submitSpy = sinon.spy();
+        const renderSpy = sinon.spy();
+
+        // yup, that's valid
+        const {  } = render(
+            <FormConfigProvider
+                schema={getSchema() }
+
+            >
+                <Form
+                    id="my-form"
+                    onSubmit={ submitSpy }
+                    type={ "EnumTypeInput" }
+                    value={
+                        observable({
+                            name: "Elmer"
+                        })
+                    }
+                >
+                    { formConfig => {
+                        renderSpy(formConfig);
+                        return (
+                            <React.Fragment>
+                                <Field name="name" />
+                            </React.Fragment>
+                        );
+                    } }
+                </Form>
+            </FormConfigProvider>
+        );
+
+        assert(renderSpy.called);
+        assert(renderSpy.lastCall.args[0] instanceof FormConfig);
+
+        const form = document.querySelector("#my-form");
+
+
+        assert(form.elements[0].value === "Elmer")
+
+    });
 });

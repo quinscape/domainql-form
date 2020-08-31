@@ -102,7 +102,7 @@ const Form  = props =>  {
 
     const parentConfig = useFormConfig();
 
-    const { children, onClick, value, type, onSubmit, errorStorage, options } = props;
+    const { id, children, onClick, value, type, onSubmit, errorStorage, options } = props;
 
     const schema = getSchema(parentConfig, props);
     const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
@@ -200,6 +200,7 @@ const Form  = props =>  {
 
     return (
         <form
+            id={ id }
             className={
                 formConfig.options.layout === FormLayout.INLINE ? "form-inline" : "form"
             }
@@ -217,6 +218,11 @@ const Form  = props =>  {
 };
 
 Form.propTypes = {
+    /**
+     * Optional pass-through id attribute for the form element.
+     */
+    id: PropTypes.string,
+
     /**
      * Submit handler to receive the current formConfig with the root observable as-is. The default behavior is to do
      * nothing as the (cloned) root object is already updated.
