@@ -425,7 +425,7 @@ describe("Field", function () {
     });
 
     // make sure to de-register our label lookup to not disturb other tests
-    after(() => GlobalConfig.registerLabelLookup(null));
+    afterEach(() => GlobalConfig.registerLabelLookup(null));
 
     it("provides a field context to render function children", function () {
 
