@@ -18,7 +18,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
 
             if (!parentConfig || !parentConfig.schema || !parentConfig.type)
             {
-                throw new Error("<FormBlock/> should only be used inside a <Form/>");
+                throw new Error("<FieldGroup/> should only be used inside a <Form/>");
             }
 
             const formConfig = parentConfig.copy();
