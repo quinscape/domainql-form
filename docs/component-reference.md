@@ -8,9 +8,10 @@ Form description
 
  Name | Type | Description 
 ------|------|-------------
+id | string | Optional pass-through id attribute for the form element.
 onClick | func | Optional onClick handler for the form element.
-onReset | func | Reset handler. If you define an `onReset` handler, you have to execute `formConfig.root.reset()` yourself. The default behaviour without `onReset` property is to reset the root observable.
-onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. If you define an onSubmit handler, you have to execute `formConfig.root.submit()` or `formConfig.root.reset()` yourself. The default behaviour without `onSubmit` property is to submit the root observable.
+onReset | func | Reset handler. The default behaviour is to do re-clone the original value
+onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. The default behavior is to do nothing as the (cloned) root object is already updated.
 options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
 schema | instance of InputSchema or object | schema to use for this form
 type | string | form base type. If it is not defined, a type prop must be given on all Fields.
@@ -296,6 +297,7 @@ These properties are available in &lt;Form/&gt;, &lt;FormBlock/&gt; and &lt;Form
 autoSubmit | bool | Whether the form automatically does a (debounced) submit on every change.
 currency | string | Currency ISO code for Currency fields
 currencyAddonRight | bool | True if the currency addon is on the right side of the input component.
+isolation | bool | Whether to protect the original observable value from changing by cloning (default: true)
 labelColumnClass | string | Additional label column class to use if in horizontal mode.
 layout | enum | Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - label to the left of input in layout column "INLINE" - inline field elements without form group element
 lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
