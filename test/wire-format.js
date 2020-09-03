@@ -1,7 +1,7 @@
 import { describe, it } from "mocha";
 import getSchema from "./util/getSchema"
 import WireFormat from "../src/WireFormat";
-import { isObservableObject } from "mobx";
+import { isObservableArray, isObservableObject } from "mobx";
 
 import assert from "power-assert"
 
@@ -246,5 +246,6 @@ describe("Wire Format", function () {
 
         assert(!isObservableObject(converted));
         assert(converted.foos[0].timestamp instanceof Date);
+        assert(!isObservableArray(converted.foos));
 
     })});

@@ -408,7 +408,7 @@ export default class WireFormat {
                 {
                     const elementType = typeRef.ofType;
                     let out = new Array(value.length);
-                    if (convertOpts && this.opts.wrapAsObservable)
+                    if (convertOpts && this.opts.wrapAsObservable && !convertOpts.noWrapping)
                     {
                         out = observable(out);
                     }
