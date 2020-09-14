@@ -52,7 +52,7 @@ const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate } = props;
 
     const fieldContext = useMemo(
         () => {
@@ -109,6 +109,11 @@ const Field = fnObserver((props, ref) => {
 
                     const value = target.type === "checkbox" ? target.checked : target.value;
 
+                    if (typeof onChange === "function")
+                    {
+                        onChange(newFieldContext, value);
+                    }
+
                     //console.log("Field.handleChange", fieldType, name, value);
 
                     formConfig.handleChange(newFieldContext, value);
@@ -119,10 +124,14 @@ const Field = fnObserver((props, ref) => {
                     const { target: { value } } = ev;
 
                     //console.log("Field.handleBlur", fieldType, name, value);
-                    
+
                     formConfig.handleBlur(newFieldContext, value);
                 },
+
+                validate,
+
                 addons: addonsFromProps || Addon.filterAddons(children)
+
             };
 
             const { validation } = formConfig.options;
@@ -201,9 +210,18 @@ Field.propTypes = {
     formGroupClass: PropTypes.string,
 
     /**
-     * Optional change handler to use
+     * Optional change handler to use to react to the single field changing
      */
     onChange: PropTypes.func,
+
+    /**
+     * Optional per-field validation function  ( (value, fieldContext) => error ). It receives the current value as string
+     * and the current field context and returns an error string if there is any or `null` if there is no error.
+     *
+     * The local validation is executed after the type validation and also prevents invalid values from being written back
+     * into the observable. The high-level validation is only executed if the local validation succeeds.
+     */
+    validate: PropTypes.func,
 
     /**
      * Optional blur handler to use

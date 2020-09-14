@@ -300,7 +300,7 @@ class InputSchema
         return resolve(this, currentType, path, 0);
     }
 
-    static validate(scalarType, value)
+    static validate(scalarType, value, ctx = null)
     {
         if (value === "")
         {
@@ -308,7 +308,21 @@ class InputSchema
         }
 
         const fn = handlerFn(scalarType, "validate");
-        return fn ? fn(value) : ""
+        if (fn)
+        {
+            const error = fn(value, ctx);
+            if (error)
+            {
+                return error
+            }
+        }
+
+        if (ctx && typeof ctx.validate === "function")
+        {
+            return ctx.validate(ctx, value);
+        }
+
+        return ""
     }
 
     static scalarToValue(scalarType, value, ctx = null)

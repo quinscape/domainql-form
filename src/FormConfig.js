@@ -185,7 +185,7 @@ class FormConfig
             let errorsForField = [ value ];
 
             const isScalar = unwrapped.kind === "SCALAR";
-            const error = isScalar ? InputSchema.validate(unwrapped.name, value) : null;
+            const error = isScalar ? InputSchema.validate(unwrapped.name, value, fieldContext) : null;
             let converted;
 
             // type error?

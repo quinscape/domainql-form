@@ -629,4 +629,120 @@ describe("Field", function () {
         assert(ref.current.value === "MyEnum")
 
     });
+
+    it("provides optional local change handler", function () {
+
+        const renderSpy = sinon.spy();
+        const onChangeSpy = sinon.spy();
+
+        const formRoot = observable({
+            _type: "EnumTypeInput",
+            name: "MyEnum",
+            values: ["A", "B", "C"],
+        });
+
+        const { container } = render(
+            <Form
+                schema={getSchema()}
+                type={"EnumTypeInput"}
+                options={{ isolation: false }}
+                value={
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field
+                                name="name"
+                                onChange={ onChangeSpy }
+                            />
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        //console.log(loc, mode, prettyDOM(container));
+
+
+
+        const input = queryByLabelText(container, "name");
+
+        act(() => { userEvent.type(input, "Zeno") })
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        assert(formConfig.root.name === "Zeno");
+        assert(!formConfig.getErrors("name").length);
+
+        assert(onChangeSpy.called)
+        assert(onChangeSpy.lastCall.args[0].isFieldContext)
+        assert(onChangeSpy.lastCall.args[0].qualifiedName === "name")
+        assert(onChangeSpy.lastCall.args[1] === "Zeno")
+
+    });
+    it("provides optional local validation", function () {
+
+        const renderSpy = sinon.spy();
+
+        const formRoot = observable({
+            _type: "EnumTypeInput",
+            name: "MyEnum",
+            values: ["A", "B", "C"],
+        });
+
+        const { container } = render(
+            <Form
+                schema={getSchema()}
+                type={"EnumTypeInput"}
+                options={{ isolation: false }}
+                value={
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field
+                                name="name"
+                                validate={ (ctx, value) => {
+
+                                    return value.indexOf("Z") === 0 ? "NO Z" : null;
+
+                                }}
+                            />
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        //console.log(loc, mode, prettyDOM(container));
+
+
+
+        const input = queryByLabelText(container, "name");
+
+        act(() => { userEvent.type(input, "Zeno") })
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        // values deemed invalid by local validation are not written through
+        assert(formConfig.root.name === "MyEnum");
+
+        assert.deepEqual(formConfig.getErrors("name"), ["Zeno","NO Z"]);
+
+
+        act(() => { userEvent.type(input, "Anaximander") });
+
+        assert(formConfig.root.name === "Anaximander");
+        assert(formRoot.name === "Anaximander");
+
+        assert(!formConfig.getErrors("name").length);
+    });
 });
