@@ -8,7 +8,7 @@ import FormConfigProvider from "./FormConfigProvider"
 import FormGroup from "./FormGroup"
 import GlobalConfig from "./GlobalConfig"
 import GlobalErrors from "./GlobalErrors"
-import InputSchema from "./InputSchema"
+import InputSchema, { registerCustomConverter } from "./InputSchema"
 import Select from "./Select"
 import TextArea from "./TextArea"
 import StaticText from "./StaticText"
@@ -42,6 +42,7 @@ export {
     GlobalConfig,
     GlobalErrors,
     InputSchema,
+    registerCustomConverter,
     Select,
     TextArea,
     StaticText,
