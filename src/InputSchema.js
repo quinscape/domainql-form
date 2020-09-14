@@ -311,7 +311,7 @@ class InputSchema
         return fn ? fn(value) : ""
     }
 
-    static scalarToValue(scalarType, value)
+    static scalarToValue(scalarType, value, ctx = null)
     {
         if (value === null)
         {
@@ -319,7 +319,7 @@ class InputSchema
         }
 
         const fn = handlerFn(scalarType, "scalarToValue");
-        return fn ? fn(value) : value
+        return fn ? fn(value, ctx) : value
     }
 
     static valueToScalar(scalarType, value)

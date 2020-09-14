@@ -105,7 +105,7 @@ const Select = props => {
         {
             const scalarValue = findOptionValue(ev.target, values, valueProperty);
 
-            const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue);
+            const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue, fieldContext);
 
             //console.log("Select handleChange", scalarValue, "=>", converted);
 

@@ -82,8 +82,8 @@ const Field = fnObserver((props, ref) => {
                 // effectiveLabel = label || "";
             }
 
-            // update field state
             const newFieldContext = {
+                isFieldContext: true,
                 fieldRef: ref,
                 name,
                 fieldId,
@@ -97,6 +97,8 @@ const Field = fnObserver((props, ref) => {
                 formGroupClass,
                 tooltip,
                 helpText,
+
+                rootType: formConfig.type,
 
                 mode: effectiveMode,
                 label: effectiveLabel,
