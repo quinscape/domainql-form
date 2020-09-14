@@ -48,7 +48,7 @@ function buildType(type)
  * field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form Customization"](./customization.md) for details)
  */
 
-const Field = fnObserver(props => {
+const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
@@ -84,6 +84,7 @@ const Field = fnObserver(props => {
 
             // update field state
             const newFieldContext = {
+                fieldRef: ref,
                 name,
                 fieldId,
                 fieldType,
@@ -154,7 +155,7 @@ const Field = fnObserver(props => {
 
     }
 
-});
+}, { forwardRef: true});
 
 Field.propTypes = {
     /**

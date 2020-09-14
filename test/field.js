@@ -1,6 +1,6 @@
 import React from "react"
 
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "@testing-library/react"
+import { act, cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -582,4 +582,51 @@ describe("Field", function () {
             assert(!addonRight);
         }
     })
+
+    it("forwards refs", function () {
+
+        const renderSpy = sinon.spy();
+
+        const formRoot = observable({
+            _type: "EnumTypeInput",
+            name: "MyEnum",
+            values: ["A", "B", "C"],
+        });
+
+        const ref = React.createRef();
+
+        let container;
+
+        act(() => {
+            const result = render(
+                <Form
+                    schema={getSchema()}
+                    type={"EnumTypeInput"}
+                    options={{isolation: false}}
+                    value={
+                        formRoot
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <Field
+                                    ref={ref}
+                                    name="name"
+                                />
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            container = result.container;
+        })
+
+        // ref value is set to input
+        assert(ref.current.value === "MyEnum")
+
+    });
 });

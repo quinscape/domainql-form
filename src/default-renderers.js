@@ -61,7 +61,7 @@ const DEFAULT_RENDERERS =
 
             render: (formConfig, ctx) =>  {
 
-                const { fieldType, mode, fieldId, inputClass, label, labelClass, tooltip, path, qualifiedName, handleChange, handleBlur } = ctx;
+                const { fieldRef, mode, fieldId, inputClass, label, labelClass, tooltip, path, qualifiedName, handleChange, handleBlur } = ctx;
 
                 const fieldValue = Field.getValue(formConfig, ctx);
 
@@ -99,6 +99,7 @@ const DEFAULT_RENDERERS =
                             )
                         }>
                             <input
+                                ref={fieldRef}
                                 id={ fieldId }
                                 name={ qualifiedName }
                                 className={ cx(inputClass, "form-check-input") }
@@ -142,6 +143,7 @@ const DEFAULT_RENDERERS =
             render: (formConfig, ctx) =>  {
 
                 const {
+                    fieldRef,
                     fieldId,
                     mode,
                     inputClass,
@@ -169,6 +171,7 @@ const DEFAULT_RENDERERS =
 
                     fieldElement = (
                         <select
+                            ref={fieldRef}
                             id={ fieldId }
                             name={ qualifiedName }
                             className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
@@ -219,6 +222,7 @@ const DEFAULT_RENDERERS =
             render: (formConfig, ctx) =>  {
 
                 const {
+                    fieldRef,
                     fieldId,
                     mode,
                     inputClass,
@@ -247,6 +251,7 @@ const DEFAULT_RENDERERS =
                 {
                     fieldElement = (
                         <input
+                            ref={fieldRef}
                             id={ fieldId }
                             name={ qualifiedName }
                             className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }

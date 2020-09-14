@@ -124,7 +124,7 @@ const Select = props => {
                 (formConfig, fieldContext) => {
                     //console.log("render Select", fieldContext);
 
-                    const { fieldId, fieldType, mode, path, qualifiedName, onBlur, autoFocus, tooltip } = fieldContext;
+                    const { fieldRef, fieldId, mode, path, qualifiedName, onBlur, autoFocus, tooltip } = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
                     const fieldValue = Field.getValue(formConfig, fieldContext);
@@ -153,6 +153,7 @@ const Select = props => {
                         </span>
                                 ) : (
                                     <select
+                                        ref={fieldRef}
                                         id={fieldId}
                                         className={
                                             cx(

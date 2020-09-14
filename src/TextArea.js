@@ -27,7 +27,7 @@ const TextArea = props => {
             {
                 (formConfig, fieldContext) => {
 
-                    const {fieldId, fieldType, mode, qualifiedName, path, autoFocus, tooltip, placeholder, handleChange, handleBlur} = fieldContext;
+                    const {fieldRef, fieldId, mode, qualifiedName, path, autoFocus, tooltip, placeholder, handleChange, handleBlur} = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
                     const fieldValue = Field.getValue(formConfig, fieldContext);
@@ -52,6 +52,7 @@ const TextArea = props => {
                     {
                         fieldElem = Addon.renderWithAddons(
                             <textarea
+                                ref={fieldRef}
                                 id={fieldId}
                                 className={
                                     cx(
