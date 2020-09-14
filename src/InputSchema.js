@@ -284,6 +284,8 @@ class InputSchema
      *
      * @param typeName      base type
      * @param name          name expression (e.g. 'name', 'values[0]', 'address.city')
+     *
+     * @return {Object} GraphQL type reference object
      */
     resolveType(typeName, name)
     {
