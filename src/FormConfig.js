@@ -171,29 +171,6 @@ class FormConfig
         return errorStorage.getErrors(root).length > 0;
     }
 
-
-    /**
-     * Returns the current form value for the given path, returning the original user-provided value in case of a
-     * field with error.
-     *
-     * @param {String} path     name/path
-     * @param {Array<FormError>} errorMessages
-     * @return {*}
-     */
-    getValue(path, errorMessages = this.getErrors(path))
-    {
-        if (errorMessages.length > 0)
-        {
-            return errorMessages[0];
-        }
-        else
-        {
-            const value = get(this.root, path);
-            //console.log("getValue", this.root, path, " = ", value);
-            return value;
-        }
-    }
-
     handleChange(fieldContext, value)
     {
         try

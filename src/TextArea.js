@@ -7,8 +7,6 @@ import Field from "./Field"
 import cx from "classnames";
 
 import { resolveStaticRenderer } from "./GlobalConfig"
-import InputSchema from "./InputSchema";
-import unwrapType from "./util/unwrapType";
 import Addon from "./Addon";
 
 
@@ -32,7 +30,7 @@ const TextArea = props => {
                     const {fieldId, fieldType, mode, qualifiedName, path, autoFocus, tooltip, placeholder, handleChange, handleBlur} = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
-                    const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
+                    const fieldValue = Field.getValue(formConfig, fieldContext);
 
                     const isPlainText = mode === FieldMode.PLAIN_TEXT;
 

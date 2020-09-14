@@ -10,8 +10,11 @@ import FieldMode from "./FieldMode"
 import { observer as fnObserver } from "mobx-react-lite"
 import useFormConfig from "./useFormConfig";
 
-import { NON_NULL, SCALAR} from "./kind"
+import { ENUM, NON_NULL, SCALAR } from "./kind"
 import Addon from "./Addon";
+import get from "lodash.get";
+import InputSchema from "./InputSchema";
+import unwrapType from "./util/unwrapType";
 
 function buildType(type)
 {
@@ -217,5 +220,28 @@ Field.propTypes = {
 };
 
 Field.displayName = "Field";
+
+Field.getValue = (formConfig, fieldContext, errorMessages = formConfig.getErrors(fieldContext.qualifiedName)) =>
+{
+    if (errorMessages.length > 0)
+    {
+        return errorMessages[0];
+    }
+    else
+    {
+        const { fieldType, path } = fieldContext;
+        const value = get(formConfig.root, path);
+        //console.log("getValue", this.root, path, " = ", value);
+
+        const unwrapped = unwrapType(fieldType);
+        if (unwrapped.kind === ENUM)
+        {
+            return value;
+        }
+        return InputSchema.scalarToValue(unwrapped.name, value, fieldContext);
+    }
+
+}
+
 
 export default Field;

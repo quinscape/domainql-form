@@ -8,6 +8,7 @@ import FormGroup from "./FormGroup"
 import unwrapType from "./util/unwrapType";
 import FormLayout from "./FormLayout";
 import Addon from "./Addon";
+import Field from "./Field";
 
 function renderStatic(ctx, fieldValue)
 {
@@ -62,8 +63,7 @@ const DEFAULT_RENDERERS =
 
                 const { fieldType, mode, fieldId, inputClass, label, labelClass, tooltip, path, qualifiedName, handleChange, handleBlur } = ctx;
 
-                // no need to convert
-                const fieldValue =  formConfig.getValue(path);
+                const fieldValue = Field.getValue(formConfig, ctx);
 
                 //console.log("checkbox value = ", fieldValue);
 
@@ -154,7 +154,7 @@ const DEFAULT_RENDERERS =
                 } = ctx;
 
                 const errorMessages = formConfig.getErrors(path);
-                const fieldValue =  formConfig.getValue(path, errorMessages);
+                const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
 
                 let fieldElement;
                 if (mode === FieldMode.PLAIN_TEXT)
@@ -225,17 +225,16 @@ const DEFAULT_RENDERERS =
                     placeholder,
                     tooltip,
                     fieldType,
-                    path,
                     qualifiedName,
                     handleChange,
                     handleBlur,
                     autoFocus
                 } = ctx;
 
-                const { currency, currencyAddonRight, mode: modeFromOptions } = formConfig.options;
+                const { currency, currencyAddonRight } = formConfig.options;
 
                 const errorMessages = formConfig.getErrors(qualifiedName);
-                const fieldValue =  InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
+                const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
 
                 //console.log("RENDER FIELD",{ ctx, fieldValue });
 

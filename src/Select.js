@@ -5,10 +5,8 @@ import FieldMode from "./FieldMode"
 import FormGroup from "./FormGroup"
 import GlobalConfig from "./GlobalConfig"
 import Field from "./Field"
-import get from "lodash.get";
 import cx from "classnames";
 
-import { resolveStaticRenderer } from "./GlobalConfig"
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
 import { useFormConfig } from "./index";
@@ -129,7 +127,7 @@ const Select = props => {
                     const { fieldId, fieldType, mode, path, qualifiedName, onBlur, autoFocus, tooltip } = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
-                    const fieldValue = InputSchema.scalarToValue(unwrapType(fieldType).name, formConfig.getValue(path, errorMessages));
+                    const fieldValue = Field.getValue(formConfig, fieldContext);
 
                     const noneText = GlobalConfig.none();
 
