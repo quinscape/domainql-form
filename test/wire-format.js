@@ -28,6 +28,42 @@ describe("Wire Format", function () {
 
         assert(converted.foos[0].timestamp instanceof Date);
 
+        const converted2 = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "name" : "Foo #1",
+                "date":  null
+            }]
+        }, false);
+
+        assert(converted2.foos[0].date === null);
+
+        const converted3 = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "name" : "Foo #1",
+                "date":  null
+            }]
+        }, true);
+
+        assert(converted3.foos[0].date === null);
+
+        const converted4 = wireFormat.convert({
+            kind: "OBJECT",
+            name : "Wrapper"
+        }, {
+            foos: [{
+                "name" : "Foo #1",
+                "date":  ""
+            }]
+        }, true);
+
+        assert(converted4.foos[0].date === null);
+
     });
 
     it("supports wrapping received values as mobx observables", function () {

@@ -53,6 +53,10 @@ const DEFAULT_TO_WIRE = {
     //     return null
     // },
     "Date": function (v) {
+        if (v === null)
+        {
+            return null;
+        }
         normDate(v);
         return v && v.toISOString();
     },
@@ -92,13 +96,13 @@ const DEFAULT_FROM_WIRE = {
     //     return null
     // },
     "Date": function (v) {
-        if (v)
+        if (!v)
         {
-            const d = new Date(v);
-            normDate(d);
-            return d;
+            return null;
         }
-        return v;
+        const d = new Date(v);
+        normDate(d);
+        return d;
     },
     // "Float": function (v) {
     //     return null
