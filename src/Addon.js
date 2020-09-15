@@ -3,15 +3,25 @@ import cx from "classnames"
 import PropTypes from "prop-types"
 import { observer as fnObserver } from "mobx-react-lite"
 
-function addAddons(addons, elems, placementToAdd)
+
+/**
+ * Renders the given addons
+ *
+ * @param {Array<JSX.Element>} addons  array of addons
+ * @param {String} placementToRender    placement to filter for
+ * 
+ * @return {JSX.Element}
+ */
+function renderAddons(addons, placementToRender)
 {
+    const elems = [];
     for (let i = 0; i < addons.length; i++)
     {
         const addon = addons[i];
 
         const { placement } = addon.props;
 
-        if (placement === placementToAdd)
+        if (placement === placementToRender)
         {
             elems.push(
                 React.cloneElement(addon, {
@@ -20,6 +30,44 @@ function addAddons(addons, elems, placementToAdd)
             )
         }
     }
+
+    if (!elems.length)
+    {
+        return false;
+    }
+
+    return (
+        <React.Fragment>
+            {
+                elems
+            }
+        </React.Fragment>
+    )
+}
+
+
+/**
+ * Returns true if the given addons contains LEFT or RIGHT addons, the true addons in the bootstrap sense.
+ *
+ * @param {Array<Addon>} addons array of addons
+ *
+ * @return {boolean} true if addons contains LEFT or RIGHT addons
+ */
+function hasBootstrapAddons(addons)
+{
+    if (addons)
+    {
+        for (let i = 0; i < addons.length; i++)
+        {
+            const { placement } = addons[i].props;
+
+            if (placement === Addon.LEFT || placement === Addon.RIGHT)
+            {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 
@@ -29,8 +77,18 @@ function addAddons(addons, elems, placementToAdd)
  */
 const Addon = fnObserver(({placement = Addon.LEFT, text, className, children}) => {
 
-
     const kids = typeof children === "function" ? children() : children;
+
+    if (placement === Addon.BEFORE || placement === Addon.AFTER)
+    {
+        return (
+            <span className={ className }>
+                {
+                    kids
+                }
+            </span>
+        );
+    }
 
     return (
         <div    
@@ -48,8 +106,10 @@ const Addon = fnObserver(({placement = Addon.LEFT, text, className, children}) =
     );
 });
 
+Addon.BEFORE = "BEFORE";
 Addon.LEFT = "LEFT";
 Addon.RIGHT = "RIGHT";
+Addon.AFTER = "AFTER";
 
 Addon.propTypes = {
     /**
@@ -61,12 +121,16 @@ Addon.propTypes = {
      * Additional classes to add to the addon element.
      */
     className: PropTypes.string,
+
     /**
-     * Placement of the addon relative to the input field.
+     * Placement of the addon relative to the input field. BEFORE and AFTER are not addons in the boostrap sense but just
+     * elements added before or after the field element / input group.
      */
     placement: PropTypes.oneOf([
+        Addon.BEFORE,
         Addon.LEFT,
-        Addon.RIGHT
+        Addon.RIGHT,
+        Addon.AFTER
     ])
 };
 
@@ -74,7 +138,7 @@ Addon.propTypes = {
  * Filters a React children element and returns an array with the <Addon/> elements.
  *
  * @param  children      React children
- * @returns {Array<React.Element>} addons
+ * @returns {Array<JSX.Element>} addons
  */
 Addon.filterAddons = (children) =>
 {
@@ -85,10 +149,10 @@ Addon.filterAddons = (children) =>
 /**
  * Renders the given field element with addons.
  *
- * @param {React.Element} fieldElem         field elem
- * @param {Array<React.Element>} addons     array of Addon elements
+ * @param {JSX.Element} fieldElem         field elem
+ * @param {Array<JSX.Element>} addons     array of Addon elements
  *
- * @returns {React.Element} .input-group element with addons and field Element
+ * @returns {JSX.Element} .input-group element with addons and field Element
  */
 Addon.renderWithAddons = (fieldElem, addons) =>
 {
@@ -97,24 +161,46 @@ Addon.renderWithAddons = (fieldElem, addons) =>
         return fieldElem;
     }
 
-    const elems = [];
-
-    addAddons(addons, elems, Addon.LEFT);
-    elems.push(
-        React.cloneElement(fieldElem, {
-            key: "field"
-        })
-    );
-    addAddons(addons, elems, Addon.RIGHT);
+    if (!hasBootstrapAddons(addons))
+    {
+        // we render without input-group
+        return (
+            <React.Fragment>
+                {
+                    renderAddons(addons, Addon.BEFORE)
+                }
+                {
+                    fieldElem
+                }
+                {
+                    renderAddons(addons, Addon.AFTER)
+                }
+            </React.Fragment>
+        );
+    }
 
     return (
-        <div
-            className="input-group"
-        >
+        <React.Fragment>
             {
-                elems
+                renderAddons(addons, Addon.BEFORE)
             }
-        </div>
+            <div
+                className="input-group"
+            >
+                {
+                    renderAddons(addons, Addon.LEFT)
+                }
+                {
+                    fieldElem
+                }
+                {
+                    renderAddons(addons, Addon.RIGHT)
+                }
+            </div>
+            {
+                renderAddons(addons, Addon.AFTER)
+            }
+        </React.Fragment>
     )
 };
 

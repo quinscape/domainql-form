@@ -513,6 +513,8 @@ describe("Field", function () {
 
     it("optionally renders field addons", function () {
 
+        const clickSpy = sinon.spy();
+
         const schema = getSchema();
 
         const formRoot = observable({
@@ -535,8 +537,10 @@ describe("Field", function () {
 
                             return (
                                 <Field name="description">
+                                    <Addon placement={ Addon.BEFORE} text={ true} className="test-1">BEFORE</Addon>
                                     <Addon placement={ Addon.LEFT} text={ true}>LEFT</Addon>
-                                    <Addon placement={ Addon.RIGHT} text={ false}>RIGHT</Addon>
+                                    <Addon placement={ Addon.RIGHT}><button type="button" onClick={ () => clickSpy("RIGHT") }>RIGHT</button></Addon>
+                                    <Addon placement={ Addon.AFTER} className="test-2"><button type="button" onClick={ () => clickSpy("AFTER") }>AFTER</button></Addon>
                                 </Field>
                             );
                         }
@@ -544,14 +548,44 @@ describe("Field", function () {
                 </Form>
             );
 
+            //console.log(prettyDOM(container))
+
+            const addonBefore = getByText(container, "BEFORE");
             const addonLeft = getByText(container, "LEFT");
             const addonRight = getByText(container, "RIGHT");
+            const addonAfter = getByText(container, "AFTER");
+
+            assert(addonBefore.className === "test-1");
+            assert(addonBefore.parentNode.className === "form-group");
 
             assert(addonLeft.className === "input-group-text");
             assert(addonLeft.parentNode.className === "input-group-prepend");
-            assert(addonRight.className === "input-group-append");
+
+            assert(addonLeft.className === "input-group-text");
+            assert(addonLeft.parentNode.className === "input-group-prepend");
+            assert(addonRight.nodeName === "BUTTON");
+            assert(addonRight.parentNode.className === "input-group-append");
+
+            assert(addonAfter.nodeName === "BUTTON");
+            assert(addonAfter.parentNode.className === "test-2");
+            assert(addonAfter.parentNode.parentNode.className === "form-group");
+
+            act(
+                () => addonRight.click()
+            )
+
+            assert(clickSpy.calledOnce)
+            assert(clickSpy.lastCall.args[0] === "RIGHT")
+
+            act(
+                () => addonAfter.click()
+            )
+
+            assert(clickSpy.calledTwice)
+            assert(clickSpy.lastCall.args[0] === "AFTER")
         }
 
+        // the existence of prop adddons hides child addons
         {
 
             const { container } = render(
