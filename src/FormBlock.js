@@ -37,9 +37,8 @@ const FormBlock = props => {
 
             return formConfig
         },
-        [ parentConfig ]
+        [ parentConfig, options ]
     );
-
 
 
     return (
