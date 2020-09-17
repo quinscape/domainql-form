@@ -598,7 +598,7 @@ describe("Field", function () {
                         ctx => {
 
                             return (
-                                <Field name="description" addons={ [ <Addon placement={ Addon.LEFT} text={ true}>PROP-ADDON</Addon> ] }>
+                                <Field name="name" addons={ [ <Addon placement={ Addon.LEFT} text={ true}>PROP-ADDON</Addon> ] }>
                                     <Addon placement={ Addon.RIGHT} text={ false}>RIGHT</Addon>
                                 </Field>
                             );
@@ -614,6 +614,41 @@ describe("Field", function () {
             assert(propAddon.className === "input-group-text");
             assert(propAddon.parentNode.className === "input-group-prepend");
             assert(!addonRight);
+        }
+
+        // for plain text fields, the true bootstrap addons are moved to the outside
+        {
+
+            const { container } = render(
+                <Form
+                    schema={schema}
+                    type={"DomainFieldInput"}
+                    value={formRoot}
+                >
+                    {
+                        ctx => {
+
+                            return (
+                                <Field name="name" mode={ FieldMode.PLAIN_TEXT }>
+                                    <Addon placement={ Addon.LEFT } moveIfPlainText={ true }>
+                                        LEFT
+                                    </Addon>
+                                    <Addon placement={ Addon.RIGHT } moveIfPlainText={ true }>
+                                        RIGHT
+                                    </Addon>
+                                </Field>
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            const addonLeft = getByText(container, "LEFT");
+            const addonRight = queryByText(container, "RIGHT");
+
+            // addons got moved outside, not rendered as part of input-group
+            assert(addonLeft.parentNode.className === "form-group");
+            assert(addonRight.parentNode.className === "form-group");
         }
     })
 

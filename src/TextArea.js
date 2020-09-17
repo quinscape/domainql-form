@@ -50,7 +50,7 @@ const TextArea = props => {
                     }
                     else
                     {
-                        fieldElem = Addon.renderWithAddons(
+                        fieldElem = (
                             <textarea
                                 ref={fieldRef}
                                 id={fieldId}
@@ -72,10 +72,12 @@ const TextArea = props => {
                                 autoFocus={autoFocus}
                                 disabled={mode === FieldMode.DISABLED}
                                 readOnly={mode === FieldMode.READ_ONLY}
-                            />,
-                            fieldContext.addons
+                            />
                         );
                     }
+
+                    fieldElem = Addon.renderWithAddons(fieldElem, fieldContext.addons);
+
                     return (
                         <FormGroup
                             {...fieldContext}

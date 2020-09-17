@@ -121,6 +121,8 @@ const DEFAULT_RENDERERS =
                     );
                 }
 
+                checkBoxElement = Addon.renderWithAddons(checkBoxElement, ctx.addons);
+
                 return (
                     <FormGroup
                         { ...ctx }
@@ -195,6 +197,8 @@ const DEFAULT_RENDERERS =
                     );
                 }
 
+                fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons);
+
                 return (
                     <FormGroup
                         { ...ctx }
@@ -266,23 +270,9 @@ const DEFAULT_RENDERERS =
                             autoFocus={ autoFocus ? true : null }
                         />
                     );
-
-                    if (fieldType.name === "Currency" && !ctx.addons.length)
-                    {
-                        fieldElement = Addon.renderWithAddons(fieldElement, [
-                            <Addon placement={ currencyAddonRight ? Addon.RIGHT : Addon.LEFT} text={ true}>
-                                {
-                                    currency
-                                }
-                            </Addon>
-                        ]);
-                    }
-                    else if ( ctx.addons.length)
-                    {
-                        fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons);
-                    }
-
                 }
+                
+                fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons);
 
                 return (
                     <FormGroup

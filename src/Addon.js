@@ -75,7 +75,9 @@ function hasBootstrapAddons(addons)
 /**
  * Addon component meant to go inside <Field/> or <TextArea/>
  */
-const Addon = fnObserver(({placement = Addon.LEFT, text, className, children}) => {
+const Addon = fnObserver(({placement = Addon.RIGHT, text, className, moveIfPlainText, children}) => {
+
+    // XXX: moveIfPlainText is handled during field context creation
 
     const kids = typeof children === "function" ? children() : children;
 
@@ -131,7 +133,16 @@ Addon.propTypes = {
         Addon.LEFT,
         Addon.RIGHT,
         Addon.AFTER
-    ])
+    ]),
+
+    /**
+     * If true, move true bootstrap addons (LEFT/RIGHT) to the outsides ( => BEFORE / AFTER) if the field is in plain text
+     * mode. This is useful in situations where you want the addon to appear even when the field is plain text, but you
+     * want to use the nicer looking visual addons when not.
+     *
+     * (Default is false)
+     */
+    moveIfPlainText: PropTypes.bool
 };
 
 /**

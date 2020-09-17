@@ -82,6 +82,32 @@ const Field = fnObserver((props, ref) => {
                 // effectiveLabel = label || "";
             }
 
+            let addons = addonsFromProps || Addon.filterAddons(children);
+
+            if (effectiveMode === FieldMode.PLAIN_TEXT)
+            {
+                addons = addons.map( addon => {
+                    const { placement, moveIfPlainText } = addon.props;
+
+                    if (moveIfPlainText)
+                    {
+                        if (placement === Addon.LEFT)
+                        {
+                            return React.cloneElement(addon, {
+                                placement: Addon.BEFORE
+                            })
+                        }
+                        else if (placement === Addon.RIGHT)
+                        {
+                            return React.cloneElement(addon, {
+                                placement: Addon.AFTER
+                            })
+                        }
+                    }
+                    return addon;
+                });
+            }
+
             const newFieldContext = {
                 isFieldContext: true,
                 fieldRef: ref,
@@ -130,7 +156,7 @@ const Field = fnObserver((props, ref) => {
 
                 validate,
 
-                addons: addonsFromProps || Addon.filterAddons(children)
+                addons
 
             };
 
