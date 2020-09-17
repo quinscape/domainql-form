@@ -13,7 +13,7 @@ const DEFAULT_STATIC_RENDERERS = {
                     // color
                     value ? "text-success" : "text-danger",
                     // icon
-                    "far",
+                    "fa",
                     value ? "fa-check-square" : "fa-square",
                     // margin-right
                     "mr-sm-2"

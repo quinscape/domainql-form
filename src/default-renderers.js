@@ -3,20 +3,20 @@ import cx from "classnames"
 
 import FieldMode from "./FieldMode"
 import InputSchema, { unwrapNonNull } from "./InputSchema"
-import { resolveStaticRenderer } from "./GlobalConfig"
+import GlobalConfig, { resolveStaticRenderer } from "./GlobalConfig"
 import FormGroup from "./FormGroup"
-import unwrapType from "./util/unwrapType";
 import FormLayout from "./FormLayout";
 import Addon from "./Addon";
 import Field from "./Field";
 
-function renderStatic(ctx, fieldValue)
+export function renderStaticField(ctx, fieldValue)
 {
 
     const {
         fieldId,
         inputClass,
-        fieldType
+        fieldType,
+        qualifiedName
     } = ctx;
 
     const scalarType = unwrapNonNull(fieldType);
@@ -32,6 +32,7 @@ function renderStatic(ctx, fieldValue)
     return (
         <span
             id={ fieldId }
+            data-name={ qualifiedName }
             className={
                 cx(
                     inputClass,
@@ -40,7 +41,7 @@ function renderStatic(ctx, fieldValue)
             }
         >
             {
-                staticRenderer(
+                (!value && value !== 0) ? GlobalConfig.none() : staticRenderer(
                     value
                 )
             }
@@ -71,21 +72,19 @@ const DEFAULT_RENDERERS =
 
                 if (mode === FieldMode.PLAIN_TEXT)
                 {
-                    const staticRenderer = resolveStaticRenderer("Boolean");
-
                     checkBoxElement = (
-                        <span id={fieldId} className="form-control-plaintext">
+                        <React.Fragment>
                             {
-                                staticRenderer(fieldValue)
+                                renderStaticField(ctx, fieldValue)
                             }
                             <label
                                 htmlFor={ fieldId }
                             >
-                            {
-                                label
-                            }
+                                {
+                                    label
+                                }
                             </label>
-                        </span>
+                        </React.Fragment>
                     )
                 }
                 else
@@ -163,7 +162,7 @@ const DEFAULT_RENDERERS =
                 let fieldElement;
                 if (mode === FieldMode.PLAIN_TEXT)
                 {
-                    fieldElement = renderStatic(ctx, fieldValue);
+                    fieldElement = renderStaticField(ctx, fieldValue);
                 }
                 else
                 {
@@ -249,7 +248,7 @@ const DEFAULT_RENDERERS =
                 let fieldElement;
                 if (mode === FieldMode.PLAIN_TEXT)
                 {
-                    fieldElement = renderStatic(ctx, fieldValue);
+                    fieldElement = renderStaticField(ctx, fieldValue);
                 }
                 else
                 {

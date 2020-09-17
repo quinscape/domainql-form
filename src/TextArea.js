@@ -8,6 +8,7 @@ import cx from "classnames";
 
 import { resolveStaticRenderer } from "./GlobalConfig"
 import Addon from "./Addon";
+import { renderStaticField } from "./default-renderers";
 
 
 /**
@@ -38,14 +39,7 @@ const TextArea = props => {
                     if (isPlainText)
                     {
                         fieldElem = (
-                            <span
-                                id={fieldId}
-                                className="form-control-plaintext"
-                            >
-                                {
-                                    resolveStaticRenderer(fieldContext.fieldType)(fieldValue)
-                                }
-                            </span>
+                            renderStaticField(fieldContext, fieldValue)
                         );
                     }
                     else

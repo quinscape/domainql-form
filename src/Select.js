@@ -10,6 +10,8 @@ import cx from "classnames";
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
 import { useFormConfig } from "./index";
+import Addon from "./Addon";
+import { renderStaticField } from "./default-renderers";
 
 
 /**
@@ -88,7 +90,7 @@ function findOptionValue(selectElem, values, valueProperty)
  */
 const Select = props => {
 
-    const { values, inputClass, required, nameProperty, valueProperty, ... fieldProps} = props;
+    const { values, inputClass, required, nameProperty, valueProperty, children, ... fieldProps} = props;
 
     const formConfig = useFormConfig();
 
@@ -118,13 +120,14 @@ const Select = props => {
     return (
         <Field
             {... fieldProps}
+            addons={ Addon.filterAddons(children) }
         >
 
             {
                 (formConfig, fieldContext) => {
                     //console.log("render Select", fieldContext);
 
-                    const { fieldRef, fieldId, mode, path, qualifiedName, onBlur, autoFocus, tooltip } = fieldContext;
+                    const { fieldRef, fieldId, mode, path, qualifiedName, onBlur, autoFocus, tooltip, addons } = fieldContext;
 
                     const errorMessages = formConfig.getErrors(path);
                     const fieldValue = Field.getValue(formConfig, fieldContext);
@@ -135,6 +138,65 @@ const Select = props => {
 
                     //console.log("SELECT", qualifiedName, fieldValue, typeof fieldValue);
 
+                    const fieldElement = (
+                        isPlainText ? (
+                            renderStaticField(fieldContext, findDisplayNameForValue(values, fieldValue, nameProperty, valueProperty))
+                        ) : (
+                            <select
+                                ref={fieldRef}
+                                id={fieldId}
+                                className={
+                                    cx(
+                                        inputClass,
+                                        "form-control",
+                                        errorMessages.length > 0 && "is-invalid"
+                                    )
+                                }
+                                name={qualifiedName}
+                                value={fieldValue}
+                                disabled={mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
+                                onChange={ev => handleChange(fieldContext, ev)}
+                                onBlur={onBlur}
+                                autoFocus={autoFocus}
+                                title={ tooltip }
+                            >
+                                {
+                                    !required && <option key="" value="">{noneText}</option>
+                                }
+                                {
+                                    values.map(v => {
+
+                                        let name, value;
+                                        if (typeof v === "string")
+                                        {
+                                            name = v;
+                                            value = v;
+                                        }
+                                        else
+                                        {
+                                            name = v[nameProperty];
+                                            value = v[valueProperty];
+                                        }
+
+                                        return (
+                                            <option
+                                                key={value}
+                                                value={value}
+                                            >
+                                                {
+                                                    name
+                                                }
+                                            </option>
+                                        );
+                                    })
+                                }
+                            </select>
+                        )
+                    );
+
+
+
+
                     return (
                         <FormGroup
                             {...fieldContext}
@@ -142,66 +204,7 @@ const Select = props => {
                             errorMessages={errorMessages}
                         >
                             {
-                                isPlainText ? (
-                                    <span
-                                        id={fieldId}
-                                        className="form-control-plaintext"
-                                    >
-                            {
-                                findDisplayNameForValue(values, fieldValue, nameProperty, valueProperty)
-                            }
-                        </span>
-                                ) : (
-                                    <select
-                                        ref={fieldRef}
-                                        id={fieldId}
-                                        className={
-                                            cx(
-                                                inputClass,
-                                                "form-control",
-                                                errorMessages.length > 0 && "is-invalid"
-                                            )
-                                        }
-                                        name={qualifiedName}
-                                        value={fieldValue}
-                                        disabled={mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
-                                        onChange={ev => handleChange(fieldContext, ev)}
-                                        onBlur={onBlur}
-                                        autoFocus={autoFocus}
-                                        title={ tooltip }
-                                    >
-                                        {
-                                            !required && <option key="" value="">{noneText}</option>
-                                        }
-                                        {
-                                            values.map(v => {
-
-                                                let name, value;
-                                                if (typeof v === "string")
-                                                {
-                                                    name = v;
-                                                    value = v;
-                                                }
-                                                else
-                                                {
-                                                    name = v[nameProperty];
-                                                    value = v[valueProperty];
-                                                }
-
-                                                return (
-                                                    <option
-                                                        key={value}
-                                                        value={value}
-                                                    >
-                                                        {
-                                                            name
-                                                        }
-                                                    </option>
-                                                );
-                                            })
-                                        }
-                                    </select>
-                                )
+                                Addon.renderWithAddons(fieldElement, addons)
                             }
                         </FormGroup>
                     )

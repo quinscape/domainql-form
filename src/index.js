@@ -25,7 +25,7 @@ import unwrapType from "./util/unwrapType";
 import FieldGroup from "./FieldGroup";
 import Addon from "./Addon";
 import ErrorStorage from "./ErrorStorage";
-
+import renderStaticField from "./default-renderers"
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
 
 
@@ -65,5 +65,7 @@ export {
     registerDomainObjectFactory,
     registerFallbackCloneFunction,
 
-    ErrorStorage
+    ErrorStorage,
+
+    renderStaticField
 }
