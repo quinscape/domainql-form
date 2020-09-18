@@ -69,7 +69,9 @@ const GlobalErrors = fnObserver(props => {
     const globalErrorsRef = useRef(null);
 
     const errors = formConfig.errorStorage.getErrors(formConfig.root);
-    
+
+    const numErrors = errors.length;
+
     const errorIdList = globalErrorsRef.current ? findFieldIds(errors, globalErrorsRef.current) : [];
 
     useEffect(
@@ -121,6 +123,7 @@ const GlobalErrors = fnObserver(props => {
         <div
             ref={ globalErrorsRef }
             className="global-errors"
+            data-errors={ numErrors }
         >
             <div
                 style={{
