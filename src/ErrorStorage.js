@@ -48,7 +48,7 @@ export default class ErrorStorage
         {
             errors.push({
                     path,
-                    errorMessages: [ value !== undefined ? value : get(this.root, path), msg]
+                    errorMessages: [ value !== undefined ? value : get(root, path), msg]
                 }
             )
         }
