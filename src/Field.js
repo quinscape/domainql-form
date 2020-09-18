@@ -167,6 +167,8 @@ const Field = fnObserver((props, ref) => {
                 validation.fieldContext(newFieldContext)
             }
 
+            Field.registerContext(formConfig.root, newFieldContext);
+
             return newFieldContext;
 
         },
@@ -288,6 +290,38 @@ Field.getValue = (formConfig, fieldContext, errorMessages = formConfig.getErrors
         return InputSchema.scalarToValue(unwrapped.name, value, fieldContext);
     }
 
+}
+
+const fieldContexts = new WeakMap();
+
+/**
+ * Returns a map with all registered field contexts for the given root.
+ *
+ * @param root
+ * @return {any}
+ */
+Field.lookupContexts = (root) =>
+{
+    return fieldContexts.get(root);
+}
+
+/**
+ * Registers the given field context for the given root form object.
+ *
+ * @param {object} root     root form object
+ * @param {Object} ctx      field context
+ */
+Field.registerContext = (root, ctx) =>
+{
+    const { qualifiedName } = ctx;
+
+    let map = fieldContexts.get(root);
+    if (!map)
+    {
+        map = new Map();
+        fieldContexts.set(root, map);
+    }
+    map.set(qualifiedName, ctx);
 }
 
 

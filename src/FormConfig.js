@@ -24,7 +24,8 @@ export const DEFAULT_OPTIONS = {
     autoSubmit: false,
     submitTimeOut: 350,
     suppressLabels: false,
-    isolation: true
+    isolation: true,
+    revalidate: true
 };
 
 /**

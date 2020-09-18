@@ -11,6 +11,7 @@ import FormLayout from "./FormLayout";
 import { useDebouncedCallback } from "use-debounce"
 import { fallbackJSClone } from "./util/clone";
 import { useObserver } from "mobx-react-lite";
+import revalidate from "./util/revalidate";
 
 
 function getSchema(formConfig, props)
@@ -109,12 +110,20 @@ const Form  = props =>  {
 
     const handleSubmit = useCallback(
         ev => {
-            
+
             ev && ev.preventDefault();
 
-            if (onSubmit)
+            if (formConfig.options.revalidate)
             {
-                onSubmit(formConfig)
+                revalidate(formConfig);
+            }
+
+            if (!formConfig.hasErrors())
+            {
+                if (onSubmit)
+                {
+                    onSubmit(formConfig)
+                }
             }
         },
         [ root, onSubmit ]

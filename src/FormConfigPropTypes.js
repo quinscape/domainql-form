@@ -61,5 +61,10 @@ export default {
     /**
      * Whether to protect the original observable value from changing by cloning (default: true)
      */
-    isolation: PropTypes.bool
+    isolation: PropTypes.bool,
+
+    /**
+     * If true, revalidate all field of the current form context (Default is true)
+     */
+    revalidate: PropTypes.bool,
 }
