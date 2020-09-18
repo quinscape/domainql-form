@@ -156,7 +156,7 @@ const DEFAULT_RENDERERS =
                     handleBlur
                 } = ctx;
 
-                const errorMessages = formConfig.getErrors(path);
+                const errorMessages = formConfig.getErrors(qualifiedName);
                 const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
 
                 let fieldElement;

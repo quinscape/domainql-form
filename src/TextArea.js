@@ -30,7 +30,7 @@ const TextArea = props => {
 
                     const {fieldRef, fieldId, mode, qualifiedName, path, autoFocus, tooltip, placeholder, handleChange, handleBlur} = fieldContext;
 
-                    const errorMessages = formConfig.getErrors(path);
+                    const errorMessages = formConfig.getErrors(qualifiedName);
                     const fieldValue = Field.getValue(formConfig, fieldContext);
 
                     const isPlainText = mode === FieldMode.PLAIN_TEXT;

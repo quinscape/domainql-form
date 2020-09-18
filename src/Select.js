@@ -129,7 +129,7 @@ const Select = props => {
 
                     const { fieldRef, fieldId, mode, path, qualifiedName, onBlur, autoFocus, tooltip, addons } = fieldContext;
 
-                    const errorMessages = formConfig.getErrors(path);
+                    const errorMessages = formConfig.getErrors(qualifiedName);
                     const fieldValue = Field.getValue(formConfig, fieldContext);
 
                     const noneText = GlobalConfig.none();
