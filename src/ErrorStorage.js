@@ -32,9 +32,6 @@ export default class ErrorStorage
     addError(root, path, msg, value)
     {
         const errors = this.getErrors(root);
-        errors.push({
-
-        })
 
         let i, existing;
         for (i = 0; i < errors.length; i++)
