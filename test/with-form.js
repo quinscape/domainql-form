@@ -13,6 +13,7 @@ import { observable } from "mobx";
 import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FieldMode from "../src/FieldMode";
+import Form from "../src/Form";
 
 
 describe("withForm()", function () {
@@ -61,6 +62,9 @@ describe("withForm()", function () {
         const { container, getByLabelText } = render(
             <EnhancedForm
                 value={formRoot}
+                options={{
+                    isolation: true
+                }}
             />
         );
 

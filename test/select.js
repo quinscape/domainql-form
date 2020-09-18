@@ -54,6 +54,9 @@ describe("Select", function (){
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
+                options={{
+                    isolation: true
+                }}
             >
                 {
                     ctx => {
@@ -235,6 +238,9 @@ describe("Select", function (){
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
+                options={{
+                    isolation: true
+                }}
             >
                 {
                     ctx => {
@@ -426,6 +432,9 @@ describe("Select", function (){
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
+                options={{
+                    isolation: true
+                }}
             >
                 {
                     ctx => {
@@ -545,6 +554,9 @@ describe("Select", function (){
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
+                options={{
+                    isolation: true
+                }}
             >
                 {
                     ctx => {

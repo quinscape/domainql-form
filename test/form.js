@@ -245,6 +245,9 @@ describe("Form", function () {
             <Form
                 schema={ getSchema() }
                 type={ "EnumTypeInput" }
+                options={{
+                    isolation: true
+                }}
                 value={
                     formRoot
                 }
@@ -383,6 +386,9 @@ describe("Form", function () {
             <Form
                 schema={ getSchema() }
                 type={ "DomainFieldInput" }
+                options={{
+                    isolation: true
+                }}
                 value={
                     // we only edit the second field of the domain type
                     formRoot.fields[1]
@@ -463,6 +469,9 @@ describe("Form", function () {
             <Form
                 schema={ getSchema() }
                 type={ "DomainTypeInput" }
+                options={{
+                    isolation: true
+                }}
                 value={
                     formRoot
                 }
@@ -524,6 +533,7 @@ describe("Form", function () {
                     type={ "EnumTypeInput" }
                     value={ formRoot }
                     options={{
+                        isolation: true,
                         autoSubmit: true,
                         submitTimeOut: 50
                     }}
@@ -619,6 +629,9 @@ describe("Form", function () {
                 <Form
                     schema={ getSchema() }
                     value={ formRoot }
+                    options={{
+                        isolation: true
+                    }}
                 >
                     {
                         ctx => {
@@ -712,7 +725,7 @@ describe("Form", function () {
 
     });
 
-    it("optionally works without isolation", function () {
+    it("works without isolation by default", function () {
 
         let renderSpy = sinon.spy();
 
@@ -724,12 +737,15 @@ describe("Form", function () {
         });
         let container, getByLabelText;
 
+
+        // XXX: isolation used to be the default and a lot of tests still use it, but the default is no isolation now,
+        //      i.e. the form writes directly into the observables.
+
         act(() => {
             const result = render(
                 <Form
                     schema={ getSchema() }
                     value={ formRoot }
-                    options={ { isolation: false } }
                 >
                     {
                         ctx => {
@@ -838,6 +854,9 @@ describe("Form", function () {
                     // we only edit the second field of the domain type
                     formRoot
                 }
+                options={{
+                    isolation: true
+                }}
             >
                 {
                     ctx => {
