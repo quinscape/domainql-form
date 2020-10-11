@@ -25,7 +25,8 @@ export function renderStaticField(ctx, fieldValue)
 
     const value = scalarType.kind === "SCALAR" ? InputSchema.valueToScalar(
         scalarType.name,
-        fieldValue
+        fieldValue,
+        ctx
     ): fieldValue;
 
 

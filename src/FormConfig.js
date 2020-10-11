@@ -245,7 +245,7 @@ class FormConfig
             const haveErrors = errorsForField.length > 1;
             if (!haveErrors)
             {
-                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value) : value;
+                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
             }
 
             // UPDATE

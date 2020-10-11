@@ -336,16 +336,15 @@ class InputSchema
         return fn ? fn(value, ctx) : value
     }
 
-    static valueToScalar(scalarType, value)
+    static valueToScalar(scalarType, value, ctx = null)
     {
         if (value === "")
         {
-
             return null;
         }
 
         const fn = handlerFn(scalarType, "valueToScalar");
-        return fn ? fn(value) : value
+        return fn ? fn(value, ctx) : value
     }
 
     toValues(typeName, value)
