@@ -52,7 +52,7 @@ const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB } = props;
 
     const fieldContext = useMemo(
         () => {
@@ -162,6 +162,11 @@ const Field = fnObserver((props, ref) => {
 
             const { validation } = formConfig.options;
 
+            if (typeof fieldContextCB === "function")
+            {
+                fieldContextCB(newFieldContext);
+            }
+
             if (validation && validation.fieldContext)
             {
                 validation.fieldContext(newFieldContext)
@@ -265,7 +270,12 @@ Field.propTypes = {
      * Array of addons as props instead of as children. Only useful if you're writing a component wrapping Field and want
      * to render your addons as field addons while using the render function form.
      */
-    addons: PropTypes.array
+    addons: PropTypes.array,
+
+    /**
+     * Callback function that allows complex field implementations to modify the newly created field context ( fieldContext => void ).
+     */
+    fieldContext: PropTypes.func
 };
 
 Field.displayName = "Field";
