@@ -16,7 +16,7 @@ export function renderHelpBlock(haveErrors, errorMessages, helpText)
     if (formText)
     {
         helpBlock = (
-            <p className={cx(haveErrors ? "invalid-feedback" : "text-muted")}>
+            <p className={cx(haveErrors ? "invalid-feedback d-block" : "text-muted")}>
                 {formText.map((txt, idx) => <span key={idx}> {txt} </span>)}
             </p>
         )
