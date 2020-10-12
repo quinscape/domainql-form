@@ -198,6 +198,11 @@ const GlobalConfig = {
         renderers = newRenderers;
     },
 
+    registerStaticRenderer: function(type, fn)
+    {
+        staticRenderers[type] = fn;
+    },
+
     registerLabelLookup: function(func)
     {
         labelLookup = func;
