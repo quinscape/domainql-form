@@ -435,7 +435,7 @@ export default class WireFormat {
         catch(e)
         {
             throw new Error(
-                "Error converting type " + describeTypeRef(typeRef) + (convertOpts ? " from" : " to") + " wire format: path = " + path +
+                "Error converting type " + describeTypeRef(typeRef) + (convertOpts.fromWire ? " from" : " to") + " wire format: path = " + path +
                 ":\nVALUE: " + JSON.stringify(value, null,4) +
                 "\nERROR: " +  e)
         }
