@@ -49,8 +49,18 @@ const CURRENCY_LIMIT_HIGH = Number.MAX_SAFE_INTEGER / CURRENCY_MULTIPLIER;
 
 const checkBoolean = checkRegexp(BOOLEAN_RE, "Invalid boolean");
 const DEFAULT_CONVERTERS = {
-    "String" : false,
-    // formik uses boolean values
+    "String" : {
+        validate: (v,ctx) => {
+
+            if (ctx && ctx.maxLength && v.length > ctx.maxLength)
+            {
+                return "Value too long";
+            }
+            return null;
+        },
+        scalarToValue: false,
+        valueToScalar: false
+    },
     "Boolean" : {
         validate: v => typeof v !== "boolean" ? "Invalid boolean" : null,
         scalarToValue: function (scalar) {

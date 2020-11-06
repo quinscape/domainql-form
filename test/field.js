@@ -818,4 +818,62 @@ describe("Field", function () {
 
         assert(!formConfig.getErrors("name").length);
     });
+
+    it("validates maximum length on 'String' fields", function () {
+
+        const renderSpy = sinon.spy();
+
+        const formRoot = observable({
+            _type: "EnumTypeInput",
+            name: "MyEnum",
+            values: ["A", "B", "C"],
+        });
+
+        const { container } = render(
+            <Form
+                schema={getSchema()}
+                type={"EnumTypeInput"}
+                options={{ isolation: false }}
+                value={
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field
+                                name="name"
+                                maxLength={ 6 }
+                            />
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        //console.log(loc, mode, prettyDOM(container));
+
+
+
+        const input = queryByLabelText(container, "name");
+
+        act(() => { userEvent.type(input, "LongerName") })
+
+        const formConfig = renderSpy.lastCall.args[0];
+
+        // The value only gets written back as long as its below maxLength, so it stops at "Longer"
+        assert(formConfig.root.name === "Longer");
+
+        assert.deepEqual(formConfig.getErrors("name"), ["LongerName","Value too long"]);
+
+
+        act(() => { userEvent.type(input, "Short") });
+
+        assert(formConfig.root.name === "Short");
+        assert(formRoot.name === "Short");
+
+        assert(!formConfig.getErrors("name").length);
+    });
 });

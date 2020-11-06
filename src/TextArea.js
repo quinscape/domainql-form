@@ -132,7 +132,12 @@ TextArea.propTypes = {
     /**
      * Cols attribute for the textarea element (default is 60)
      */
-    cols: PropTypes.number
+    cols: PropTypes.number,
+
+    /**
+     * Maximum field length
+     */
+    maxLength: PropTypes.number
 };
 
 TextArea.defaultProps = {

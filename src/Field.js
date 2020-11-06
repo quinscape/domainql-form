@@ -52,7 +52,7 @@ const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB, maxLength } = props;
 
     const fieldContext = useMemo(
         () => {
@@ -123,7 +123,7 @@ const Field = fnObserver((props, ref) => {
                 formGroupClass,
                 tooltip,
                 helpText,
-
+                maxLength,
                 rootType: formConfig.type,
 
                 mode: effectiveMode,
@@ -275,7 +275,12 @@ Field.propTypes = {
     /**
      * Callback function that allows complex field implementations to modify the newly created field context ( fieldContext => void ).
      */
-    fieldContext: PropTypes.func
+    fieldContext: PropTypes.func,
+
+    /**
+     * Maximum field length (for string fields)
+     */
+    maxLength: PropTypes.number
 };
 
 Field.displayName = "Field";

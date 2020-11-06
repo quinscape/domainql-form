@@ -1,5 +1,5 @@
 import React from "react"
-import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText } from "@testing-library/react"
+import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, act } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -228,5 +228,75 @@ describe("TextArea", function (){
 
 
     });
+
+    it(
+        "validates maximum length", () => {
+
+            const renderSpy = sinon.spy();
+
+            /*
+            input DomainFieldInput {
+                name: String!
+                description: String
+                type: FieldType!
+                required: Boolean!
+                maxLength: Int!
+                sqlType: String
+                config: [ConfigValueInput]
+                unique: Boolean
+            }
+             */
+
+            const formRoot = observable({
+                name: "MyField",
+                description: "XXX",
+                type: "STRING",
+                required: true,
+                maxLength: -1
+            });
+            const { container } = render(
+                <Form
+                    schema={ getSchema() }
+                    type={ "DomainFieldInput" }
+                    value={ formRoot }
+                >
+                    {
+                        ctx => {
+
+                            renderSpy(ctx);
+                            return (
+                                <TextArea
+                                    name="description"
+                                    maxLength={ 3 }
+                                />
+                            );
+                        }
+                    }
+                </Form>
+            );
+
+            //console.log(prettyDOM(container));
+
+            const textArea = queryByLabelText(container, "description");
+
+            act(() => { userEvent.type(textArea, "ABCD") })
+
+            const formConfig = renderSpy.lastCall.args[0];
+
+            // The value only gets written back as long as its below maxLength, so it stops at "ABC"
+            assert(formConfig.root.description === "ABC");
+
+            assert.deepEqual(formConfig.getErrors("description"), ["ABCD","Value too long"]);
+
+
+            act(() => { userEvent.type(textArea, "AAA") });
+
+            assert(formConfig.root.description === "AAA");
+            assert(formRoot.description === "AAA");
+
+            assert(!formConfig.getErrors("description").length);
+
+
+        });
 
 });
