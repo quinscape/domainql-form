@@ -32,9 +32,9 @@ export function resetConverter()
  * Register new scalar converter / validator
  *
  * @param {String} type                 type name
- * @param {function} validate           validates the given string value and returns an error message if the value is invalid
- * @param {function} scalarToValue      converts the scalar value to a user-editable string representation
- * @param {function} valueToScalar      converts the string representation back to a scalar value
+ * @param {function|boolean} validate           validates the given string value and returns an error message if the value is invalid
+ * @param {function|boolean} scalarToValue      converts the scalar value to a user-editable string representation
+ * @param {function|boolean} valueToScalar      converts the string representation back to a scalar value
  */
 export function registerCustomConverter(type, validate, scalarToValue, valueToScalar)
 {
