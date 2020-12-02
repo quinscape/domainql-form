@@ -8,17 +8,21 @@ import { CURRENCY_MULTIPLIER } from "./default-converters";
 const DEFAULT_STATIC_RENDERERS = {
     "Boolean" : (value) => {
         return (
-            <span className={
-                cx(
-                    // color
-                    value ? "text-success" : "text-danger",
-                    // icon
-                    "fa",
-                    value ? "fa-check-square" : "fa-square",
-                    // margin-right
-                    "mr-sm-2"
-                )
-            }/>
+            <span
+                className={
+                    cx(
+                        // color
+                        value ? "text-success" : "text-muted",
+                        // icon
+                        "fa",
+                        value ? "fa-check-square" : "fa-square",
+                        // margin-right
+                        "mr-sm-2"
+                    )
+                }
+                title={ String(value) }
+                aria-label={ String(value) }
+            />
         )
     },
     "Currency" : (value) => {
