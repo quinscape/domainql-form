@@ -248,7 +248,7 @@ Field.propTypes = {
     onChange: PropTypes.func,
 
     /**
-     * Optional per-field validation function  ( (value, fieldContext) => error ). It receives the current value as string
+     * Optional per-field validation function  ( (fieldContext, value) => error ). It receives the current value as string
      * and the current field context and returns an error string if there is any or `null` if there is no error.
      *
      * The local validation is executed after the type validation and also prevents invalid values from being written back
