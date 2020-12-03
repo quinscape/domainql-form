@@ -118,9 +118,20 @@ function defaultStaticRenderer(value)
     return String(value);
 }
 
-export function resolveStaticRenderer(name)
+const RSR_DEFAULTS = {
+    default: true
+};
+
+/**
+ * Resolves the static renderer for the given scalar type
+ * @param {String} name     scalar type name
+ * @param {Object} [opts]     options
+ * @param {Object} opts     options
+ * @return {*|(function(*=): string)|null}
+ */
+export function resolveStaticRenderer(name, opts = RSR_DEFAULTS)
 {
-    return staticRenderers[name] || defaultStaticRenderer;
+    return staticRenderers[name] || ( opts.default ? defaultStaticRenderer : null);
 }
 
 /**

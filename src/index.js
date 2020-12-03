@@ -6,7 +6,7 @@ import FormBlock from "./FormBlock"
 import FormConfig from "./FormConfig"
 import FormConfigProvider from "./FormConfigProvider"
 import FormGroup from "./FormGroup"
-import GlobalConfig from "./GlobalConfig"
+import GlobalConfig,{ resolveStaticRenderer } from "./GlobalConfig"
 import GlobalErrors from "./GlobalErrors"
 import InputSchema, { registerCustomConverter } from "./InputSchema"
 import Select from "./Select"
@@ -67,5 +67,6 @@ export {
 
     ErrorStorage,
 
-    renderStaticField
+    renderStaticField,
+    resolveStaticRenderer
 }
