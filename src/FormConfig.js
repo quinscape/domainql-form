@@ -76,6 +76,7 @@ class FormConfig
      */
     constructor(opts, schema = null, errorStorage = getDefaultErrorStorage())
     {
+
         if (schema instanceof InputSchema)
         {
             this.schema = schema;
@@ -94,6 +95,8 @@ class FormConfig
 
         // clear form context
         this.setFormContext();
+
+        //console.log("NEW FormConfig", this)
     }
 
 
@@ -318,6 +321,21 @@ class FormConfig
             {
                 this.ctx.debouncedSubmit();
             }
+        }
+    }
+
+    getMode()
+    {
+        const { root } = this;
+        const { mode } = this.options;
+        
+        if (!root && mode === FieldMode.NORMAL)
+        {
+            return FieldMode.DISABLED;
+        }
+        else
+        {
+            return mode;
         }
     }
 }

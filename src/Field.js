@@ -59,7 +59,7 @@ const Field = fnObserver((props, ref) => {
             const { id, label, autoFocus, tooltip, placeholder, type } = props;
 
             const qualifiedName = formConfig.getPath(name);
-            const effectiveMode = mode || formConfig.options.mode;
+            const effectiveMode = mode || formConfig.getMode();
 
             const path = toPath(qualifiedName);
 
@@ -172,7 +172,10 @@ const Field = fnObserver((props, ref) => {
                 validation.fieldContext(newFieldContext)
             }
 
-            Field.registerContext(formConfig.root, newFieldContext);
+            if (formConfig.root)
+            {
+                Field.registerContext(formConfig.root, newFieldContext);
+            }
 
             return newFieldContext;
 
@@ -294,7 +297,12 @@ Field.getValue = (formConfig, fieldContext, errorMessages = formConfig.getErrors
     else
     {
         const { fieldType, path } = fieldContext;
-        const value = get(formConfig.root, path);
+        let value = get(formConfig.root, path);
+        if (value === undefined)
+        {
+            value = null;
+        }
+
         //console.log("getValue", this.root, path, " = ", value);
 
         const unwrapped = unwrapType(fieldType);

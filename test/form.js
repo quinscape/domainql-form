@@ -1,6 +1,6 @@
 import React from "react"
 import { describe, after, afterEach, it } from "mocha";
-import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByText } from "@testing-library/react"
+import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByText, getByLabelText } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -11,12 +11,14 @@ import Form from "../src/Form";
 import FormConfig, { FormConfigContext, DEFAULT_OPTIONS } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import Field from "../src/Field";
-import { observable } from "mobx";
+import { observable, runInAction } from "mobx";
+import { observer as fnObserver } from "mobx-react-lite";
 import viewModelToJs from "./util/viewModelToJs";
 import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
 import ErrorStorage from "../src/ErrorStorage";
+import assertRenderThrows from "./util/assertRenderThrows";
 
 
 describe("Form", function () {
@@ -1108,4 +1110,129 @@ describe("Form", function () {
         assert(form.elements[0].value === "Elmer")
 
     });
+
+    it("works with null form object", () => {
+
+        const renderSpy = sinon.spy();
+
+        const FormComponent = fnObserver(({state, renderSpy}) => {
+            return (
+
+                    <Form
+                        key={ state.formObject && state.formObject.id }
+                        id="my-form"
+                        type={ "EnumTypeInput" }
+                        value={
+                            state.formObject
+                        }
+                    >
+                        { formConfig => {
+                            renderSpy(formConfig);
+                            return (
+                                <React.Fragment>
+                                    <Field name="name" />
+                                </React.Fragment>
+                            );
+                        } }
+                    </Form>
+            )
+        })
+
+        const state = observable({
+            /*
+                input EnumTypeInput {
+                  name: String!
+                  values: [String]!
+                  description: String
+                }
+             */
+            formObject: null
+        });
+
+        let container;
+
+        act(
+            () => {
+                const result = render(
+                    <FormConfigProvider
+                        schema={getSchema() }
+
+                    >
+                        <FormComponent
+                            state={ state }
+                            renderSpy={ renderSpy }
+                        />
+                    </FormConfigProvider>
+                );
+
+                container = result.container;
+            }
+        )
+
+
+        const input = getByLabelText(container, "name")
+
+        assert(input.disabled)
+        assert(input.value === "")
+
+        return Promise.resolve()
+            .then(() => {
+
+                act(
+                    () => {
+                        runInAction(
+                            () => state.formObject = {
+                                id: "2840e722-fde0-41f9-8e95-3147e378b9a8",
+                                name: "MyEnum",
+                                values: ["A", "B", "C"],
+                            }
+                        )
+                    }
+                )
+
+                const input = getByLabelText(container, "name")
+
+                assert(!input.disabled)
+                assert(input.value === "MyEnum")
+
+                act(
+                    () => {
+                        userEvent.type(input, "AnotherEnum");
+                    }
+                )
+
+                const formConfig = renderSpy.lastCall.args[0];
+                assert(formConfig.root.name === "AnotherEnum");
+                assert(state.formObject.name === "AnotherEnum");
+
+                // XXX: Make sure we still complain about wrong field names
+                assertRenderThrows(
+                    <FormConfigProvider
+                        schema={getSchema() }
+
+                    >
+                        <Form
+                            key={ state.formObject && state.formObject.id }
+                            id="my-form"
+                            type={ "EnumTypeInput" }
+                            value={
+                                null
+                            }
+                        >
+                            { formConfig => {
+                                renderSpy(formConfig);
+                                return (
+                                    <React.Fragment>
+                                        <Field name="name2" />
+                                    </React.Fragment>
+                                );
+                            } }
+                        </Form>
+                    </FormConfigProvider>,
+                    /Could not find 'name2'/
+                )
+            })
+
+    })
+
 });

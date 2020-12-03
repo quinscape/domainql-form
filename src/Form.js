@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 
 import PropTypes from "prop-types"
 import FormConfig, { DEFAULT_OPTIONS, FormConfigContext } from "./FormConfig";
@@ -79,6 +79,11 @@ function getOption(name, options, parentOptions)
 
 function cloneRoot(schema, value, options, parentConfig)
 {
+    if (!value)
+    {
+        return null;
+    }
+
     // return as-is if isolation option is falsy
     if (!getOption("isolation", options, parentConfig && parentConfig.options))
     {
@@ -158,7 +163,7 @@ const Form  = props =>  {
             formConfig = new FormConfig(
                 options,
                 schema,
-            errorStorage
+                errorStorage
             );
         }
 
@@ -259,7 +264,7 @@ Form.propTypes = {
     /**
      * initial value (typed GraphQL object)
      */
-    value: PropTypes.any.isRequired,
+    value: PropTypes.any,
 
     /**
      * High-level validation configuration object
