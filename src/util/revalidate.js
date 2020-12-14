@@ -128,8 +128,9 @@ function revalidateRecursive(parentType, typeRef, value, root, errorStorage, con
             const elementType = typeRef.ofType;
             for (let j = 0; j < value.length; j++)
             {
+                const pathForElem = join(path, j);
                 //console.log("CONVERT ELEMENT", elementType, value[j], convertOpts);
-                revalidateRecursive(parentType, elementType, value[j], root, errorStorage, contexts, validation, schema, path);
+                revalidateRecursive(parentType, elementType, value[j], root, errorStorage, contexts, validation, schema, pathForElem);
             }
         }
     }
