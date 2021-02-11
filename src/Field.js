@@ -70,7 +70,7 @@ const Field = fnObserver((props, ref) => {
             if (name && name.length)
             {
                 const lastSegment = path[path.length - 1];
-                fieldId = id || "field-" + formConfig.type + "-" + qualifiedName;
+                fieldId = id || "c" + formConfig.formContext.id + ":" + formConfig.ctx.formId + ":" + qualifiedName;
                 effectiveLabel =
                     typeof label === "string" ? label : formConfig.options.lookupLabel(formConfig, lastSegment);
             }
@@ -126,6 +126,8 @@ const Field = fnObserver((props, ref) => {
                 maxLength,
                 rootType: formConfig.type,
 
+                root: formConfig.root,
+
                 mode: effectiveMode,
                 label: effectiveLabel,
 
@@ -174,7 +176,7 @@ const Field = fnObserver((props, ref) => {
 
             if (formConfig.root)
             {
-                Field.registerContext(formConfig.root, newFieldContext);
+                formConfig.formContext.registerFieldContext(newFieldContext);
             }
 
             return newFieldContext;
@@ -313,38 +315,6 @@ Field.getValue = (formConfig, fieldContext, errorMessages = formConfig.getErrors
         return InputSchema.scalarToValue(unwrapped.name, value, fieldContext);
     }
 
-}
-
-const fieldContexts = new WeakMap();
-
-/**
- * Returns a map with all registered field contexts for the given root.
- *
- * @param root
- * @return {any}
- */
-Field.lookupContexts = (root) =>
-{
-    return fieldContexts.get(root);
-}
-
-/**
- * Registers the given field context for the given root form object.
- *
- * @param {object} root     root form object
- * @param {Object} ctx      field context
- */
-Field.registerContext = (root, ctx) =>
-{
-    const { qualifiedName } = ctx;
-
-    let map = fieldContexts.get(root);
-    if (!map)
-    {
-        map = new Map();
-        fieldContexts.set(root, map);
-    }
-    map.set(qualifiedName, ctx);
 }
 
 

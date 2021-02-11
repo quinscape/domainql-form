@@ -24,10 +24,9 @@ import FormLayout from "./FormLayout"
 import unwrapType from "./util/unwrapType";
 import FieldGroup from "./FieldGroup";
 import Addon from "./Addon";
-import ErrorStorage from "./ErrorStorage";
 import { renderStaticField } from "./default-renderers"
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
-
+import FormContext, { getDefaultFormContext } from "../src/FormContext";
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -65,8 +64,9 @@ export {
     registerDomainObjectFactory,
     registerFallbackCloneFunction,
 
-    ErrorStorage,
-
     renderStaticField,
-    resolveStaticRenderer
+    resolveStaticRenderer,
+
+    FormContext,
+    getDefaultFormContext
 }

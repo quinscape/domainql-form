@@ -1,6 +1,6 @@
 import React from "react"
 import { describe, after, afterEach, it } from "mocha";
-import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByText, getByLabelText } from "@testing-library/react"
+import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByText, getByLabelText,flushEffects } from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -17,17 +17,16 @@ import viewModelToJs from "./util/viewModelToJs";
 import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
-import ErrorStorage from "../src/ErrorStorage";
+import FormContext, { getDefaultFormContext, resetDefaultFormContext } from "../src/FormContext";
 import assertRenderThrows from "./util/assertRenderThrows";
 
 
 describe("Form", function () {
 
     // automatically unmount and cleanup DOM after the tests are finished.
-    afterEach( cleanup );
+    afterEach( cleanup);
 
-    after(dumpUsage);
-
+    //afterEach( resetFormContext );
 
     it("provides a form config to render function", function () {
 
@@ -952,8 +951,6 @@ describe("Form", function () {
         const renderSpyA = sinon.spy();
         const renderSpyB = sinon.spy();
 
-        const errorStorage = new ErrorStorage();
-
         /*
             input DomainTypeInput {
               name: String!
@@ -989,82 +986,79 @@ describe("Form", function () {
             }
         });
 
+
+        // XXX: we test two forms with the same form context and different root objects.
         const { container } = render(
             <FormConfigProvider
-                errorStorage={ errorStorage }
+                schema={ getSchema() }
                 options={{
                     isolation: false
                 }}
             >
-            <Form
-                schema={ getSchema() }
-                type={ "DomainTypeInput" }
-                value={
-                    formRoot
-                }
-            >
-                {
-                    ctx => {
-
-                        renderSpyA(ctx);
-                        return (
-                            <React.Fragment>
-                                <Field name="fields.0.maxLength"/>
-                                <p className="form-control-plainText">{ ctx.hasErrors() ? "0:ERROR" : "0:OK"  } </p>
-                            </React.Fragment>
-                        );
+                <Form
+                    type={ "DomainTypeInput" }
+                    value={
+                        formRoot
                     }
-                }
-            </Form>
-            <Form
-                schema={ getSchema() }
-                type={ "DomainTypeInput" }
-                value={
-                    formRoot
-                }
-            >
-                {
-                    ctx => {
+                >
+                    {
+                        ctx => {
 
-                        renderSpyB(ctx);
-                        return (
-                            <React.Fragment>
-                                <Field name="fields.1.maxLength"/>
-                                <p className="form-control-plainText">{ ctx.hasErrors() ? "1:ERROR" : "1:OK"  } </p>
-                            </React.Fragment>
-                        );
+                            renderSpyA(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="name"/>
+                                    <p className="form-control-plainText">{ ctx.hasErrors() ? "0:ERROR" : "0:OK"  } </p>
+                                </React.Fragment>
+                            );
+                        }
                     }
-                }
-            </Form>
+                </Form>
+                <Form
+                    type={ "DomainFieldInput" }
+                    value={
+                        formRoot.fields[1]
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpyB(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="maxLength"/>
+                                    <p className="form-control-plainText">{ ctx.hasErrors() ? "1:ERROR" : "1:OK"  } </p>
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
             </FormConfigProvider>
         );
 
 
         //console.log(prettyDOM(container))
 
-        const inputs = getAllByLabelText( container,"maxLength");
+        const nameInput = getByLabelText(container, "name");
+        const maxLenInput = getByLabelText(container, "maxLength");
 
-        assert(inputs.length === 2);
-
-        assert(inputs[0].value === "36");
-        assert(inputs[1].value === "100");
+        assert(nameInput.value === "MyType");
+        assert(maxLenInput.value === "100");
 
         assert(getByText(container, "0:OK"))
         assert(getByText(container, "1:OK"))
 
         // type a wrong number
-        userEvent.type(inputs[0], "12a");
+        userEvent.type(maxLenInput, "12a");
 
         const formConfig = renderSpyA.lastCall.args[0];
         // the form stopped updating the value after 12
-        assert(formConfig.root.fields[0].maxLength === 12);
+        assert(formConfig.root.fields[1].maxLength === 12);
 
-        assert.deepEqual(errorStorage.findError(formRoot, "fields.0.maxLength"), ["12a","Invalid Integer"]);
-        assert.deepEqual(errorStorage.findError(formRoot, "fields.1.maxLength"), []);
+        assert.deepEqual(getDefaultFormContext().findError(formRoot.fields[1], "maxLength"), ["12a","Invalid Integer"]);
 
         assert(getByText(container, "0:ERROR"))
         assert(getByText(container, "1:ERROR"))
-
     });
 
 
@@ -1234,5 +1228,143 @@ describe("Form", function () {
             })
 
     })
+
+    it("performs revalidation grouped by form context", function () {
+
+        const renderSpyA = sinon.spy();
+        const renderSpyB = sinon.spy();
+
+        /*
+            input DomainTypeInput {
+              name: String!
+              description: String
+              fields: [DomainFieldInput]!
+              primaryKey: UniqueConstraintInput!
+              foreignKeys: [ForeignKeyInput]!
+              uniqueConstraints: [UniqueConstraintInput]!
+            }
+
+            input DomainFieldInput
+            {
+                description : String
+                maxLength : Int!
+                name : String!
+                required : Boolean!
+                sqlType : String
+                type : FieldType!
+                unique : Boolean
+            }
+
+
+         */
+
+        const formRoot = observable({
+            name: null,
+            fields: [
+                {
+                    name: "id",
+                    type: "UUID",
+                    maxLength: 36,
+                    required: true,
+                    unique: false
+                }, {
+                    name: "name",
+                    type: "STRING",
+                    maxLength: null,
+                    required: true,
+                    unique: false
+                }
+            ],
+            foreignKeys: [],
+            uniqueConstraints: [],
+            primaryKey: {
+                fields: ["id"]
+            }
+        });
+
+
+        // XXX: we test two forms with the same form context and different root objects.
+        const { container } = render(
+            <FormConfigProvider
+                schema={ getSchema() }
+                options={{
+                    isolation: false
+                }}
+            >
+                <Form
+                    id="domain-type-form"
+                    type={ "DomainTypeInput" }
+                    value={
+                        formRoot
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpyA(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="name"/>
+                                    <p className="form-control-plainText">{ ctx.hasErrors() ? "0:ERROR" : "0:OK"  } </p>
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+                <Form
+                    id="domain-field-form"
+                    type={ "DomainFieldInput" }
+                    value={
+                        formRoot.fields[1]
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpyB(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="maxLength"/>
+                                    <p className="form-control-plainText">{ ctx.hasErrors() ? "1:ERROR" : "1:OK"  } </p>
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+            </FormConfigProvider>
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        const nameInput = getByLabelText(container, "name");
+        const maxLenInput = getByLabelText(container, "maxLength");
+
+        // empty values on two nonNull fields
+        assert(nameInput.value === "");
+        assert(maxLenInput.value === "");
+
+        // ok, because we don't render errors on the initial render
+        assert(getByText(container, "0:OK"))
+        assert(getByText(container, "1:OK"))
+
+
+        act(
+            () => {
+
+                const form = document.getElementById("domain-field-form");
+                form.submit();
+            }
+        )
+
+        // both forms have errors
+        assert(getByText(container, "0:ERROR"))
+        assert(getByText(container, "1:ERROR"))
+
+        // the submit attempt on the sub form results in both required fields being detected
+        assert.deepEqual(getDefaultFormContext().findError(formRoot, "name"), ["","DomainFieldInput.name:Field Required"]);
+        assert.deepEqual(getDefaultFormContext().findError(formRoot.fields[1], "maxLength"), ["","DomainFieldInput.maxLength:Field Required"]);
+
+    });
 
 });

@@ -5,20 +5,17 @@ import FormConfig, { FormConfigContext } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
-import ErrorStorage from "./ErrorStorage";
-
-
 
 /**
  * Allows the definition defaults for form config options and schema at the top of the application component hierarchy.
  */
 const FormConfigProvider = props => {
 
-    const { options, schema, errorStorage, children } = props;
+    const { options, schema, children } = props;
 
     const formConfig = useMemo(() => {
-        return new FormConfig(options, schema, errorStorage);
-    }, [ options, schema, errorStorage ]);
+        return new FormConfig(options, schema, null);
+    }, [ options, schema ]);
 
     return (
         <FormConfigContext.Provider value={ formConfig }>
@@ -30,11 +27,17 @@ const FormConfigProvider = props => {
 };
 
 FormConfigProvider.propTypes = {
-    // provides the input schema for all child <Form/> components.
+    /**
+     * provides the input schema for all child <Form/> components.
+     */
     schema: PropTypes.oneOfType([
         PropTypes.instanceOf(InputSchema),
         PropTypes.object
     ]),
+
+    /**
+     * Default form options
+     */
     options: PropTypes.shape(
         FORM_CONFIG_PROP_TYPES
     )

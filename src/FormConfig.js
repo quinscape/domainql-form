@@ -2,14 +2,12 @@ import React from "react"
 import InputSchema from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
-import get from "lodash.get"
 import set from "lodash.set"
 
 import { action } from "mobx"
 import unwrapType from "./util/unwrapType";
 import { NON_NULL } from "./kind";
 import FormLayout from "./FormLayout";
-import ErrorStorage from "./ErrorStorage";
 
 
 export const DEFAULT_OPTIONS = {
@@ -41,18 +39,6 @@ export const FormConfigContext = React.createContext(null);
  @property {Array<String>} errorMessages    error messages, first value is original user-provided value
  */
 
-let defaultErrorStorage;
-
-function getDefaultErrorStorage()
-{
-    if (!defaultErrorStorage)
-    {
-        defaultErrorStorage = new ErrorStorage();
-    }
-    return defaultErrorStorage;
-}
-
-
 /**
  * Encapsulates the complete configuration of a form field and is provided via React Context.
  *
@@ -72,9 +58,9 @@ class FormConfig
      *
      * @param {Object} opts                     form config options
      * @param {InputSchema|Object} [schema]     Schema (raw data or InputSchema instance)
-     * @param {ErrorStorage} errorStorage       optional error storage to use. Default is using a lazily initialized static storage.
+     * @param {FormContext} formContext       optional error storage to use. Default is using a lazily initialized static storage.
      */
-    constructor(opts, schema = null, errorStorage = getDefaultErrorStorage())
+    constructor(opts, schema = null, formContext)
     {
 
         if (schema instanceof InputSchema)
@@ -91,7 +77,7 @@ class FormConfig
             ... opts
         };
 
-        this.errorStorage = errorStorage;
+        this.formContext = formContext;
 
         // clear form context
         this.setFormContext();
@@ -120,7 +106,7 @@ class FormConfig
 
     copy()
     {
-        const copy = new FormConfig(this.options, this.schema, this.errorStorage);
+        const copy = new FormConfig(this.options, this.schema, this.formContext);
         copy.setFormContext(this.type, this.basePath, this.root, this.ctx);
         return copy;
     }
@@ -145,34 +131,34 @@ class FormConfig
 
     getErrors(path)
     {
-        const { root, errorStorage } = this;
+        const { root, formContext } = this;
 
-        return errorStorage.findError( root, path);
+        return formContext.findError( root, path);
     }
 
     addError(path, msg, value)
     {
-        const { root, errorStorage } = this;
-        errorStorage.addError(root, path, msg, value);
+        const { root, formContext } = this;
+        formContext.addError(root, path, msg, value);
     }
 
     removeErrors(path)
     {
-        const { root, errorStorage } = this;
-        errorStorage.removeErrors(root, path);
+        const { root, formContext } = this;
+        formContext.removeErrors(root, path);
 
     }
 
     listAllErrors()
     {
-        const { root, errorStorage } = this;
-        return [ ... errorStorage.getErrors(root)];
+        const { root, formContext } = this;
+        return [ ... formContext.getErrors()];
     }
 
     hasErrors()
     {
-        const { root, errorStorage } = this;
-        return errorStorage.getErrors(root).length > 0;
+        const { root, formContext } = this;
+        return formContext.getErrors().length > 0;
     }
 
     handleChange(fieldContext, value)
@@ -203,25 +189,7 @@ class FormConfig
                 // handle NON_NULL fields
                 if (fieldType.kind === NON_NULL && value === "")
                 {
-                    let parentType;
-                    const fieldName = fieldContext.path.slice(-1);
-                    if (this.type)
-                    {
-                        if (fieldContext.path.length > 1)
-                        {
-                            parentType = this.schema.resolveType(this.type, fieldContext.path.slice(0, -1)).name + "." + fieldName;
-                        }
-                        else
-                        {
-                            parentType = this.type + "." + fieldName;
-                        }
-                    }
-                    else
-                    {
-                        parentType = fieldName;
-                    }
-
-                    errorsForField.push(parentType + ":Field Required");
+                    errorsForField.push(this.getRequiredErrorMessage(fieldContext));
                 }
 
                 const { validation } = this.options;
@@ -271,49 +239,13 @@ class FormConfig
         }
     };
 
-    @action
     updateFromChange(qualifiedName, converted, errorsForField)
     {
-        const { root, errorStorage } = this;
+        const { root, formContext } = this;
 
-        const haveErrors = errorsForField.length > 1;
+        formContext.updateErrors(root, qualifiedName, errorsForField);
 
-        const errors = errorStorage.getErrors(root);
-
-        const index =  errorStorage.findErrorIndex(root, qualifiedName);
-        if (index < 0)
-        {
-            if (haveErrors)
-            {
-                // ADD ERRORS
-                errors.push({
-                    path: qualifiedName,
-                    errorMessages: errorsForField
-                });
-            }
-        }
-        else
-        {
-            if (haveErrors)
-            {
-                // UPDATE ERRORS
-                errors[index] = {
-                    path: qualifiedName,
-                    errorMessages: errorsForField
-                }
-            }
-            else
-            {
-                // REMOVE ERRORS
-                const changedErrors = errors.slice();
-                changedErrors.splice(index, 1);
-
-                errors.replace(changedErrors)
-            }
-        }
-
-
-        if (!haveErrors)
+        if (errorsForField.length < 2)
         {
             set(root, qualifiedName, converted);
 
@@ -337,6 +269,29 @@ class FormConfig
         {
             return mode;
         }
+    }
+
+    getRequiredErrorMessage(fieldContext)
+    {
+        let parentType;
+        const fieldName = fieldContext.path.slice(-1);
+        if (this.type)
+        {
+            if (fieldContext.path.length > 1)
+            {
+                parentType = this.schema.resolveType(this.type, fieldContext.path.slice(0, -1)).name + "." + fieldName;
+            }
+            else
+            {
+                parentType = this.type + "." + fieldName;
+            }
+        }
+        else
+        {
+            parentType = fieldName;
+        }
+
+        return parentType + ":Field Required";
     }
 }
 

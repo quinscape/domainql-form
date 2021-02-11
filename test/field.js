@@ -492,7 +492,7 @@ describe("Field", function () {
 
         //console.log({fieldContext});
 
-        assert(fieldContext.fieldId === "field-DomainFieldInput-description");
+        assert( /^c[0-9]+:f[0-9]+:description$/.test(fieldContext.fieldId));
         assert(formConfig.schema === schema);
         assert(formConfig.type === "DomainFieldInput");
         assert.deepEqual(formConfig.options, DEFAULT_OPTIONS);

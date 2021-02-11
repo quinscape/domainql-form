@@ -12,6 +12,7 @@ import { useDebouncedCallback } from "use-debounce"
 import { fallbackJSClone } from "./util/clone";
 import { useObserver } from "mobx-react-lite";
 import revalidate from "./util/revalidate";
+import { getDefaultFormContext } from "./FormContext";
 
 
 function getSchema(formConfig, props)
@@ -39,13 +40,14 @@ function getSchema(formConfig, props)
  * 
  * @constructor
  */
-export function InternalContext(setRoot, submit, debouncedSubmit, cancelDebouncedSubmit)
+export function InternalContext(setRoot, submit, debouncedSubmit, cancelDebouncedSubmit, formId)
 {
     this.setRoot = setRoot;
     this.submit = submit;
 
     this.debouncedSubmit = debouncedSubmit;
     this.cancelDebouncedSubmit = cancelDebouncedSubmit;
+    this.formId = formId;
 }
 
 
@@ -100,7 +102,7 @@ function cloneRoot(schema, value, options, parentConfig)
     }
 }
 
-
+let formCounter = 0;
 /**
  * Form description
  */
@@ -108,10 +110,22 @@ const Form  = props =>  {
 
     const parentConfig = useFormConfig();
 
-    const { id, children, onClick, value, type, onSubmit, errorStorage, options } = props;
+    /**
+     * Internal form id for the form instance. Independent of the id attribute of the form.
+     */
+    const formId = useMemo( () => "f" + formCounter++, []);
+
+    const { id, children, onClick, value, type, onSubmit, formContext = getDefaultFormContext(), options } = props;
 
     const schema = getSchema(parentConfig, props);
     const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
+
+    useEffect(
+        () => {
+            return () => formContext.unregisterForm(formId)
+        },
+        []
+    )
 
     const handleSubmit = useCallback(
         ev => {
@@ -155,7 +169,7 @@ const Form  = props =>  {
                     ... options
                 } : parentConfig.options,
                 schema,
-                errorStorage || parentConfig.errorStorage
+                formContext
             );
         }
         else
@@ -163,7 +177,7 @@ const Form  = props =>  {
             formConfig = new FormConfig(
                 options,
                 schema,
-                errorStorage
+                formContext
             );
         }
 
@@ -175,7 +189,8 @@ const Form  = props =>  {
                 setRoot,
                 handleSubmit,
                 debouncedSubmit,
-                cancelDebouncedSubmit
+                cancelDebouncedSubmit,
+                formId
             )
         );
 
@@ -206,7 +221,8 @@ const Form  = props =>  {
                     setRoot,
                     handleSubmit,
                     debouncedSubmit,
-                    cancelDebouncedSubmit
+                    cancelDebouncedSubmit,
+                    formId
                 )
             );
         }
@@ -221,6 +237,7 @@ const Form  = props =>  {
             onSubmit={ handleSubmit }
             onReset={ handleReset }
             onClick={ onClick || null }
+            data-form-id={ formId }
         >
             <FormConfigContext.Provider value={ formConfig }>
                 {

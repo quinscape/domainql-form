@@ -68,7 +68,7 @@ const GlobalErrors = fnObserver(props => {
 
     const globalErrorsRef = useRef(null);
 
-    const errors = formConfig.errorStorage.getErrors(formConfig.root);
+    const errors = formConfig.formContext.getErrorsForRoot(formConfig.root);
 
     const numErrors = errors.length;
 
