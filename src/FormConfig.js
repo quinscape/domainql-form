@@ -26,6 +26,8 @@ export const DEFAULT_OPTIONS = {
     revalidate: true
 };
 
+const EMPTY = [];
+
 /**
  * React context for the current FormConfig object
  * @type {React.Context<FormConfig>}
@@ -133,17 +135,27 @@ class FormConfig
     {
         const { root, formContext } = this;
 
-        return formContext.findError( root, path);
+        return formContext ? formContext.findError( root, path) : EMPTY;
     }
 
     addError(path, msg, value)
     {
+        if (!formContext)
+        {
+            throw new Error("No form context initialize")
+        }
+
         const { root, formContext } = this;
         formContext.addError(root, path, msg, value);
     }
 
     removeErrors(path)
     {
+        if (!formContext)
+        {
+            throw new Error("No form context initialize")
+        }
+
         const { root, formContext } = this;
         formContext.removeErrors(root, path);
 
@@ -151,14 +163,15 @@ class FormConfig
 
     listAllErrors()
     {
-        const { root, formContext } = this;
-        return [ ... formContext.getErrors()];
+        const { formContext } = this;
+
+        return formContext ? [ ... formContext.getErrors()] : [];
     }
 
     hasErrors()
     {
-        const { root, formContext } = this;
-        return formContext.getErrors().length > 0;
+        const { formContext } = this;
+        return formContext ? formContext.getErrors().length > 0 : false;
     }
 
     handleChange(fieldContext, value)
@@ -239,6 +252,7 @@ class FormConfig
         }
     };
 
+    @action
     updateFromChange(qualifiedName, converted, errorsForField)
     {
         const { root, formContext } = this;

@@ -19,6 +19,7 @@ import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
 import FormContext, { getDefaultFormContext, resetDefaultFormContext } from "../src/FormContext";
 import assertRenderThrows from "./util/assertRenderThrows";
+import useFormConfig from "../src/useFormConfig";
 
 
 describe("Form", function () {
@@ -1109,9 +1110,23 @@ describe("Form", function () {
 
         const renderSpy = sinon.spy();
 
+        const TestErrors = fnObserver(({name = "ERRORS"}) => {
+
+            const formConfig = useFormConfig();
+
+            return (
+                <span>
+                    { name }:{ String(formConfig.hasErrors()) }
+                </span>
+            )
+        });
+
+
         const FormComponent = fnObserver(({state, renderSpy}) => {
             return (
+                <React.Fragment>
 
+                    <TestErrors name="OUTSIDE"/>
                     <Form
                         key={ state.formObject && state.formObject.id }
                         id="my-form"
@@ -1125,10 +1140,12 @@ describe("Form", function () {
                             return (
                                 <React.Fragment>
                                     <Field name="name" />
+                                    <TestErrors name="INSIDE"/>
                                 </React.Fragment>
                             );
                         } }
                     </Form>
+                </React.Fragment>
             )
         })
 
@@ -1163,11 +1180,15 @@ describe("Form", function () {
             }
         )
 
+        //console.log(prettyDOM(container))
 
         const input = getByLabelText(container, "name")
 
         assert(input.disabled)
         assert(input.value === "")
+
+        assert(getByText(container, "OUTSIDE:false"))
+        assert(getByText(container, "INSIDE:false"))
 
         return Promise.resolve()
             .then(() => {
@@ -1184,20 +1205,41 @@ describe("Form", function () {
                     }
                 )
 
-                const input = getByLabelText(container, "name")
+                assert(getByText(container, "OUTSIDE:false"))
+                assert(getByText(container, "INSIDE:false"))
 
-                assert(!input.disabled)
-                assert(input.value === "MyEnum")
+                const nameInput = getByLabelText(container, "name")
+
+                assert(!nameInput.disabled)
+                assert(nameInput.value === "MyEnum")
 
                 act(
                     () => {
-                        userEvent.type(input, "AnotherEnum");
+                        userEvent.type(nameInput, "AnotherEnum");
                     }
                 )
 
                 const formConfig = renderSpy.lastCall.args[0];
                 assert(formConfig.root.name === "AnotherEnum");
                 assert(state.formObject.name === "AnotherEnum");
+
+                act(
+                    () => {
+                        fireEvent.change(nameInput, {
+                            target: {
+                                value: ""
+                            }
+                        });
+                    }
+                )
+
+
+                const formConfig2 = renderSpy.lastCall.args[0];
+                assert.deepEqual(formConfig2.getErrors("name"), ["","EnumTypeInput.name:Field Required"]);
+
+                assert(getByText(container, "OUTSIDE:false"))
+                assert(getByText(container, "INSIDE:true"))
+
 
                 // XXX: Make sure we still complain about wrong field names
                 assertRenderThrows(
