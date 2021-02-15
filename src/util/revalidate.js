@@ -84,7 +84,7 @@ export default function revalidate(formConfig)
             if (validation)
             {
                 const scalarName = typeRef.name;
-                const result = validation.validateField(fieldContext, value);
+                const result = validation.validateField(ctx, value);
 
                 if (result)
                 {
