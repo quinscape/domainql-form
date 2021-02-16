@@ -142,7 +142,7 @@ class FormConfig
     {
         if (!formContext)
         {
-            throw new Error("No form context initialize")
+            throw new Error("No form context initialized")
         }
 
         const { root, formContext } = this;
@@ -153,7 +153,7 @@ class FormConfig
     {
         if (!formContext)
         {
-            throw new Error("No form context initialize")
+            throw new Error("No form context initialized")
         }
 
         const { root, formContext } = this;
