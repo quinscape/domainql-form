@@ -21,33 +21,13 @@ const secret = Symbol("FormContext Secret");
 let contextCounter = 0;
 let objectCounter = 0;
 
-const ids = new WeakMap();
-
-
 /**
- * Provides a unique numeric id for an observable root object.
+ * Weakmap containing numeric identifiers for form root objects. We keep it in the module to share those identifiers
+ * among all form contexts.
  *
- * @param root      observable root object
- * @return {number} unique numeric id
+ * @type {WeakMap<object, number>}
  */
-function getUniqueId(root)
-{
-    if (!root)
-    {
-        return 0;
-    }
-
-    const existing = ids.get(root);
-    if (existing !== undefined)
-    {
-        return existing;
-    }
-
-    const newId = ++objectCounter;
-    ids.set(root, newId);
-    return newId;
-}
-
+const ids = new WeakMap();
 
 /**
  * The form context represents a logical context with which multiple <Form/> objects can interact with each other and
@@ -97,7 +77,7 @@ export default class FormContext
 
         const errors  = this.getErrors();
 
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
 
         return errors.filter( err => err.rootId ===  rootId);
     }
@@ -109,7 +89,7 @@ export default class FormContext
 
         const errors = this.getErrors();
 
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
 
         let i, existing;
         for (i = 0; i < errors.length; i++)
@@ -142,7 +122,7 @@ export default class FormContext
     {
         const errors = this.getErrors();
 
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
 
         const newErrors = errors.filter(
             err => err.path !== path || err.rootId !== rootId
@@ -157,7 +137,7 @@ export default class FormContext
     findError(root, path)
     {
         const errors = this.getErrors();
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
         for (let i = 0; i < errors.length; i++)
         {
             const error = errors[i];
@@ -172,7 +152,7 @@ export default class FormContext
     findErrorIndex(root, path)
     {
         const errors = this.getErrors();
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
         for (let i = 0; i < errors.length; i++)
         {
             const error = errors[i];
@@ -194,7 +174,7 @@ export default class FormContext
 
         const errors = this.getErrors();
 
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
 
         const newErrors = errors.filter(
             err => err.rootId !== rootId
@@ -286,7 +266,7 @@ export default class FormContext
         const errors = this.getErrors();
 
 
-        const rootId = getUniqueId(root);
+        const rootId = FormContext.getUniqueId(root);
 
         const index =  this.findErrorIndex(root, qualifiedName);
         if (index < 0)
@@ -321,6 +301,31 @@ export default class FormContext
                 errors.replace(changedErrors)
             }
         }
+    }
+
+
+    /**
+     * Provides a unique numeric id for an observable root object.
+     *
+     * @param root      observable root object
+     * @return {number} unique numeric id
+     */
+    static getUniqueId(root)
+    {
+        if (!root)
+        {
+            return 0;
+        }
+
+        const existing = ids.get(root);
+        if (existing !== undefined)
+        {
+            return existing;
+        }
+
+        const newId = ++objectCounter;
+        ids.set(root, newId);
+        return newId;
     }
 }
 
