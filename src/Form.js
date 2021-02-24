@@ -194,6 +194,8 @@ const Form  = props =>  {
             )
         );
 
+        //console.log("<Form/> FormConfig", formConfig)
+
         return formConfig;
 
     }, [parentConfig, root, onSubmit, options]);
