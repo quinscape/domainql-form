@@ -140,23 +140,25 @@ class FormConfig
 
     addError(path, msg, value)
     {
+        const { root, formContext } = this;
+
         if (!formContext)
         {
             throw new Error("No form context initialized")
         }
 
-        const { root, formContext } = this;
         formContext.addError(root, path, msg, value);
     }
 
     removeErrors(path)
     {
+        const { root, formContext } = this;
+
         if (!formContext)
         {
             throw new Error("No form context initialized")
         }
 
-        const { root, formContext } = this;
         formContext.removeErrors(root, path);
 
     }
