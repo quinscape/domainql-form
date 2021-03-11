@@ -9,6 +9,7 @@ import dumpUsage from "./util/dumpUsage";
 import { describe, it } from "mocha";
 import { observable } from "mobx";
 
+import rawResolveSchema from "./inputschema-resolve-schema.json"
 
 describe("InputSchema", function () {
 
@@ -78,6 +79,95 @@ describe("InputSchema", function () {
         assert(clone._type === "Foo")
         assert(clone.name === "Test-Foo")
         assert(clone.id === undefined)
+
+    })
+
+    it("resolves path types", function () {
+        const inputSchema = new InputSchema(
+            rawResolveSchema
+        );
+
+        assert.deepEqual(
+            inputSchema.resolveType("QuxMain", "name"),
+            {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                }
+            }
+        )
+
+        assert.deepEqual(
+            inputSchema.resolveType("QuxMain", "quxA"),
+            {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                    "kind": "OBJECT",
+                    "name": "QuxA",
+                    "ofType": null
+                }
+            }
+        )
+
+        assert.deepEqual(
+            inputSchema.resolveType("QuxMain", "quxA.name"),
+            {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                }
+            }
+        )
+
+        assert.deepEqual(
+            inputSchema.resolveType("Baz", "bazLinks.0.value"),
+            {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                    "kind": "OBJECT",
+                    "name": "BazValue",
+                    "ofType": null
+                }
+            }
+        )
+
+        assert.deepEqual(
+            inputSchema.resolveType("Baz", "bazLinks.0.value.name"),
+            {
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                }
+            }
+        )
+
+        assert.deepEqual(
+            inputSchema.resolveType("TripleA", "tripleB.tripleC"),
+            {
+                "kind": "OBJECT",
+                "name": "TripleC",
+                "ofType": null
+            }
+        )
+        assert.deepEqual(
+            inputSchema.resolveType("TripleA", "tripleB.tripleC.name"),
+            {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+            }
+        )
 
     })
 

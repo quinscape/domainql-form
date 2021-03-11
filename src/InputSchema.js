@@ -110,7 +110,9 @@ function resolve(inputSchema, current, path, pos)
         throw new Error("Invalid type '" + current.name + "': " + JSON.stringify(current));
     }
 
-    const found = findNamed(current.kind === INPUT_OBJECT ? current.inputFields : current.fields, prop);
+    const relatedType = inputSchema.getType(current.name);
+
+    const found = findNamed(relatedType.kind === INPUT_OBJECT ? relatedType.inputFields : relatedType.fields, prop);
 
     if (!found)
     {
