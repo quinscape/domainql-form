@@ -222,17 +222,16 @@ export default class WireFormat {
      * representation.
      *
      * @param {String} [type]       Complex Type within the GraphQL domain. Optional if the object contains a _type property pointing to the type.
-     * @param {Object} obj          type instance as observable object
+     * @param {Object} value          type instance as observable object
      * @param {Object} classes      object map mapping type names to observable class implementations.
      *
      * @return {Object} type instance in wire format
      */
-    toWire(type, obj)
+    toWire(type, value)
     {
-        type = getType(type, obj);
+        type = getType(type, value);
 
-        return convert(
-            this,
+        return this.convert(
             {
                 kind: OBJECT,
                 name: type
@@ -263,8 +262,7 @@ export default class WireFormat {
     {
         type = getType(type, value);
 
-        return convert(
-            this,
+        return this.convert(
             {
                 kind: OBJECT,
                 name: type

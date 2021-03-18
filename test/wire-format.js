@@ -284,4 +284,63 @@ describe("Wire Format", function () {
         assert(converted.foos[0].timestamp instanceof Date);
         assert(!isObservableArray(converted.foos));
 
-    })});
+    })
+
+    it("offers simplified conversion methods", function () {
+
+        const schema = getSchema();
+
+        const wireFormat = new WireFormat(schema, {
+        }, { wrapAsObservable: true});
+
+
+        {
+            const converted = wireFormat.fromWire("Wrapper", {
+                foos: [{
+                    "name" : "Foo #1",
+                    "timestamp":  "2018-11-16T00:00:00.000Z"
+                }]
+            });
+
+            assert.deepEqual(
+                converted,
+                {
+                    "_type": "Wrapper",
+                    "foos": [
+                        {
+                            "_type": "Foo",
+                            "name": "Foo #1",
+                            "timestamp": new Date(Date.parse("2018-11-16T00:00:00.000Z"))
+
+                        }
+                    ]
+                }
+            )
+
+        }
+
+        {
+            const converted = wireFormat.toWire("WrapperInput", {
+                foos: [{
+                    "name" : "Foo #1",
+                    "timestamp":  new Date(Date.parse("2018-11-16T00:00:00.000Z"))
+                }]
+            });
+
+            assert.deepEqual(
+                converted,
+                {
+                    "foos": [
+                        {
+                            "name": "Foo #1",
+                            "timestamp": "2018-11-16T00:00:00.000Z"
+
+                        }
+                    ]
+                }
+            )
+
+        }
+    })
+
+});
