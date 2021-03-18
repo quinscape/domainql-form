@@ -62,6 +62,11 @@ export default class FormContext
         return this[secret].errors;
     }
 
+    hasErrors()
+    {
+        return this[secret].errors.length > 0;
+    }
+
     /**
      *
      * @param [root]    optional root object to filter the errors
@@ -261,10 +266,11 @@ export default class FormContext
     @action
     updateErrors(root, qualifiedName, errorsForField)
     {
+        //console.log("FormContext.updateErrors: root = ", root, ", qualifiedName = ", qualifiedName,  "errorsForField = ", errorsForField);
+
         const haveErrors = errorsForField.length > 1;
 
         const errors = this.getErrors();
-
 
         const rootId = FormContext.getUniqueId(root);
 
