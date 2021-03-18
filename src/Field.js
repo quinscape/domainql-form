@@ -52,11 +52,11 @@ const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB, maxLength } = props;
+    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB, maxLength, tooltip } = props;
 
     const fieldContext = useMemo(
         () => {
-            const { id, label, autoFocus, tooltip, placeholder, type } = props;
+            const { id, label, autoFocus, placeholder, type } = props;
 
             const qualifiedName = formConfig.getPath(name);
             const effectiveMode = mode || formConfig.getMode();
@@ -182,7 +182,7 @@ const Field = fnObserver((props, ref) => {
             return newFieldContext;
 
         },
-        [ formConfig, name, mode, inputClass, labelClass ]
+        [ formConfig, name, mode, inputClass, labelClass, tooltip ]
     );
 
     //console.log("RENDER FIELD", fieldContext);
