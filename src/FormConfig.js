@@ -257,6 +257,8 @@ class FormConfig
     @action
     updateFromChange(qualifiedName, converted, errorsForField)
     {
+        //console.log("updateFromChange", qualifiedName, converted, errorsForField)
+
         const { root, formContext } = this;
 
         formContext.updateErrors(root, qualifiedName, errorsForField);
