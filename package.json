@@ -53,7 +53,7 @@
     "scripts": {
         "prepublish": "cross-env NODE_ENV=production babel src --out-dir lib",
         "watch": "cross-env NODE_ENV=development babel -s -w src --out-dir lib",
-        "test": "cross-env BABEL_ENV=test mocha -r @babel/register -r ./test/setup.js -R spec test/",
+        "test": "cross-env BABEL_ENV=test mocha -r @babel/register -r ./test/setup.js -R spec test/ --exit",
         "build-docs": "node -r @babel/register tooling/build-ref.js"
     }
 }
