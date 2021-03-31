@@ -8,6 +8,7 @@ import { action } from "mobx"
 import unwrapType from "./util/unwrapType";
 import { NON_NULL } from "./kind";
 import FormLayout from "./FormLayout";
+import FormContext from "./FormContext";
 
 
 export const DEFAULT_OPTIONS = {
@@ -18,7 +19,6 @@ export const DEFAULT_OPTIONS = {
     currency: "EUR",
     currencyAddonRight: true,
     lookupLabel: GlobalConfig.lookupLabel,
-    validation: null,
     autoSubmit: false,
     submitTimeOut: 350,
     suppressLabels: false,
@@ -41,6 +41,16 @@ export const FormConfigContext = React.createContext(null);
  @property {Array<String>} errorMessages    error messages, first value is original user-provided value
  */
 
+function validateOptions(options)
+{
+    if (options.validation)
+    {
+        throw new Error("Configuring validation via form config is deprecated create a new form context with your validation and call .useAsDefault()");
+    }
+    return options;
+}
+
+
 /**
  * Encapsulates the complete configuration of a form field and is provided via React Context.
  *
@@ -59,27 +69,17 @@ class FormConfig
     /**
      *
      * @param {Object} opts                     form config options
-     * @param {InputSchema|Object} [schema]     Schema (raw data or InputSchema instance)
-     * @param {FormContext} formContext       optional error storage to use. Default is using a lazily initialized static storage.
+     * @param {FormContext} formContext         form context to use for this 
      */
-    constructor(opts, schema = null, formContext)
+    constructor(opts, formContext)
     {
-
-        if (schema instanceof InputSchema)
-        {
-            this.schema = schema;
-        }
-        else
-        {
-            this.schema = schema && new InputSchema(schema);
-        }
-
-        this.options = {
+        this.options = validateOptions({
             ... DEFAULT_OPTIONS,
             ... opts
-        };
+        });
 
         this.formContext = formContext;
+
 
         // clear form context
         this.setFormContext();
@@ -87,6 +87,13 @@ class FormConfig
         //console.log("NEW FormConfig", this)
     }
 
+    get schema()
+    {
+        const { schema } = this.formContext;
+
+
+        return schema;
+    }
 
     /**
      * Sets the form context part of the current form config
@@ -108,7 +115,7 @@ class FormConfig
 
     copy()
     {
-        const copy = new FormConfig(this.options, this.schema, this.formContext);
+        const copy = new FormConfig(this.options, this.formContext);
         copy.setFormContext(this.type, this.basePath, this.root, this.ctx);
         return copy;
     }
@@ -167,13 +174,13 @@ class FormConfig
     {
         const { formContext } = this;
 
-        return formContext ? [ ... formContext.getErrors()] : [];
+        return [ ... formContext.getErrors()];
     }
 
     hasErrors()
     {
         const { formContext } = this;
-        return formContext ? formContext.getErrors().length > 0 : false;
+        return formContext.getErrors().length > 0;
     }
 
     handleChange(fieldContext, value)
@@ -204,27 +211,22 @@ class FormConfig
                 // handle NON_NULL fields
                 if (fieldType.kind === NON_NULL && value === "")
                 {
-                    errorsForField.push(this.getRequiredErrorMessage(fieldContext));
+                    errorsForField.push(this.formContext.getRequiredErrorMessage(fieldContext));
                 }
 
-                const { validation } = this.options;
-                if (validation && validation.validateField)
-                {
-                    const highLevelResult = validation.validateField(fieldContext, value);
+                const highLevelResult = this.formContext.validate(fieldContext,value)
 
-                    if (highLevelResult)
+                if (highLevelResult)
+                {
+                    if (Array.isArray(highLevelResult))
                     {
-                        if (Array.isArray(highLevelResult))
-                        {
-                            errorsForField = errorsForField.concat(highLevelResult);
-                        }
-                        else
-                        {
-                            errorsForField.push(highLevelResult);
-                        }
+                        errorsForField = errorsForField.concat(highLevelResult);
+                    }
+                    else
+                    {
+                        errorsForField.push(highLevelResult);
                     }
                 }
-
             }
 
             // errors contains more than just our value
@@ -287,29 +289,6 @@ class FormConfig
         {
             return mode;
         }
-    }
-
-    getRequiredErrorMessage(fieldContext)
-    {
-        let parentType;
-        const fieldName = fieldContext.path.slice(-1);
-        if (this.type)
-        {
-            if (fieldContext.path.length > 1)
-            {
-                parentType = this.schema.resolveType(this.type, fieldContext.path.slice(0, -1)).name + "." + fieldName;
-            }
-            else
-            {
-                parentType = this.type + "." + fieldName;
-            }
-        }
-        else
-        {
-            parentType = fieldName;
-        }
-
-        return parentType + ":Field Required";
     }
 }
 

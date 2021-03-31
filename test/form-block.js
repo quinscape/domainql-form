@@ -12,10 +12,18 @@ import FormConfig, { FormConfigContext } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import { observable } from "mobx";
 import dumpUsage from "./util/dumpUsage";
+import { FormContext } from "../src";
 
 describe("FormBlock", function () {
 
     after(dumpUsage);
+
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
 
     it("overrides Form options", function () {
 
@@ -27,7 +35,6 @@ describe("FormBlock", function () {
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "EnumTypeInput" }
                 value={ formRoot }
             >
@@ -59,7 +66,6 @@ describe("FormBlock", function () {
         const inputSchema = getSchema();
         const { container } = render(
             <Form
-                schema={inputSchema }
                 onSubmit={ () => null }
                 type={ "EnumTypeInput" }
                 value={ formRoot }

@@ -16,6 +16,7 @@ import itParam from "mocha-param"
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import dumpUsage from "./util/dumpUsage";
+import { FormContext } from "../src";
 
 
 describe("Select", function (){
@@ -24,6 +25,13 @@ describe("Select", function (){
     afterEach( cleanup );
 
     after( dumpUsage) ;
+
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
 
     it("renders as select element", function() {
 
@@ -51,7 +59,6 @@ describe("Select", function (){
         });
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
                 options={{
@@ -126,7 +133,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
             >
@@ -182,7 +188,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
             >
@@ -235,7 +240,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
                 options={{
@@ -330,7 +334,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 options={{
                     mode: loc === ModeLocation.INHERITED ? mode : null
@@ -429,7 +432,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
                 options={{
@@ -551,7 +553,6 @@ describe("Select", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
                 options={{

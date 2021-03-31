@@ -1,3 +1,6 @@
+import { ENUM, NON_NULL, SCALAR } from "./kind";
+import InputSchema, { unwrapNonNull } from "./InputSchema";
+
 import { action, isObservableObject, observable, toJS } from "mobx";
 import get from "lodash.get";
 
@@ -6,15 +9,6 @@ let defaultFormContext;
 
 const EMPTY = [];
 
-export function getDefaultFormContext()
-{
-    if (!defaultFormContext)
-    {
-        defaultFormContext = new FormContext();
-    }
-
-    return defaultFormContext;
-}
 
 const secret = Symbol("FormContext Secret");
 
@@ -29,6 +23,27 @@ let objectCounter = 0;
  */
 const ids = new WeakMap();
 
+function validateEnum(schema, enumTypeName, value)
+{
+    if (!value)
+    {
+        return true;
+    }
+
+    const { enumValues } = schema.getType(enumTypeName);
+
+    for (let i = 0; i < enumValues.length; i++)
+    {
+        const enumValue = enumValues[i];
+        if (enumValue.name === value)
+        {
+            return true;
+        }
+    }
+    return false
+}
+
+
 /**
  * The form context represents a logical context with which multiple <Form/> objects can interact with each other and
  * offer a cohesive user experience.
@@ -41,21 +56,36 @@ const ids = new WeakMap();
  */
 export default class FormContext
 {
-    constructor()
+    constructor(schema, options = {})
     {
+
+        if (!schema)
+        {
+            throw new Error("Form context needs an inputSchema argument")
+        }
+
+        const { validation = null } = options;
+
         this[secret] = {
+
+            schema,
+            validation,
+
             id: contextCounter++,
             errors: observable([]),
             fieldContexts: []
         }
     }
 
+    get schema()
+    {
+        return this[secret].schema;
+    }
 
     /**
+     *  Returns all errors for the form context.
      *
-     * @param [root]    optional root object to filter the errors
-     *
-     * @return {[]|IObservableArray<any>|*}
+     * @return {Array} errors entries
      */
     getErrors()
     {
@@ -68,10 +98,11 @@ export default class FormContext
     }
 
     /**
+     * Returns a list of errors registered for the given form root.
      *
-     * @param [root]    optional root object to filter the errors
+     * @param [root]    root observable. A falsy root object will always have an empty error list.
      *
-     * @return {[]|IObservableArray<any>|*}
+     * @return {Array} errors entries
      */
     getErrorsForRoot(root)
     {
@@ -239,16 +270,51 @@ export default class FormContext
 
     registerFieldContext(fieldContext)
     {
-        const { fieldContexts } = this[secret];
+        const { fieldContexts, validation } = this[secret];
 
+        if (validation && validation.fieldContext)
+        {
+            validation.fieldContext(fieldContext)
+        }
         fieldContexts.push(fieldContext);
     }
 
+
+    /**
+     * Performs the registered high-level validation for the given field context and value
+     *
+     * @param fieldContext      field context
+     * @param {*} value         scalar value
+     * 
+     * @return {String|Array<String>|null} error or array of errors. Might return null for no errors / no validation registered.
+     */
+    validate(fieldContext, value)
+    {
+        const { validation } = this[secret];
+        if (validation && validation.validateField)
+        {
+            return validation.validateField(fieldContext, value);
+        }
+        return null;
+    }
+
+
+    /**
+     * Returns id of the form context
+     *
+     * @return {number} id
+     */
     get id()
     {
         return this[secret].id;
     }
 
+
+    /**
+     * Returns an array with all registered field contexts.
+     *
+     * @return {Array} field contexts
+     */
     get fieldContexts()
     {
         const { fieldContexts } = this[secret];
@@ -311,6 +377,96 @@ export default class FormContext
 
 
     /**
+     * Performs a complete revalidation of all registered field contexts.
+     */
+    revalidate()
+    {
+
+        const { fieldContexts } = this[secret];
+
+        for (let i = 0; i < fieldContexts.length; i++)
+        {
+
+            const ctx = fieldContexts[i];
+            const { root, fieldType, path, qualifiedName } = ctx;
+            //console.log("Revalidate: ", toJS(root), ctx)
+            const value = get(root, path);
+
+
+            if (fieldType.kind === NON_NULL)
+            {
+                if (value === null || value === undefined)
+                {
+                    this.addError(root, qualifiedName, this.getRequiredErrorMessage(ctx) , "");
+                }
+            }
+
+            const typeRef = unwrapNonNull(fieldType);
+
+            if (typeRef.kind === SCALAR)
+            {
+                const scalarName = typeRef.name;
+                const result = this.validate(ctx, value);
+                if (result)
+                {
+                    if (Array.isArray(result))
+                    {
+                        for (let i = 0; i < result.length; i++)
+                        {
+                            const r = result[i];
+                            this.addError(root, qualifiedName, r , InputSchema.scalarToValue(scalarName, value, ctx));
+                        }
+                    }
+                    else
+                    {
+                        this.addError(root, qualifiedName, result , InputSchema.scalarToValue(scalarName, value, ctx));
+                    }
+                }
+            }
+            else if (typeRef.kind === ENUM)
+            {
+                const enumTypeName = typeRef.name;
+                if (!validateEnum(this.schema, enumTypeName, value))
+                {
+                    if (__DEV)
+                    {
+                        console.warn("Invalid value for Enum " + enumTypeName + " at " + path + " in " + JSON.stringify(root) + ": " + value);
+                    }
+                    this.addError(root, path, "Invalid Enum Value" , value);
+                }
+            }
+        }
+    }
+
+
+    getRequiredErrorMessage(fieldContext)
+    {
+        const { rootType } = fieldContext;
+
+        let parentType;
+        const fieldName = fieldContext.path.slice(-1);
+        if (rootType)
+        {
+            if (fieldContext.path.length > 1)
+            {
+                parentType = this.schema.resolveType(rootType, fieldContext.path.slice(0, -1)).name + "." + fieldName;
+            }
+            else
+            {
+                parentType = rootType + "." + fieldName;
+            }
+        }
+        else
+        {
+            parentType = fieldName;
+        }
+
+        return parentType + ":Field Required";
+    }
+
+
+
+    /**
      * Provides a unique numeric id for an observable root object.
      *
      * @param root      observable root object
@@ -333,5 +489,27 @@ export default class FormContext
         ids.set(root, newId);
         return newId;
     }
-}
 
+
+    /**
+     * Returns the default form context.
+     *
+     */
+    static getDefault()
+    {
+        if (!defaultFormContext)
+        {
+            throw new Error("No default form context defined.");
+        }
+        return defaultFormContext;
+    }
+
+
+    /**
+     * Uses the current form context instance as the default form context.
+     */
+    useAsDefault()
+    {
+        defaultFormContext = this;
+    }
+}

@@ -14,6 +14,7 @@ import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FieldMode from "../src/FieldMode";
 import Form from "../src/Form";
+import { FormContext } from "../src";
 
 
 describe("withForm()", function () {
@@ -22,6 +23,14 @@ describe("withForm()", function () {
     afterEach( cleanup );
 
     after(dumpUsage);
+
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
+
 
     it("wraps a form body component ", function () {
 
@@ -44,9 +53,7 @@ describe("withForm()", function () {
             FooForm,
             {
                 // The form always needs the InputType
-                type: "FooInput",
-                // and the schema if it is not provided by a <FormConfigProvider/>
-                schema:  getSchema()
+                type: "FooInput"
 
             }
         );
@@ -116,9 +123,7 @@ describe("withForm()", function () {
             FooForm,
             {
                 // The form always needs the InputType
-                type: "FooInput",
-                // and the schema if it is not provided by a <FormConfigProvider/>
-                schema:  getSchema()
+                type: "FooInput"
 
             }
         );

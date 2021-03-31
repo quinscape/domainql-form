@@ -22,6 +22,7 @@ import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import dumpUsage from "./util/dumpUsage";
 import Addon from "../src/Addon";
+import { FormContext } from "../src";
 
 describe("Field", function () {
 
@@ -29,6 +30,13 @@ describe("Field", function () {
     afterEach(cleanup);
 
     after( dumpUsage) ;
+
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
 
     itParam(
         "renders as text input (${value})",
@@ -47,7 +55,6 @@ describe("Field", function () {
 
             const { container } = render(
                 <Form
-                    schema={getSchema()}
                     type={"EnumTypeInput"}
                     options={{
                         mode: loc === ModeLocation.INHERITED ? mode : null,
@@ -145,7 +152,6 @@ describe("Field", function () {
             });
             const {container} = render(
                 <Form
-                    schema={getSchema()}
                     type={"DomainFieldInput"}
                     options={{
                         mode: loc === ModeLocation.INHERITED ? mode : null,
@@ -239,7 +245,6 @@ describe("Field", function () {
 
             const {container} = render(
                 <Form
-                    schema={getSchema()}
                     type={"DomainFieldInput"}
                     options={{
                         mode: loc === ModeLocation.INHERITED ? mode : null,
@@ -336,7 +341,6 @@ describe("Field", function () {
 
         const {container} = render(
             <Form
-                schema={getSchema()}
                 type={"DomainFieldInput"}
                 value={formRoot}
             >
@@ -392,7 +396,6 @@ describe("Field", function () {
 
         const {container} = render(
             <Form
-                schema={getSchema()}
                 type={"DomainFieldInput"}
                 value={formRoot}
             >
@@ -448,7 +451,6 @@ describe("Field", function () {
         });
         const {container} = render(
             <Form
-                schema={schema}
                 type={"DomainFieldInput"}
                 value={formRoot}
             >
@@ -532,7 +534,6 @@ describe("Field", function () {
 
             const { container } = render(
                 <Form
-                    schema={schema}
                     type={"DomainFieldInput"}
                     value={formRoot}
                 >
@@ -594,7 +595,6 @@ describe("Field", function () {
 
             const { container } = render(
                 <Form
-                    schema={schema}
                     type={"DomainFieldInput"}
                     value={formRoot}
                 >
@@ -625,7 +625,6 @@ describe("Field", function () {
 
             const { container } = render(
                 <Form
-                    schema={schema}
                     type={"DomainFieldInput"}
                     value={formRoot}
                 >
@@ -673,7 +672,6 @@ describe("Field", function () {
         act(() => {
             const result = render(
                 <Form
-                    schema={getSchema()}
                     type={"EnumTypeInput"}
                     options={{isolation: false}}
                     value={
@@ -716,7 +714,6 @@ describe("Field", function () {
 
         const { container } = render(
             <Form
-                schema={getSchema()}
                 type={"EnumTypeInput"}
                 options={{ isolation: false }}
                 value={
@@ -769,7 +766,6 @@ describe("Field", function () {
 
         const { container } = render(
             <Form
-                schema={getSchema()}
                 type={"EnumTypeInput"}
                 options={{ isolation: false }}
                 value={
@@ -831,7 +827,6 @@ describe("Field", function () {
 
         const { container } = render(
             <Form
-                schema={getSchema()}
                 type={"EnumTypeInput"}
                 options={{ isolation: false }}
                 value={

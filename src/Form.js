@@ -11,23 +11,7 @@ import FormLayout from "./FormLayout";
 import { useDebouncedCallback } from "use-debounce"
 import { fallbackJSClone } from "./util/clone";
 import { useObserver } from "mobx-react-lite";
-import revalidate from "./util/revalidate";
-import { getDefaultFormContext } from "./FormContext";
-
-
-function getSchema(formConfig, props)
-{
-    const { schema: schemaFromProps } = props;
-
-    const schema = (formConfig && formConfig.schema) || schemaFromProps;
-
-    if (!schema)
-    {
-        throw new Error("No schema prop given and no FormConfigProvider providing one either");
-    }
-
-    return schema;
-}
+import FormContext from "./FormContext";
 
 
 /**
@@ -115,9 +99,9 @@ const Form  = props =>  {
      */
     const formId = useMemo( () => "f" + formCounter++, []);
 
-    const { id, children, onClick, value, type, onSubmit, formContext = getDefaultFormContext(), options } = props;
-
-    const schema = getSchema(parentConfig, props);
+    const { id, children, onClick, value, type, onSubmit, formContext = FormContext.getDefault(), options } = props;
+    
+    const { schema } = formContext;
     const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
 
     useEffect(
@@ -134,7 +118,7 @@ const Form  = props =>  {
 
             if (formConfig.options.revalidate)
             {
-                revalidate(formConfig);
+                formConfig.formContext.revalidate();
             }
 
             if (!formConfig.hasErrors())
@@ -168,7 +152,6 @@ const Form  = props =>  {
                     ... parentConfig.options,
                     ... options
                 } : parentConfig.options,
-                schema,
                 formContext
             );
         }
@@ -176,7 +159,6 @@ const Form  = props =>  {
         {
             formConfig = new FormConfig(
                 options,
-                schema,
                 formContext
             );
         }
@@ -268,14 +250,6 @@ Form.propTypes = {
     onReset: PropTypes.func,
 
     /**
-     * schema to use for this form
-     */
-    schema: PropTypes.oneOfType([
-        PropTypes.instanceOf(InputSchema),
-        PropTypes.object
-    ]),
-
-    /**
      * form base type. If it is not defined, a type prop must be given on all Fields.
      */
     type: PropTypes.string,
@@ -284,11 +258,6 @@ Form.propTypes = {
      * initial value (typed GraphQL object)
      */
     value: PropTypes.any,
-
-    /**
-     * High-level validation configuration object
-     */
-    validation: PropTypes.object,
 
     /**
      * Optional onClick handler for the form element.

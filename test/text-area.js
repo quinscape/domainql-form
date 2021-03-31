@@ -19,11 +19,19 @@ import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import Field from "./field";
 import Addon from "../src/Addon";
+import { FormContext } from "../src";
 
 describe("TextArea", function (){
 
     // automatically unmount and cleanup DOM after the tests are finished.
     afterEach( cleanup );
+
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
 
     after( dumpUsage) ;
 
@@ -54,7 +62,6 @@ describe("TextArea", function (){
 
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
             >
@@ -124,7 +131,6 @@ describe("TextArea", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 options={{
                     mode: loc === ModeLocation.INHERITED ? mode : null
@@ -202,7 +208,6 @@ describe("TextArea", function (){
         });
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 value={ formRoot }
             >
@@ -256,7 +261,6 @@ describe("TextArea", function (){
             });
             const { container } = render(
                 <Form
-                    schema={ getSchema() }
                     type={ "DomainFieldInput" }
                     value={ formRoot }
                 >

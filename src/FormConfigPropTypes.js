@@ -39,11 +39,6 @@ export default {
     mode: PropTypes.oneOf(FieldMode.values()),
 
     /**
-     * High-level validation configuration object
-     */
-    validation: PropTypes.object,
-
-    /**
      * Whether the form automatically does a (debounced) submit on every change.
      */
     autoSubmit: PropTypes.bool,
@@ -66,5 +61,5 @@ export default {
     /**
      * If true, revalidate all field of the current form context (Default is true)
      */
-    revalidate: PropTypes.bool,
+    revalidate: PropTypes.bool
 }

@@ -16,7 +16,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
     const formConfig = useMemo(
         () => {
 
-            if (!parentConfig || !parentConfig.schema || !parentConfig.type)
+            if (!parentConfig || !parentConfig.type)
             {
                 throw new Error("<FieldGroup/> should only be used inside a <Form/>");
             }

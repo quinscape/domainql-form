@@ -29,6 +29,13 @@ describe("Form", function () {
 
     //afterEach( resetFormContext );
 
+    beforeEach(
+        () => {
+            const formContext = new FormContext(getSchema());
+            formContext.useAsDefault();
+        }
+    )
+
     it("provides a form config to render function", function () {
 
         const submitSpy = sinon.spy();
@@ -37,7 +44,6 @@ describe("Form", function () {
         // yup, that's valid
         const {  } = render(
             <Form
-                schema={ getSchema() }
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
                 value={observable({
@@ -91,7 +97,6 @@ describe("Form", function () {
         // yup, that's valid
         const {  } = render(
             <Form
-                schema={ getSchema() }
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
                 value={observable( {
@@ -133,7 +138,6 @@ describe("Form", function () {
         // yup, that's valid
         const {  } = render(
             <Form
-                schema={ getSchema() }
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
                 value={
@@ -177,10 +181,7 @@ describe("Form", function () {
 
         // yup, that's valid
         const {  } = render(
-            <FormConfigProvider
-                schema={getSchema() }
-
-            >
+            <FormConfigProvider>
             <Form
                 onSubmit={ submitSpy }
                 type={ "EnumTypeInput" }
@@ -208,7 +209,6 @@ describe("Form", function () {
         // yup, that's valid
         const {  } = render(
             <FormConfigProvider
-                schema={getSchema() }
                 options={{
                     layout: FormLayout.INLINE
                 }}
@@ -245,7 +245,6 @@ describe("Form", function () {
         });
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "EnumTypeInput" }
                 options={{
                     isolation: true
@@ -295,7 +294,6 @@ describe("Form", function () {
 
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 onSubmit={submitSpy }
                 type={ "EnumTypeInput" }
                 value={
@@ -386,7 +384,6 @@ describe("Form", function () {
 
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainFieldInput" }
                 options={{
                     isolation: true
@@ -469,7 +466,6 @@ describe("Form", function () {
 
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainTypeInput" }
                 options={{
                     isolation: true
@@ -531,7 +527,6 @@ describe("Form", function () {
         act(() => {
             const result = render(
                 <Form
-                    schema={ getSchema() }
                     type={ "EnumTypeInput" }
                     value={ formRoot }
                     options={{
@@ -629,7 +624,6 @@ describe("Form", function () {
         act(() => {
             const result = render(
                 <Form
-                    schema={ getSchema() }
                     value={ formRoot }
                     options={{
                         isolation: true
@@ -746,7 +740,6 @@ describe("Form", function () {
         act(() => {
             const result = render(
                 <Form
-                    schema={ getSchema() }
                     value={ formRoot }
                 >
                     {
@@ -850,7 +843,6 @@ describe("Form", function () {
 
         const { container, getByLabelText } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainType" }
                 value={
                     // we only edit the second field of the domain type
@@ -991,7 +983,6 @@ describe("Form", function () {
         // XXX: we test two forms with the same form context and different root objects.
         const { container } = render(
             <FormConfigProvider
-                schema={ getSchema() }
                 options={{
                     isolation: false
                 }}
@@ -1056,7 +1047,7 @@ describe("Form", function () {
         // the form stopped updating the value after 12
         assert(formConfig.root.fields[1].maxLength === 12);
 
-        assert.deepEqual(getDefaultFormContext().findError(formRoot.fields[1], "maxLength"), ["12a","Invalid Integer"]);
+        assert.deepEqual(FormContext.getDefault().findError(formRoot.fields[1], "maxLength"), ["12a","Invalid Integer"]);
 
         assert(getByText(container, "0:ERROR"))
         assert(getByText(container, "1:ERROR"))
@@ -1070,10 +1061,7 @@ describe("Form", function () {
 
         // yup, that's valid
         const {  } = render(
-            <FormConfigProvider
-                schema={getSchema() }
-
-            >
+            <FormConfigProvider>
                 <Form
                     id="my-form"
                     onSubmit={ submitSpy }
@@ -1165,10 +1153,7 @@ describe("Form", function () {
         act(
             () => {
                 const result = render(
-                    <FormConfigProvider
-                        schema={getSchema() }
-
-                    >
+                    <FormConfigProvider>
                         <FormComponent
                             state={ state }
                             renderSpy={ renderSpy }
@@ -1237,16 +1222,13 @@ describe("Form", function () {
                 const formConfig2 = renderSpy.lastCall.args[0];
                 assert.deepEqual(formConfig2.getErrors("name"), ["","EnumTypeInput.name:Field Required"]);
 
-                assert(getByText(container, "OUTSIDE:false"))
+                assert(getByText(container, "OUTSIDE:true"))
                 assert(getByText(container, "INSIDE:true"))
 
 
                 // XXX: Make sure we still complain about wrong field names
                 assertRenderThrows(
-                    <FormConfigProvider
-                        schema={getSchema() }
-
-                    >
+                    <FormConfigProvider>
                         <Form
                             key={ state.formObject && state.formObject.id }
                             id="my-form"
@@ -1328,7 +1310,6 @@ describe("Form", function () {
         // XXX: we test two forms with the same form context and different root objects.
         const { container } = render(
             <FormConfigProvider
-                schema={ getSchema() }
                 options={{
                     isolation: false
                 }}
@@ -1404,8 +1385,8 @@ describe("Form", function () {
         assert(getByText(container, "1:ERROR"))
 
         // the submit attempt on the sub form results in both required fields being detected
-        assert.deepEqual(getDefaultFormContext().findError(formRoot, "name"), ["","DomainFieldInput.name:Field Required"]);
-        assert.deepEqual(getDefaultFormContext().findError(formRoot.fields[1], "maxLength"), ["","DomainFieldInput.maxLength:Field Required"]);
+        assert.deepEqual(FormContext.getDefault().findError(formRoot, "name"), ["","DomainTypeInput.name:Field Required"]);
+        assert.deepEqual(FormContext.getDefault().findError(formRoot.fields[1], "maxLength"), ["","DomainFieldInput.maxLength:Field Required"]);
 
     });
 

@@ -14,12 +14,12 @@ import userEvent from "@testing-library/user-event";
 
 import itParam from "mocha-param"
 import ModeLocation from "./util/ModeLocation";
+import { FormContext } from "../src";
 
 describe("High-Level Validation", function () {
 
     // automatically unmount and cleanup DOM after the tests are finished.
     afterEach( cleanup );
-
 
     itParam(
         "does additional field validation ( ${value} error} ",
@@ -68,24 +68,24 @@ describe("High-Level Validation", function () {
             }
         });
 
+        const formContext = new FormContext(getSchema(), {
+            validation: {
+                validateField: (ctx, value) => {
+
+                    if (ctx.qualifiedName === "name" && value === "aaa")
+                    {
+                        return err;
+                    }
+
+                    return null;
+                }
+            }
+        })
+            formContext.useAsDefault();
+
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainTypeInput" }
-                options={{
-                    validation: {
-                        validateField: (ctx, value) => {
-
-                            if (ctx.qualifiedName === "name" && value === "aaa")
-                            {
-                                return err;
-                            }
-
-                            return null;
-                        }
-                    }
-                }}
-
                 value={
                     // we only edit the second field of the domain type
                     formRoot
@@ -155,21 +155,22 @@ describe("High-Level Validation", function () {
             }
         });
 
+        const formContext = new FormContext(getSchema(), {
+            validation: {
+                fieldContext: (ctx) => {
+
+                    if (ctx.qualifiedName === "name")
+                    {
+                        ctx.mode = FieldMode.READ_ONLY
+                    }
+                },
+            }
+        })
+        formContext.useAsDefault();
+
         const { container } = render(
             <Form
-                schema={ getSchema() }
                 type={ "DomainTypeInput" }
-                options={{
-                    validation: {
-                        fieldContext: (ctx) => {
-
-                            if (ctx.qualifiedName === "name")
-                            {
-                                ctx.mode = FieldMode.READ_ONLY
-                            }
-                        },
-                    }
-                }}
                 value={
                     // we only edit the second field of the domain type
                     formRoot

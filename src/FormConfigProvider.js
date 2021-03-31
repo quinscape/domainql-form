@@ -5,17 +5,18 @@ import FormConfig, { FormConfigContext } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
+import FormContext, { getDefaultFormContext } from "./FormContext";
 
 /**
  * Allows the definition defaults for form config options and schema at the top of the application component hierarchy.
  */
 const FormConfigProvider = props => {
 
-    const { options, schema, children } = props;
+    const { options, formContext = FormContext.getDefault(), children } = props;
 
     const formConfig = useMemo(() => {
-        return new FormConfig(options, schema, null);
-    }, [ options, schema ]);
+        return new FormConfig(options, formContext);
+    }, [ options ]);
 
     return (
         <FormConfigContext.Provider value={ formConfig }>

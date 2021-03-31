@@ -162,16 +162,9 @@ const Field = fnObserver((props, ref) => {
 
             };
 
-            const { validation } = formConfig.options;
-
             if (typeof fieldContextCB === "function")
             {
                 fieldContextCB(newFieldContext);
-            }
-
-            if (validation && validation.fieldContext)
-            {
-                validation.fieldContext(newFieldContext)
             }
 
             if (formConfig.root)

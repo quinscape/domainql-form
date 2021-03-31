@@ -13,10 +13,8 @@ onClick | func | Optional onClick handler for the form element.
 onReset | func | Reset handler. The default behaviour is to do re-clone the original value
 onSubmit | func | Submit handler to receive the current formConfig with the root observable as-is. The default behavior is to do nothing as the (cloned) root object is already updated.
 options | Form options | Form options. Options here overwrite options inherited from a FormConfigProvider
-schema | instance of InputSchema or object | schema to use for this form
 type | string | form base type. If it is not defined, a type prop must be given on all Fields.
-validation | object | High-level validation configuration object
-**value** (required) | any | initial value (typed GraphQL object)
+value | any | initial value (typed GraphQL object)
 ### Simple Form Example
 
 ```js
@@ -76,17 +74,20 @@ field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form C
 ------|------|-------------
 addons | array | Array of addons as props instead of as children. Only useful if you're writing a component wrapping Field and want to render your addons as field addons while using the render function form.
 autoFocus | bool | Pass-through autoFocus attribute for text inputs
+fieldContext | func | Callback function that allows complex field implementations to modify the newly created field context ( fieldContext => void ).
 formGroupClass | string | Additional HTML classes for the form group element.
 helpText | string | Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
 inputClass | string | Additional HTML classes for the input element.
 label | string | Label for the field.
 labelClass | string | Additional HTML classes for the label element.
+maxLength | number | Maximum field length (for string fields)
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
 onBlur | func | Optional blur handler to use
-onChange | func | Optional change handler to use
+onChange | func | Optional change handler to use to react to the single field changing
 placeholder | string | Placeholder text to render for text inputs.
 tooltip | string | Tooltip / title attribute for the input element
+validate | func | Optional per-field validation function ( (fieldContext, value) => error ). It receives the current value as string and the current field context and returns an error string if there is any or `null` if there is no error. The local validation is executed after the type validation and also prevents invalid values from being written back into the observable. The high-level validation is only executed if the local validation succeeds.
 ### FieldMode
 
 FieldMode is a Javascript enum that controls the render mode of all fields
@@ -116,11 +117,13 @@ helpText | string | Additional help text for this field. Is rendered for non-err
 inputClass | string | Additional HTML classes for the textarea element.
 label | string | Label for the field.
 labelClass | string | Additional HTML classes for the label element.
+maxLength | number | Maximum field length
 mode | FieldMode value | Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
 **name** (required) | string | Name / path for this field (e.g. "name", but also "foos.0.name")
 placeholder | string | Placeholder text to render for the empty text area.
 rows | number | Rows attribute for the textarea element (default is 3)
 tooltip | string | Tooltip / title attribute
+validate | func | Optional per-field validation function ( (fieldContext, value) => error ). It receives the current value as string and the current field context and returns an error string if there is any or `null` if there is no error. The local validation is executed after the type validation and also prevents invalid values from being written back into the observable. The high-level validation is only executed if the local validation succeeds.
 ## &lt;Select/&gt;
 
 Allows selection from a list of string values for a target field.
@@ -259,8 +262,8 @@ Allows the definition defaults for form config options and schema at the top of 
 
  Name | Type | Description 
 ------|------|-------------
-options | Form options | ...
-schema | instance of InputSchema or object | ...
+options | Form options | Default form options
+schema | instance of InputSchema or object | provides the input schema for all child <Form/> components.
 ### &lt;FormConfigProvider/&gt; Example
 
 ```js
@@ -302,9 +305,9 @@ labelColumnClass | string | Additional label column class to use if in horizonta
 layout | enum | Form layout: "DEFAULT" - Label on top of input. "HORIZONTAL" - label to the left of input in layout column "INLINE" - inline field elements without form group element
 lookupLabel | func | Optional function to look up a form field label based on formConfig and field name / path.
 mode | FieldMode value | Default mode for input components within the Form. Setting this on a &lt;FormBlock&gt; or a &lt;Form&gt; will control all fields inside the form block or form.
+revalidate | bool | If true, revalidate all field of the current form context (Default is true)
 submitTimeOut | number | Timeout in milliseconds for submit debouncing.
 suppressLabels | bool | Render no label in inline mode at all.
-validation | object | High-level validation configuration object
 wrapperColumnClass | string | Additional wrapper column class to use if in horizontal mode.
 ## FormConfig
 
@@ -329,7 +332,6 @@ being available in all lifecycle methods etc pp.
   Name       | Type                   | Description
 -------------|------------------------|------------------------------------------------------
  type        | string                 | Name of the base input type of the form. Only defined within a &lt;Form/&gt;.
- schema      | InputSchema instance   | input schema
  options     | object                 | current set of default options
  basePath    | string                 | Current prefix for field names/paths
  root        | Mobx view model        | Current form base value (is not set outside of <Form/>)
