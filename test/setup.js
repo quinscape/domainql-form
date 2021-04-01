@@ -1,3 +1,4 @@
+require("raf/polyfill")
 /*
  * Some environment patching for "jsdom-global/register"
  */
