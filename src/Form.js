@@ -267,7 +267,13 @@ Form.propTypes = {
     /**
      * Form options. Options here overwrite options inherited from a FormConfigProvider
      */
-    options: PropTypes.shape(FORM_CONFIG_PROP_TYPES)
+    options: PropTypes.shape(FORM_CONFIG_PROP_TYPES),
+
+    /**
+     * Optional alternate form-context to use for this form. Separate form contexts will have separate error storage and
+     * submit/validation cycles.
+     */
+    formContext: PropTypes.instanceOf(FormContext.class)
 };
 
 export default Form

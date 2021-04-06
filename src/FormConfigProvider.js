@@ -41,7 +41,12 @@ FormConfigProvider.propTypes = {
      */
     options: PropTypes.shape(
         FORM_CONFIG_PROP_TYPES
-    )
+    ),
+
+    /**
+     * Optional alternate form-context to provide as context
+     */
+    formContext: PropTypes.instanceOf(FormContext)
 };
 
 export default FormConfigProvider
