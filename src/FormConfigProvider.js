@@ -5,7 +5,7 @@ import FormConfig, { FormConfigContext } from "./FormConfig";
 import FORM_CONFIG_PROP_TYPES from "./FormConfigPropTypes"
 
 import InputSchema from "./InputSchema";
-import FormContext, { getDefaultFormContext } from "./FormContext";
+import FormContext from "./FormContext";
 
 /**
  * Allows the definition defaults for form config options and schema at the top of the application component hierarchy.

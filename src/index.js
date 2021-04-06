@@ -26,7 +26,7 @@ import FieldGroup from "./FieldGroup";
 import Addon from "./Addon";
 import { renderStaticField } from "./default-renderers"
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
-import FormContext, { getDefaultFormContext } from "./FormContext";
+import FormContext from "./FormContext";
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -67,6 +67,5 @@ export {
     renderStaticField,
     resolveStaticRenderer,
 
-    FormContext,
-    getDefaultFormContext
+    FormContext
 }

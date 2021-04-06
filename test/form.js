@@ -17,7 +17,7 @@ import viewModelToJs from "./util/viewModelToJs";
 import userEvent from "@testing-library/user-event";
 import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
-import FormContext, { getDefaultFormContext, resetDefaultFormContext } from "../src/FormContext";
+import FormContext from "../src/FormContext";
 import assertRenderThrows from "./util/assertRenderThrows";
 import useFormConfig from "../src/useFormConfig";
 
