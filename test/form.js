@@ -4,8 +4,6 @@ import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByTex
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
-
 import sinon from "sinon"
 import Form from "../src/Form";
 import FormConfig, { FormConfigContext, DEFAULT_OPTIONS } from "../src/FormConfig";
@@ -15,12 +13,13 @@ import { observable, runInAction } from "mobx";
 import { observer as fnObserver } from "mobx-react-lite";
 import viewModelToJs from "./util/viewModelToJs";
 import userEvent from "@testing-library/user-event";
-import dumpUsage from "./util/dumpUsage";
 import FormLayout from "../src/FormLayout";
 import FormContext from "../src/FormContext";
 import assertRenderThrows from "./util/assertRenderThrows";
 import useFormConfig from "../src/useFormConfig";
+import { InputSchema } from "../src";
 
+import rawSchema from "./schema.json"
 
 describe("Form", function () {
 
@@ -31,7 +30,7 @@ describe("Form", function () {
 
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )

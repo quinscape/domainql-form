@@ -256,8 +256,10 @@ function convertInput(inputSchema, baseTypeDef, value, toScalar)
 
 class InputSchema
 {
-    constructor(schema, debug = false)
+    constructor(raw, debug = false)
     {
+        const { schema, meta } = raw;
+
         const { types } = schema;
 
         if (!types || typeof types.length !== "number")
@@ -266,6 +268,7 @@ class InputSchema
         }
 
         this.schema = schema;
+        this.meta = meta;
         this.debug = debug;
     }
 

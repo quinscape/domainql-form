@@ -3,7 +3,6 @@ import { cleanup, fireEvent, getByLabelText, queryByLabelText, getByText, render
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
 
 import sinon from "sinon"
 import Form from "../src/Form";
@@ -15,8 +14,8 @@ import { observable } from "mobx";
 import itParam from "mocha-param"
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
-import dumpUsage from "./util/dumpUsage";
-import { FormContext } from "../src";
+import { FormContext, InputSchema } from "../src";
+import rawSchema from "./schema.json";
 
 
 describe("Select", function (){
@@ -24,11 +23,10 @@ describe("Select", function (){
     // automatically unmount and cleanup DOM after the tests are finished.
     afterEach( cleanup );
 
-    after( dumpUsage) ;
 
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )

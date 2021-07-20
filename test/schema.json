@@ -1,1223 +1,1241 @@
 {
-    "types": [
-        {
-            "kind": "SCALAR",
-            "name": "String",
-            "description": "Built-in String",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Int",
-            "description": "Built-in Int",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "DomainTypeInput",
-            "description": "Generated for de.quinscape.domainql.model.DomainType",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+    "schema": {
+        "types": [
+            {
+                "kind": "SCALAR",
+                "name": "String",
+                "description": "Built-in String",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Int",
+                "description": "Built-in Int",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "DomainTypeInput",
+                "description": "Generated for de.quinscape.domainql.model.DomainType",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "description",
+                        "description": null,
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "description",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "fields",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "fields",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "DomainFieldInput",
-                                "ofType": null
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "DomainFieldInput",
+                                    "ofType": null
+                                }
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "primaryKey",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "UniqueConstraintInput",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "foreignKeys",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
-                            "name": null,
-                            "ofType": {
-                                "kind": "INPUT_OBJECT",
-                                "name": "ForeignKeyInput",
-                                "ofType": null
-                            }
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "uniqueConstraints",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "primaryKey",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
                                 "name": "UniqueConstraintInput",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "UniqueConstraintInput",
-            "description": "Generated for de.quinscape.domainql.model.UniqueConstraint",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "fields",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "foreignKeys",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "ForeignKeyInput",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "uniqueConstraints",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "UniqueConstraintInput",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "UniqueConstraintInput",
+                "description": "Generated for de.quinscape.domainql.model.UniqueConstraint",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "fields",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "ConfigValueInput",
+                "description": "Generated for de.quinscape.domainql.model.ConfigValue",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "value",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Date",
+                "description": "SQL date equivalent",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Long",
+                "description": "Long type",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "description": "Built-in Boolean",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Currency",
+                "description": "Currency value",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Timestamp",
+                "description": "SQL timestamp equivalent",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "DomainFieldInput",
+                "description": "Generated for de.quinscape.domainql.model.DomainField",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
                                 "name": "String",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "ConfigValueInput",
-            "description": "Generated for de.quinscape.domainql.model.ConfigValue",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "value",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Date",
-            "description": "SQL date equivalent",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Long",
-            "description": "Long type",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Boolean",
-            "description": "Built-in Boolean",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Currency",
-            "description": "Currency value",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Timestamp",
-            "description": "SQL timestamp equivalent",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "DomainFieldInput",
-            "description": "Generated for de.quinscape.domainql.model.DomainField",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "description",
+                        "description": null,
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "description",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
+                    {
+                        "name": "type",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "ENUM",
+                                "name": "FieldType",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "type",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "ENUM",
-                            "name": "FieldType",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "required",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "Boolean",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "maxLength",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "Int",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "sqlType",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "config",
-                    "description": null,
-                    "type": {
-                        "kind": "LIST",
-                        "name": null,
-                        "ofType": {
-                            "kind": "INPUT_OBJECT",
-                            "name": "ConfigValueInput",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "unique",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Boolean",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "EnumTypeInput",
-            "description": "Generated for de.quinscape.domainql.model.EnumType",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "values",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "required",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "String",
+                                "name": "Boolean",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "description",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "ENUM",
-            "name": "FieldType",
-            "description": null,
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": [
-                {
-                    "name": "STRING",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "INTEGER",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "LONG",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "BIG_DECIMAL",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "BOOLEAN",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "TIMESTAMP",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "DATE",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "UUID",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "CUSTOM_SQL",
-                    "description": null,
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "ForeignKeyInput",
-            "description": "Generated for de.quinscape.domainql.model.ForeignKey",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "description",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "targetType",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "fields",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "maxLength",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
-                                "name": "String",
+                                "name": "Int",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                },
-                {
-                    "name": "targetFields",
-                    "description": null,
-                    "type": {
-                        "kind": "LIST",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "sqlType",
+                        "description": null,
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "FooInput",
-            "description": "Generated for de.quinscape.eamodern.service.Foo",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "date",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Date",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "longNum",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Long",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "flag",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Boolean",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "num",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "Int",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "moneys",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Currency",
-                        "ofType": null
-                    },
-                    "defaultValue": "0"
-                },
-                {
-                    "name": "timestamp",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Timestamp",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "Foo",
-            "description": "Generated for de.quinscape.eamodern.service.Foo",
-            "fields": [
-                {
-                    "name": "date",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Date",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "longNum",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Long",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "flag",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Boolean",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "num",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "Int",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "name",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "String",
-                            "ofType": null
-                        }
-                    },
-                    "defaultValue": null
-                },
-                {
-                    "name": "moneys",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Currency",
-                        "ofType": null
-                    },
-                    "defaultValue": "0"
-                },
-                {
-                    "name": "timestamp",
-                    "description": null,
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Timestamp",
-                        "ofType": null
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "Wrapper",
-            "description": "Generated for de.quinscape.eamodern.service.Foo",
-            "inputFields": null,
-            "fields": [
-                {
-                    "name": "foos",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
-                            "name": null,
-                            "ofType": {
-                                "kind": "OBJECT",
-                                "name": "Foo",
-                                "ofType": null
-                            }
-                        }
-                    },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "INPUT_OBJECT",
-            "name": "WrapperInput",
-            "description": "Generated for de.quinscape.eamodern.service.Foo",
-            "fields": null,
-            "inputFields": [
-                {
-                    "name": "foos",
-                    "description": null,
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "config",
+                        "description": null,
+                        "type": {
                             "kind": "LIST",
                             "name": null,
                             "ofType": {
                                 "kind": "INPUT_OBJECT",
-                                "name": "FooInput",
+                                "name": "ConfigValueInput",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "defaultValue": null
-                }
-            ],
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "FKLayout",
-            "description": "Generated for de.quinscape.domainql.model.FKLayout",
-            "fields": [
-                {
-                    "name": "x",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Float",
-                        "ofType": null
+                    {
+                        "name": "unique",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Boolean",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "EnumTypeInput",
+                "description": "Generated for de.quinscape.domainql.model.EnumType",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "y",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Float",
-                        "ofType": null
+                    {
+                        "name": "values",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "DomainType",
-            "description": "Generated for de.quinscape.domainql.model.DomainType",
-            "fields": [
-                {
-                    "name": "name",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "description",
+                        "description": null,
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "ENUM",
+                "name": "FieldType",
+                "description": null,
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": [
+                    {
+                        "name": "STRING",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "description",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
+                    {
+                        "name": "INTEGER",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
-                            "name": null,
-                            "ofType": {
-                                "kind": "OBJECT",
-                                "name": "DomainField",
-                                "ofType": null
-                            }
-                        }
+                    {
+                        "name": "LONG",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "primaryKey",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "OBJECT",
-                            "name": "UniqueConstraint",
+                    {
+                        "name": "BIG_DECIMAL",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "BOOLEAN",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "TIMESTAMP",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "DATE",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "UUID",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "CUSTOM_SQL",
+                        "description": null,
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "ForeignKeyInput",
+                "description": "Generated for de.quinscape.domainql.model.ForeignKey",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "description",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "defaultValue": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "foreignKeys",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "targetType",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "fields",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "targetFields",
+                        "description": null,
+                        "type": {
                             "kind": "LIST",
                             "name": null,
                             "ofType": {
-                                "kind": "OBJECT",
-                                "name": "ForeignKey",
+                                "kind": "SCALAR",
+                                "name": "String",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "FooInput",
+                "description": "Generated for de.quinscape.eamodern.service.Foo",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "date",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Date",
+                            "ofType": null
+                        },
+                        "defaultValue": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "uniqueConstraints",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "longNum",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Long",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "flag",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Boolean",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "num",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "moneys",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Currency",
+                            "ofType": null
+                        },
+                        "defaultValue": "0"
+                    },
+                    {
+                        "name": "timestamp",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Timestamp",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "Foo",
+                "description": "Generated for de.quinscape.eamodern.service.Foo",
+                "fields": [
+                    {
+                        "name": "date",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Date",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "longNum",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Long",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "flag",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Boolean",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "num",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "name",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "defaultValue": null
+                    },
+                    {
+                        "name": "moneys",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Currency",
+                            "ofType": null
+                        },
+                        "defaultValue": "0"
+                    },
+                    {
+                        "name": "timestamp",
+                        "description": null,
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Timestamp",
+                            "ofType": null
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "Wrapper",
+                "description": "Generated for de.quinscape.eamodern.service.Foo",
+                "inputFields": null,
+                "fields": [
+                    {
+                        "name": "foos",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "Foo",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "INPUT_OBJECT",
+                "name": "WrapperInput",
+                "description": "Generated for de.quinscape.eamodern.service.Foo",
+                "fields": null,
+                "inputFields": [
+                    {
+                        "name": "foos",
+                        "description": null,
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "INPUT_OBJECT",
+                                    "name": "FooInput",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "defaultValue": null
+                    }
+                ],
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "FKLayout",
+                "description": "Generated for de.quinscape.domainql.model.FKLayout",
+                "fields": [
+                    {
+                        "name": "x",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Float",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "y",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Float",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "DomainType",
+                "description": "Generated for de.quinscape.domainql.model.DomainType",
+                "fields": [
+                    {
+                        "name": "name",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "description",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "fields",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "DomainField",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "primaryKey",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "OBJECT",
                                 "name": "UniqueConstraint",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "_",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "OBJECT",
-                        "name": "DTLayout",
-                        "ofType": null
+                    {
+                        "name": "foreignKeys",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "ForeignKey",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "SCALAR",
-            "name": "Float",
-            "description": "Built-in Float",
-            "fields": null,
-            "inputFields": null,
-            "interfaces": null,
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "DTLayout",
-            "description": "Generated for de.quinscape.domainql.model.DTLayout",
-            "fields": [
-                {
-                    "name": "color",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
+                    {
+                        "name": "uniqueConstraints",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "OBJECT",
+                                    "name": "UniqueConstraint",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "x",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Float",
-                        "ofType": null
+                    {
+                        "name": "_",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "DTLayout",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "SCALAR",
+                "name": "Float",
+                "description": "Built-in Float",
+                "fields": null,
+                "inputFields": null,
+                "interfaces": null,
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "DTLayout",
+                "description": "Generated for de.quinscape.domainql.model.DTLayout",
+                "fields": [
+                    {
+                        "name": "color",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "y",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Float",
-                        "ofType": null
+                    {
+                        "name": "x",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Float",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "ConfigValue",
-            "description": "Generated for de.quinscape.domainql.model.ConfigValue",
-            "fields": [
-                {
-                    "name": "name",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
+                    {
+                        "name": "y",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "Float",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "ConfigValue",
+                "description": "Generated for de.quinscape.domainql.model.ConfigValue",
+                "fields": [
+                    {
+                        "name": "name",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "value",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "UniqueConstraint",
-            "description": "Generated for de.quinscape.domainql.model.UniqueConstraint",
-            "fields": [
-                {
-                    "name": "fields",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "LIST",
+                    {
+                        "name": "value",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
+                            "ofType": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "UniqueConstraint",
+                "description": "Generated for de.quinscape.domainql.model.UniqueConstraint",
+                "fields": [
+                    {
+                        "name": "fields",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "DomainField",
+                "description": "Generated for de.quinscape.domainql.model.DomainField",
+                "fields": [
+                    {
+                        "name": "name",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
                             "name": null,
                             "ofType": {
                                 "kind": "SCALAR",
                                 "name": "String",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "DomainField",
-            "description": "Generated for de.quinscape.domainql.model.DomainField",
-            "fields": [
-                {
-                    "name": "name",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "description",
+                        "description": "",
+                        "args": [],
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "description",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
+                    {
+                        "name": "type",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "ENUM",
+                                "name": "FieldType",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "type",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "ENUM",
-                            "name": "FieldType",
+                    {
+                        "name": "notNull",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Boolean",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "maxLength",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "Int",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "sqlType",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "SCALAR",
+                            "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "notNull",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "config",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "LIST",
+                            "name": null,
+                            "ofType": {
+                                "kind": "OBJECT",
+                                "name": "ConfigValue",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "unique",
+                        "description": "",
+                        "args": [],
+                        "type": {
                             "kind": "SCALAR",
                             "name": "Boolean",
                             "ofType": null
-                        }
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "maxLength",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "Int",
-                            "ofType": null
-                        }
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "sqlType",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "config",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "LIST",
-                        "name": null,
-                        "ofType": {
-                            "kind": "OBJECT",
-                            "name": "ConfigValue",
-                            "ofType": null
-                        }
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "unique",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "Boolean",
-                        "ofType": null
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
-        },
-        {
-            "kind": "OBJECT",
-            "name": "ForeignKey",
-            "description": "Generated for de.quinscape.domainql.model.ForeignKey",
-            "fields": [
-                {
-                    "name": "description",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "SCALAR",
-                        "name": "String",
-                        "ofType": null
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "targetType",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            },
+            {
+                "kind": "OBJECT",
+                "name": "ForeignKey",
+                "description": "Generated for de.quinscape.domainql.model.ForeignKey",
+                "fields": [
+                    {
+                        "name": "description",
+                        "description": "",
+                        "args": [],
+                        "type": {
                             "kind": "SCALAR",
                             "name": "String",
                             "ofType": null
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "fields",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "NON_NULL",
-                        "name": null,
-                        "ofType": {
+                    {
+                        "name": "targetType",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "SCALAR",
+                                "name": "String",
+                                "ofType": null
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "fields",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "NON_NULL",
+                            "name": null,
+                            "ofType": {
+                                "kind": "LIST",
+                                "name": null,
+                                "ofType": {
+                                    "kind": "SCALAR",
+                                    "name": "String",
+                                    "ofType": null
+                                }
+                            }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    },
+                    {
+                        "name": "targetFields",
+                        "description": "",
+                        "args": [],
+                        "type": {
                             "kind": "LIST",
                             "name": null,
                             "ofType": {
@@ -1225,44 +1243,41 @@
                                 "name": "String",
                                 "ofType": null
                             }
-                        }
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
                     },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "targetFields",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "LIST",
-                        "name": null,
-                        "ofType": {
-                            "kind": "SCALAR",
-                            "name": "String",
+                    {
+                        "name": "_",
+                        "description": "",
+                        "args": [],
+                        "type": {
+                            "kind": "OBJECT",
+                            "name": "FKLayout",
                             "ofType": null
-                        }
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                },
-                {
-                    "name": "_",
-                    "description": "",
-                    "args": [],
-                    "type": {
-                        "kind": "OBJECT",
-                        "name": "FKLayout",
-                        "ofType": null
-                    },
-                    "isDeprecated": false,
-                    "deprecationReason": null
-                }
-            ],
-            "inputFields": null,
-            "interfaces": [],
-            "enumValues": null,
-            "possibleTypes": null
+                        },
+                        "isDeprecated": false,
+                        "deprecationReason": null
+                    }
+                ],
+                "inputFields": null,
+                "interfaces": [],
+                "enumValues": null,
+                "possibleTypes": null
+            }
+        ]
+    },
+    "meta": {
+        "types": {
+            "Foo": {},
+            "Wrapper": {},
+            "FKLayout": {},
+            "DomainType": {},
+            "DTLayout": {},
+            "ConfigValue": {},
+            "UniqueConstraint": {},
+            "DomainField": {},
+            "ForeignKey": {}
         }
-    ]
+    }
 }

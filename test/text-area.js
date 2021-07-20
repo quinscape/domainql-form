@@ -3,8 +3,6 @@ import { cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByTex
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
-import dumpUsage from "./util/dumpUsage"
 import InputSchema from "../src/InputSchema";
 
 import sinon from "sinon"
@@ -20,6 +18,7 @@ import ModeLocation from "./util/ModeLocation";
 import Field from "./field";
 import Addon from "../src/Addon";
 import { FormContext } from "../src";
+import rawSchema from "./schema.json";
 
 describe("TextArea", function (){
 
@@ -28,12 +27,10 @@ describe("TextArea", function (){
 
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )
-
-    after( dumpUsage) ;
 
     it("renders as textarea element", function() {
 

@@ -4,7 +4,6 @@ import { act, cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, get
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
 
 import sinon from "sinon"
 import Form from "../src/Form";
@@ -20,20 +19,18 @@ import itParam from "mocha-param"
 import FieldMode from "../src/FieldMode";
 import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
-import dumpUsage from "./util/dumpUsage";
 import Addon from "../src/Addon";
-import { FormContext } from "../src";
+import { FormContext, InputSchema } from "../src";
+import rawSchema from "./schema.json";
 
 describe("Field", function () {
 
     // automatically unmount and cleanup DOM after the tests are finished.
     afterEach(cleanup);
 
-    after( dumpUsage) ;
-
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )
@@ -440,7 +437,7 @@ describe("Field", function () {
             return "[ " + formConfig.type + "." + name + " ]";
         });
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
         const renderSpy = sinon.spy();
 
         const formRoot = observable({
@@ -495,7 +492,7 @@ describe("Field", function () {
         //console.log({fieldContext});
 
         assert( /^c[0-9]+:f[0-9]+:description$/.test(fieldContext.fieldId));
-        assert(formConfig.schema === schema);
+        assert(formConfig.schema  instanceof InputSchema);
         assert(formConfig.type === "DomainFieldInput");
         assert.deepEqual(formConfig.options, DEFAULT_OPTIONS);
         assert(fieldContext.fieldType.kind === "SCALAR");
@@ -521,7 +518,7 @@ describe("Field", function () {
 
         const clickSpy = sinon.spy();
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const formRoot = observable({
             name: "MyField",

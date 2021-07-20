@@ -1,23 +1,21 @@
-import getSchema from "./util/getSchema"
 import InputSchema from "../src/InputSchema";
 
 import assert from "power-assert"
 
 import ADDRESS_OBJECT_TYPED from "./address.json"
 import ADDRESS_OBJECT_VALUES from "./address-values.json"
-import dumpUsage from "./util/dumpUsage";
 import { describe, it } from "mocha";
 import { observable } from "mobx";
 
 import rawResolveSchema from "./inputschema-resolve-schema.json"
+import rawSchema from "./schema.json";
 
 describe("InputSchema", function () {
 
-    after(dumpUsage);
 
     it("converts complex values to string values", function () {
 
-        const inputSchema = getSchema();
+        const inputSchema = new InputSchema(rawSchema);
 
 
         const converted = inputSchema.toValues("DomainTypeInput", ADDRESS_OBJECT_TYPED);
@@ -41,7 +39,7 @@ describe("InputSchema", function () {
 
     it("converts string values back to typed values", function () {
 
-        const inputSchema = getSchema();
+        const inputSchema = new InputSchema(rawSchema);
 
         const converted = inputSchema.fromValues("DomainTypeInput", ADDRESS_OBJECT_VALUES);
 
@@ -67,7 +65,7 @@ describe("InputSchema", function () {
     });
 
     it("clones objects", function () {
-        const inputSchema = getSchema();
+        const inputSchema = new InputSchema(rawSchema);
 
         const orig = observable({
             _type: "Foo",

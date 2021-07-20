@@ -3,7 +3,6 @@ import { cleanup, fireEvent, render, wait, prettyDOM } from "@testing-library/re
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
 import InputSchema from "../src/InputSchema";
 
 import sinon from "sinon"
@@ -11,10 +10,10 @@ import Field from "../src/Field";
 import withForm from "../src/withForm";
 import { observable } from "mobx";
 import userEvent from "@testing-library/user-event";
-import dumpUsage from "./util/dumpUsage";
 import FieldMode from "../src/FieldMode";
 import Form from "../src/Form";
 import { FormContext } from "../src";
+import rawSchema from "./schema.json";
 
 
 describe("withForm()", function () {
@@ -22,11 +21,10 @@ describe("withForm()", function () {
     // automatically unmount and cleanup DOM after the tests are finished.
     afterEach( cleanup );
 
-    after(dumpUsage);
 
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )

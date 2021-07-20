@@ -3,8 +3,6 @@ import { cleanup, fireEvent, render, getByLabelText } from "@testing-library/rea
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
-
 import sinon from "sinon"
 import Form from "../src/Form";
 import Field from "../src/Field";
@@ -14,7 +12,8 @@ import userEvent from "@testing-library/user-event";
 
 import itParam from "mocha-param"
 import ModeLocation from "./util/ModeLocation";
-import { FormContext } from "../src";
+import { FormContext, InputSchema } from "../src";
+import rawSchema from "./schema.json";
 
 describe("High-Level Validation", function () {
 
@@ -68,7 +67,7 @@ describe("High-Level Validation", function () {
             }
         });
 
-        const formContext = new FormContext(getSchema(), {
+        const formContext = new FormContext(new InputSchema(rawSchema), {
             validation: {
                 validateField: (ctx, value) => {
 
@@ -155,7 +154,7 @@ describe("High-Level Validation", function () {
             }
         });
 
-        const formContext = new FormContext(getSchema(), {
+        const formContext = new FormContext(new InputSchema(rawSchema), {
             validation: {
                 fieldContext: (ctx) => {
 

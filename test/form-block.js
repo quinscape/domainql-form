@@ -3,7 +3,6 @@ import { cleanup, fireEvent, render, wait, prettyDOM } from "@testing-library/re
 
 import assert from "power-assert"
 
-import getSchema from "./util/getSchema"
 
 import sinon from "sinon"
 import Form from "../src/Form";
@@ -11,16 +10,15 @@ import FormBlock from "../src/FormBlock";
 import FormConfig, { FormConfigContext } from "../src/FormConfig";
 import FormConfigProvider from "../src/FormConfigProvider";
 import { observable } from "mobx";
-import dumpUsage from "./util/dumpUsage";
-import { FormContext } from "../src";
+import { FormContext, InputSchema } from "../src";
+import rawSchema from "./schema.json";
+import { instanceOf } from "prop-types";
 
 describe("FormBlock", function () {
 
-    after(dumpUsage);
-
     beforeEach(
         () => {
-            const formContext = new FormContext(getSchema());
+            const formContext = new FormContext(new InputSchema(rawSchema));
             formContext.useAsDefault();
         }
     )
@@ -29,7 +27,7 @@ describe("FormBlock", function () {
 
         const consumerSpy = sinon.spy();
 
-        const inputSchema = getSchema();
+        const inputSchema = new InputSchema(rawSchema);
         const formRoot = observable({
             name: "MYENUM"
         });
@@ -53,7 +51,7 @@ describe("FormBlock", function () {
         assert(consumerSpy.called);
         assert(consumerSpy.lastCall.args[0].options.labelColumnClass === "foo");
         assert(consumerSpy.lastCall.args[0].type === "EnumTypeInput");
-        assert(consumerSpy.lastCall.args[0].schema === inputSchema);
+        assert(consumerSpy.lastCall.args[0].schema instanceof InputSchema);
     });
 
     it("allows changing the base path", function () {
@@ -63,7 +61,7 @@ describe("FormBlock", function () {
             name: "MYENUM"
         });
 
-        const inputSchema = getSchema();
+        const inputSchema = new InputSchema(rawSchema);
         const { container } = render(
             <Form
                 onSubmit={ () => null }

@@ -1,15 +1,16 @@
 import { describe, it } from "mocha";
-import getSchema from "./util/getSchema"
 import WireFormat from "../src/WireFormat";
 import { isObservableArray, isObservableObject } from "mobx";
 
 import assert from "power-assert"
+import { InputSchema } from "../src";
+import rawSchema from "./schema.json";
 
 describe("Wire Format", function () {
 
     it("converts GraphQL JSON wire format to live JS objects", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
 
@@ -68,7 +69,7 @@ describe("Wire Format", function () {
 
     it("supports wrapping received values as mobx observables", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
 
@@ -96,7 +97,7 @@ describe("Wire Format", function () {
             foos;
         }
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
             Foo
@@ -119,7 +120,7 @@ describe("Wire Format", function () {
 
     it("converts live JS objects to GraphQL JSON wire format", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
 
@@ -173,7 +174,7 @@ describe("Wire Format", function () {
     });
 
     it("resolves aliases", function () {
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
 
@@ -207,7 +208,7 @@ describe("Wire Format", function () {
             foos;
         }
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
             Foo
@@ -238,7 +239,7 @@ describe("Wire Format", function () {
 
     it("converts live JS objects to GraphQL JSON wire format with _type", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
 
@@ -264,7 +265,7 @@ describe("Wire Format", function () {
 
     it("converts GraphQL JSON wire format to live JS objects (forced not-wrapped)", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
         }, { wrapAsObservable: true});
@@ -288,7 +289,7 @@ describe("Wire Format", function () {
 
     it("offers simplified conversion methods", function () {
 
-        const schema = getSchema();
+        const schema = new InputSchema(rawSchema);
 
         const wireFormat = new WireFormat(schema, {
         }, { wrapAsObservable: true});
