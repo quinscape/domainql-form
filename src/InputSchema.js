@@ -254,6 +254,13 @@ function convertInput(inputSchema, baseTypeDef, value, toScalar)
     return out;
 }
 
+
+function undefinedToNull(value)
+{
+    return value === undefined ? null : value;
+}
+
+
 class InputSchema
 {
     constructor(raw, debug = false)
@@ -416,6 +423,74 @@ class InputSchema
     cloneList(array, update)
     {
         return clone(obj, update, this);
+    }
+
+
+    /**
+     * Returns the meta addendum with the given name or null.
+     * @param {String} addendum     name
+     *
+     * @return {*} meta addendum data or null
+     */
+    getMetaAddendum(addendum)
+    {
+        return undefinedToNull(this.meta[addendum]);
+    }
+
+
+    /**
+     * Returns the type meta for the given type name. Throws if the given type is not valid.
+     *
+     * @param {String} typeName     GraphQL output type name
+     * @param {String} meta         meta field name
+     * @return {*} data or null
+     */
+    getTypeMeta(typeName, meta)
+    {
+        const type = this.meta.types[typeName];
+        if (!type)
+        {
+            throw new Error("Invalid type: " + typeName);
+        }
+
+        if (!type.meta)
+        {
+            return null;
+        }
+
+        return undefinedToNull(type.meta[meta]);
+    }
+
+
+    /**
+     * Returns field meta data for the given type and field. Throws if the given type is not valid.
+     *
+     * @param {String} typeName     GraphQL output type name
+     * @param {String} fieldName    field name
+     * @param {String} meta         meta field name
+     * @return {*} data or null
+     */
+    getFieldMeta(typeName, fieldName, meta)
+    {
+        const type = this.meta.types[typeName];
+        if (!type)
+        {
+            throw new Error("Invalid type: " + typeName);
+        }
+
+        if (!type.fields)
+        {
+            return null;
+        }
+
+        const m = type.fields[fieldName];
+
+        if (!m)
+        {
+            return null;
+        }
+
+        return undefinedToNull(m[meta]);
     }
 }
 
