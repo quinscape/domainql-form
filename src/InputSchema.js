@@ -425,6 +425,15 @@ class InputSchema
         return clone(obj, update, this);
     }
 
+    getRelations()
+    {
+        return this.getMetaAddendum("relations");
+    }
+
+    getGenericTypes()
+    {
+        return this.getMetaAddendum("genericTypes");
+    }
 
     /**
      * Returns the meta addendum with the given name or null.
