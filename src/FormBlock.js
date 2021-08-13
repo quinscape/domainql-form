@@ -18,7 +18,7 @@ const FormBlock = props => {
     const formConfig = useMemo(
         () => {
 
-            if (!parentConfig || !parentConfig.type)
+            if (!parentConfig)
             {
                 throw new Error("<FormBlock/> should only be used inside a <Form/>");
             }
