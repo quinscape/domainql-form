@@ -158,7 +158,8 @@ const Field = fnObserver((props, ref) => {
 
                 validate,
 
-                addons
+                addons,
+                section: null
 
             };
 
