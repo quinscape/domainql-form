@@ -5,12 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/test/select.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/select.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -69,7 +76,7 @@
       <recent name="$PROJECT_DIR$/test" />
     </key>
   </component>
-  <component name="RunManager" selected="Mocha.Select">
+  <component name="RunManager" selected="Mocha.DomainQL Form Tests">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -119,7 +126,7 @@
     </configuration>
     <configuration name="DomainQL Form Tests" type="mocha-javascript-test-runner">
       <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
+      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
       <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
       <working-directory>$PROJECT_DIR$</working-directory>
       <pass-parent-env>true</pass-parent-env>
@@ -167,24 +174,6 @@
       <test-file>$PROJECT_DIR$/test/form.js</test-file>
       <method v="2" />
     </configuration>
-    <configuration name="FormSelector" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/test/form-selector.js</test-file>
-      <test-names>
-        <name value="FormSelector" />
-      </test-names>
-      <method v="2" />
-    </configuration>
     <configuration name="Form.works on nested fields" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
       <node-options>-r babel-register -r ./test/setup.js</node-options>
@@ -201,6 +190,24 @@
       <test-names>
         <name value="Form" />
         <name value="works on nested fields" />
+      </test-names>
+      <method v="2" />
+    </configuration>
+    <configuration name="High-Level Validation" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs>
+        <env name="BABEL_ENV" value="test" />
+      </envs>
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>SUITE</test-kind>
+      <test-file>$PROJECT_DIR$/test/validation.js</test-file>
+      <test-names>
+        <name value="High-Level Validation" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -222,9 +229,9 @@
       </test-names>
       <method v="2" />
     </configuration>
-    <configuration name="TextArea" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+    <configuration name="TextArea.renders as textarea element" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
+      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
       <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
       <working-directory>$PROJECT_DIR$</working-directory>
       <pass-parent-env>true</pass-parent-env>
@@ -233,10 +240,11 @@
       </envs>
       <ui>bdd</ui>
       <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
+      <test-kind>TEST</test-kind>
       <test-file>$PROJECT_DIR$/test/text-area.js</test-file>
       <test-names>
         <name value="TextArea" />
+        <name value="renders as textarea element" />
       </test-names>
       <method v="2" />
     </configuration>
@@ -244,18 +252,18 @@
       <item itemvalue="Mocha.DomainQL Form Tests" />
       <item itemvalue="Mocha.Form Test" />
       <item itemvalue="Mocha.Field" />
-      <item itemvalue="Mocha.FormSelector" />
       <item itemvalue="Mocha.Form.works on nested fields" />
       <item itemvalue="Mocha.Select" />
-      <item itemvalue="Mocha.TextArea" />
+      <item itemvalue="Mocha.TextArea.renders as textarea element" />
+      <item itemvalue="Mocha.High-Level Validation" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Mocha.Select" />
+        <item itemvalue="Mocha.High-Level Validation" />
+        <item itemvalue="Mocha.TextArea.renders as textarea element" />
         <item itemvalue="Mocha.Field" />
         <item itemvalue="Mocha.Form.works on nested fields" />
-        <item itemvalue="Mocha.FormSelector" />
-        <item itemvalue="Mocha.TextArea" />
       </list>
     </recent_temporary>
   </component>
@@ -372,6 +380,12 @@
           <url>file://$PROJECT_DIR$/node_modules/mobx/src/core/derivation.ts</url>
           <line>140</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/node_modules/mobx/dist/mobx.cjs.development.js</url>
+          <line>1755</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
