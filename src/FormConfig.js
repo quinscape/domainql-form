@@ -4,7 +4,7 @@ import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
 import set from "lodash.set"
 
-import { action } from "mobx"
+import { action, makeObservable } from "mobx"
 import unwrapType from "./util/unwrapType";
 import { NON_NULL } from "./kind";
 import FormLayout from "./FormLayout";
@@ -85,6 +85,8 @@ class FormConfig
         this.setFormContext();
 
         //console.log("NEW FormConfig", this)
+
+        makeObservable(this);
     }
 
     get schema()

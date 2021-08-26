@@ -20,6 +20,7 @@ import useFormConfig from "../src/useFormConfig";
 import { InputSchema } from "../src";
 
 import rawSchema from "./schema.json"
+import clearAndType from "./util/clearAndType";
 
 describe("Form", function () {
 
@@ -52,7 +53,10 @@ describe("Form", function () {
                 })}
             >
                 {
-                    renderSpy
+                    formConfig => {
+                        renderSpy(formConfig);
+                        return <span/>
+                    }
                 }
             </Form>
         );
@@ -105,7 +109,10 @@ describe("Form", function () {
                 })}
             >
                 {
-                    renderSpy
+                    formConfig => {
+                        renderSpy(formConfig);
+                        return <span/>
+                    }
                 }
             </Form>
         );
@@ -190,7 +197,12 @@ describe("Form", function () {
                     })
                 }
             >
-                { renderSpy }
+                {
+                    formConfig => {
+                        renderSpy(formConfig);
+                        return <span/>
+                    }
+                }
             </Form>
             </FormConfigProvider>
         );
@@ -222,7 +234,12 @@ describe("Form", function () {
                         })
                     }
                 >
-                    { renderSpy }
+                    {
+                        formConfig => {
+                            renderSpy(formConfig);
+                            return <span/>
+                        }
+                    }
                 </Form>
             </FormConfigProvider>
         );
@@ -267,7 +284,7 @@ describe("Form", function () {
 
         const input = getByLabelText("name");
 
-        userEvent.type(input, "AnotherEnum");
+        clearAndType(input, "AnotherEnum");
 
         const formConfig = renderSpy.lastCall.args[0];
         assert(formConfig.root.name === "AnotherEnum");
@@ -317,7 +334,7 @@ describe("Form", function () {
 
         const input = getByLabelText("name");
 
-        userEvent.type(input, "AnotherEnum");
+        clearAndType(input, "AnotherEnum");
 
         const formConfig = renderSpy.lastCall.args[0];
         assert(formConfig.root.name === "AnotherEnum");
@@ -409,7 +426,7 @@ describe("Form", function () {
 
         assert(input.value === "name");
 
-        userEvent.type(input, "AnotherName");
+        clearAndType(input, "AnotherName");
 
         const formConfig = renderSpy.lastCall.args[0];
         assert(formConfig.root.name === "AnotherName");
@@ -493,7 +510,7 @@ describe("Form", function () {
 
         assert(input.value === "name");
 
-        userEvent.type(input, "AnotherName");
+        clearAndType(input, "AnotherName");
 
         const formConfig = renderSpy.lastCall.args[0];
         assert(formConfig.root.fields[1].name === "AnotherName");
@@ -681,18 +698,12 @@ describe("Form", function () {
             ]
         );
 
-        act( () => {
-            userEvent.type(input1, "Changed");
-        });
+        clearAndType(input1, "Changed");
 
         const formConfig3 = renderSpy.lastCall.args[0];
         assert(formConfig3.root.field1 === "Changed");
 
-
-        act( () => {
-            userEvent.type(input2, "abc");
-        });
-
+        clearAndType(input2, "abc")
         const formConfig4 = renderSpy.lastCall.args[0];
         assert.deepEqual(
             formConfig4.getErrors("field2"),
@@ -702,9 +713,8 @@ describe("Form", function () {
             ]
         );
 
-        act( () => {
-            userEvent.type(input2, "98765");
-        });
+
+        clearAndType(input2, "98765");
 
         const formConfig5 = renderSpy.lastCall.args[0];
         assert(formConfig5.root.field2 === 98765);
@@ -774,17 +784,13 @@ describe("Form", function () {
         assert(input1.value === "String Field Content");
         assert(input2.value === "12345");
 
-        act( () => {
-            userEvent.type(input1, "Changed");
-        });
+        clearAndType(input1, "Changed");
 
         const formConfig3 = renderSpy.lastCall.args[0];
         assert(formConfig3.root.field1 === "Changed");
         assert(formRoot.field1 === "Changed");
 
-        act( () => {
-            userEvent.type(input2, "98765");
-        });
+        clearAndType(input2, "98765")
 
         const formConfig5 = renderSpy.lastCall.args[0];
         assert(formConfig5.root.field2 === 98765);
@@ -919,7 +925,7 @@ describe("Form", function () {
             ]
         );
 
-        userEvent.type(input2, "110");
+        clearAndType(input2, "110");
 
 
         const formConfig3 = renderSpy.lastCall.args[0];
@@ -1040,7 +1046,7 @@ describe("Form", function () {
         assert(getByText(container, "1:OK"))
 
         // type a wrong number
-        userEvent.type(maxLenInput, "12a");
+        clearAndType(maxLenInput, "12a");
 
         const formConfig = renderSpyA.lastCall.args[0];
         // the form stopped updating the value after 12
@@ -1197,11 +1203,7 @@ describe("Form", function () {
                 assert(!nameInput.disabled)
                 assert(nameInput.value === "MyEnum")
 
-                act(
-                    () => {
-                        userEvent.type(nameInput, "AnotherEnum");
-                    }
-                )
+                clearAndType(nameInput, "AnotherEnum");
 
                 const formConfig = renderSpy.lastCall.args[0];
                 assert(formConfig.root.name === "AnotherEnum");

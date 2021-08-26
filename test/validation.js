@@ -14,6 +14,7 @@ import itParam from "mocha-param"
 import ModeLocation from "./util/ModeLocation";
 import { FormContext, InputSchema } from "../src";
 import rawSchema from "./schema.json";
+import clearAndType from "./util/clearAndType";
 
 describe("High-Level Validation", function () {
 
@@ -109,7 +110,7 @@ describe("High-Level Validation", function () {
 
         assert(input.value === "MyType");
 
-        userEvent.type(input, "aaa");
+        clearAndType(input, "aaa");
 
         const formConfig = renderSpy.lastCall.args[0];
         assert.deepEqual(formConfig.getErrors("name"), err === "single" ? ["aaa", "single"] : ["aaa", "multi", "array"]);

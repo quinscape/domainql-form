@@ -22,6 +22,8 @@ import ModeLocation from "./util/ModeLocation";
 import Addon from "../src/Addon";
 import { FormContext, InputSchema } from "../src";
 import rawSchema from "./schema.json";
+import clearAndType from "./util/clearAndType";
+import findSpanByLabelText from "./util/findSpanByLabelText";
 
 describe("Field", function () {
 
@@ -82,7 +84,8 @@ describe("Field", function () {
             switch (mode)
             {
                 case FieldMode.NORMAL:
-                    userEvent.type(input, "AnotherEnum");
+
+                    clearAndType(input, "AnotherEnum");
 
                     const formConfig = renderSpy.lastCall.args[0];
                     assert(formConfig.root.name === "AnotherEnum");
@@ -107,8 +110,8 @@ describe("Field", function () {
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.PLAIN_TEXT:
-                    assert(input.tagName === "SPAN");
-                    assert(input.className.indexOf("form-control-plaintext") >= 0);
+                    const fieldSpan = findSpanByLabelText(container, "name");
+                    assert(fieldSpan.className.indexOf("form-control-plaintext") >= 0);
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.INVISIBLE:
@@ -199,8 +202,8 @@ describe("Field", function () {
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.PLAIN_TEXT:
-                    assert(checkbox.tagName === "SPAN");
-                    assert(checkbox.className.indexOf("form-control-plaintext") >= 0);
+                    const cbSpan = findSpanByLabelText(container, "required");
+                    assert(cbSpan.className.indexOf("form-control-plaintext") >= 0);
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.INVISIBLE:
@@ -300,8 +303,8 @@ describe("Field", function () {
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.PLAIN_TEXT:
-                    assert(select.tagName === "SPAN");
-                    assert(select.className.indexOf("form-control-plaintext") >= 0);
+                    const selectSpan = findSpanByLabelText(container, "type");
+                    assert(selectSpan.className.indexOf("form-control-plaintext") >= 0);
                     assert(container.querySelectorAll(".form-group").length === 1)
                     break;
                 case FieldMode.INVISIBLE:
@@ -356,7 +359,7 @@ describe("Field", function () {
         const numericInput = queryByLabelText(container, "maxLength");
         assert(numericInput.value === "-1");
 
-        userEvent.type(numericInput, "1a");
+        clearAndType(numericInput, "1a");
 
         const formConfig = renderSpy.lastCall.args[0];
 
@@ -738,7 +741,7 @@ describe("Field", function () {
 
         const input = queryByLabelText(container, "name");
 
-        act(() => { userEvent.type(input, "Zeno") })
+        clearAndType(input, "Zeno");
 
         const formConfig = renderSpy.lastCall.args[0];
 
@@ -749,7 +752,6 @@ describe("Field", function () {
         assert(onChangeSpy.lastCall.args[0].isFieldContext)
         assert(onChangeSpy.lastCall.args[0].qualifiedName === "name")
         assert(onChangeSpy.lastCall.args[1] === "Zeno")
-
     });
     it("provides optional local validation", function () {
 
@@ -794,7 +796,7 @@ describe("Field", function () {
 
         const input = queryByLabelText(container, "name");
 
-        act(() => { userEvent.type(input, "Zeno") })
+        clearAndType(input, "Zeno")
 
         const formConfig = renderSpy.lastCall.args[0];
 
@@ -804,7 +806,7 @@ describe("Field", function () {
         assert.deepEqual(formConfig.getErrors("name"), ["Zeno","NO Z"]);
 
 
-        act(() => { userEvent.type(input, "Anaximander") });
+        clearAndType(input, "Anaximander") 
 
         assert(formConfig.root.name === "Anaximander");
         assert(formRoot.name === "Anaximander");
@@ -851,7 +853,7 @@ describe("Field", function () {
 
         const input = queryByLabelText(container, "name");
 
-        act(() => { userEvent.type(input, "LongerName") })
+        clearAndType(input, "LongerName");
 
         const formConfig = renderSpy.lastCall.args[0];
 
@@ -861,7 +863,7 @@ describe("Field", function () {
         assert.deepEqual(formConfig.getErrors("name"), ["LongerName","Value too long"]);
 
 
-        act(() => { userEvent.type(input, "Short") });
+        clearAndType(input, "Short");
 
         assert(formConfig.root.name === "Short");
         assert(formRoot.name === "Short");

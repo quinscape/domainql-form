@@ -1,7 +1,7 @@
 import { ENUM, NON_NULL, SCALAR } from "./kind";
 import InputSchema, { unwrapNonNull } from "./InputSchema";
 
-import { action, isObservableObject, observable, toJS } from "mobx";
+import { action, isObservableObject, makeObservable, observable, toJS } from "mobx";
 import get from "lodash.get";
 
 
@@ -65,6 +65,8 @@ export default class FormContext
         }
 
         const { validation = null } = options;
+
+        makeObservable(this);
 
         this[secret] = {
 

@@ -19,6 +19,8 @@ import Field from "./field";
 import Addon from "../src/Addon";
 import { FormContext } from "../src";
 import rawSchema from "./schema.json";
+import findSpanByLabelText from "./util/findSpanByLabelText";
+import clearAndType from "./util/clearAndType";
 
 describe("TextArea", function (){
 
@@ -88,7 +90,7 @@ describe("TextArea", function (){
 
         const formConfig = renderSpy.lastCall.args[0];
 
-        assert(formConfig.root.description === "YYY");
+        assert(formConfig.root.description === "XXXYYY");
 
         fireEvent.submit(
             container.querySelector("form")
@@ -167,8 +169,9 @@ describe("TextArea", function (){
                 assert(container.querySelectorAll(".form-group").length === 1)
                 break;
             case FieldMode.PLAIN_TEXT:
-                assert(textArea.tagName === "SPAN");
-                assert(textArea.innerHTML === "XXX");
+
+                const textAreaLabel = findSpanByLabelText(container, "description");
+                assert(textAreaLabel.innerHTML === "XXX");
                 assert(container.querySelectorAll(".form-group").length === 1)
                 break;
             case FieldMode.INVISIBLE:
@@ -280,7 +283,7 @@ describe("TextArea", function (){
 
             const textArea = queryByLabelText(container, "description");
 
-            act(() => { userEvent.type(textArea, "ABCD") })
+            clearAndType(textArea, "ABCD")
 
             const formConfig = renderSpy.lastCall.args[0];
 
@@ -290,7 +293,7 @@ describe("TextArea", function (){
             assert.deepEqual(formConfig.getErrors("description"), ["ABCD","Value too long"]);
 
 
-            act(() => { userEvent.type(textArea, "AAA") });
+            clearAndType(textArea, "AAA") 
 
             assert(formConfig.root.description === "AAA");
             assert(formRoot.description === "AAA");

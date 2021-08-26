@@ -10,7 +10,7 @@ import FormLayout from "./FormLayout";
 
 import { useDebouncedCallback } from "use-debounce"
 import { fallbackJSClone } from "./util/clone";
-import { useObserver } from "mobx-react-lite";
+import { Observer } from "mobx-react-lite";
 import FormContext from "./FormContext";
 
 
@@ -20,17 +20,16 @@ import FormContext from "./FormContext";
  * @param {Function} setRoot                    changes the form root object (type must match!)
  * @param {Function} submit                     triggers a Form submit
  * @param {Function} debouncedSubmit            debounced submission
- * @param {Function} cancelDebouncedSubmit      cancels any outstanding submissions
- * 
+ * @param {String} formId                        form id
+ *
  * @constructor
  */
-export function InternalContext(setRoot, submit, debouncedSubmit, cancelDebouncedSubmit, formId)
+export function InternalContext(setRoot, submit, debouncedSubmit, formId)
 {
     this.setRoot = setRoot;
     this.submit = submit;
 
     this.debouncedSubmit = debouncedSubmit;
-    this.cancelDebouncedSubmit = cancelDebouncedSubmit;
     this.formId = formId;
 }
 
@@ -134,7 +133,7 @@ const Form  = props =>  {
 
     const submitTimeOut = getOption("submitTimeOut", options, parentConfig && parentConfig.options);
 
-    const [ debouncedSubmit, cancelDebouncedSubmit ] = useDebouncedCallback(
+    const debouncedSubmit  = useDebouncedCallback(
         handleSubmit,
         submitTimeOut,
     );
@@ -171,7 +170,6 @@ const Form  = props =>  {
                 setRoot,
                 handleSubmit,
                 debouncedSubmit,
-                cancelDebouncedSubmit,
                 formId
             )
         );
@@ -205,7 +203,6 @@ const Form  = props =>  {
                     setRoot,
                     handleSubmit,
                     debouncedSubmit,
-                    cancelDebouncedSubmit,
                     formId
                 )
             );
@@ -224,9 +221,11 @@ const Form  = props =>  {
             data-form-id={ formId }
         >
             <FormConfigContext.Provider value={ formConfig }>
-                {
-                    useObserver(() => typeof children === "function" ? children(formConfig) : children)
-                }
+                <Observer>
+                    {
+                        () => typeof children === "function" ? children(formConfig) : children
+                    }
+                </Observer>
             </FormConfigContext.Provider>
         </form>
     );

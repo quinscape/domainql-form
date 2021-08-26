@@ -1,5 +1,5 @@
 import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT, ENUM } from "./kind";
-import { observable, action } from "mobx";
+import { observable, action, makeObservable } from "mobx";
 
 function getType(type, obj)
 {
@@ -210,6 +210,9 @@ export default class WireFormat {
         this.FromWireConverters = {
             ... DEFAULT_FROM_WIRE
         };
+
+
+        makeObservable(this);
 
         //console.log("Created", this);
     }

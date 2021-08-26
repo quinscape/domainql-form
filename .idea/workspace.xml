@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/InputSchema.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/InputSchema.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test/select.js" beforeDir="false" afterPath="$PROJECT_DIR$/test/select.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,8 +37,8 @@
     <property name="MemberChooser.sorted" value="false" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="15.12.0" />
-    <property name="javascript.nodejs.core.library.typings.version" value="14.14.37" />
+    <property name="javascript.nodejs.core.library.configured.version" value="14.17.5" />
+    <property name="javascript.nodejs.core.library.typings.version" value="14.17.5" />
     <property name="js.last.introduce.type" value="CONST" />
     <property name="jsgraphql-schema-editor-notification" value="false" />
     <property name="last_opened_file_path" value="/var/www/test/plaintext.html" />
@@ -67,7 +69,7 @@
       <recent name="$PROJECT_DIR$/test" />
     </key>
   </component>
-  <component name="RunManager" selected="Mocha.DomainQL Form Tests">
+  <component name="RunManager" selected="Mocha.Select">
     <configuration default="true" type="Applet">
       <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
       <method v="2">
@@ -204,7 +206,7 @@
     </configuration>
     <configuration name="Select" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
       <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
+      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
       <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
       <working-directory>$PROJECT_DIR$</working-directory>
       <pass-parent-env>true</pass-parent-env>
@@ -249,11 +251,11 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Mocha.Select" />
         <item itemvalue="Mocha.Field" />
         <item itemvalue="Mocha.Form.works on nested fields" />
         <item itemvalue="Mocha.FormSelector" />
         <item itemvalue="Mocha.TextArea" />
-        <item itemvalue="Mocha.Select" />
       </list>
     </recent_temporary>
   </component>
@@ -304,6 +306,10 @@
       <workItem from="1626353615463" duration="671000" />
       <workItem from="1626790175109" duration="3432000" />
       <workItem from="1626806791054" duration="3096000" />
+      <workItem from="1629739103048" duration="4601000" />
+      <workItem from="1629802870932" duration="2413000" />
+      <workItem from="1629942413482" duration="3127000" />
+      <workItem from="1629993723343" duration="166000" />
     </task>
     <servers />
   </component>
@@ -361,6 +367,11 @@
           <url>file://$PROJECT_DIR$/src/InputSchema.js</url>
           <line>140</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/node_modules/mobx/src/core/derivation.ts</url>
+          <line>140</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

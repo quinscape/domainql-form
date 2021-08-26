@@ -1,5 +1,13 @@
 import React from "react"
-import { cleanup, fireEvent, getByLabelText, queryByLabelText, getByText, render } from "@testing-library/react"
+import {
+    cleanup,
+    fireEvent,
+    getByLabelText,
+    queryByLabelText,
+    getByText,
+    render,
+    prettyDOM
+} from "@testing-library/react"
 
 import assert from "power-assert"
 
@@ -16,6 +24,7 @@ import cartesian from "cartesian";
 import ModeLocation from "./util/ModeLocation";
 import { FormContext, InputSchema } from "../src";
 import rawSchema from "./schema.json";
+import findSpanByLabelText from "./util/findSpanByLabelText";
 
 
 describe("Select", function (){
@@ -369,33 +378,35 @@ describe("Select", function (){
             </Form>
         );
 
+        //console.log(prettyDOM(container))
         const select = queryByLabelText(container, "name");
 
-            switch (mode)
-            {
-                case FieldMode.NORMAL:
-                    assert(select.value === "AAA");
-                    assert(!select.disabled);
-                    assert(container.querySelectorAll(".form-group").length === 1)
-                    break;
-                case FieldMode.DISABLED:
-                case FieldMode.READ_ONLY:
-                    assert(select.value === "AAA");
-                    assert(select.disabled);
-                    assert(container.querySelectorAll(".form-group").length === 1)
-                    break;
-                case FieldMode.PLAIN_TEXT:
-                    // select is rendered as span.form-control-plaintext
-                    assert(select.tagName === "SPAN");
-                    assert(select.className.indexOf("form-control-plaintext") >= 0);
-                    assert(select.innerHTML === "Option A");
-                    assert(container.querySelectorAll(".form-group").length === 1)
-                    break;
-                case FieldMode.INVISIBLE:
-                    assert(!select);
-                    assert(container.querySelectorAll(".form-group").length === 0)
-                    break;
-            }
+        switch (mode)
+        {
+            case FieldMode.NORMAL:
+                assert(select.value === "AAA");
+                assert(!select.disabled);
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.DISABLED:
+            case FieldMode.READ_ONLY:
+                assert(select.value === "AAA");
+                assert(select.disabled);
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.PLAIN_TEXT:
+
+                // select is rendered as span.form-control-plaintext
+                const selectSpan = findSpanByLabelText(container, "name")
+                assert(selectSpan.className.indexOf("form-control-plaintext") >= 0);
+                assert(selectSpan.innerHTML === "Option A");
+                assert(container.querySelectorAll(".form-group").length === 1)
+                break;
+            case FieldMode.INVISIBLE:
+                assert(!select);
+                assert(container.querySelectorAll(".form-group").length === 0)
+                break;
+        }
 
 
     });

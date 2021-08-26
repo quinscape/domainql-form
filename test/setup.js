@@ -1,4 +1,10 @@
 require("raf/polyfill")
+
+// set MobX configuration
+require("mobx").configure({
+    enforceActions: "observed"
+});
+
 /*
  * Some environment patching for "jsdom-global/register"
  */
