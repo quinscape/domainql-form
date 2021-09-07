@@ -753,6 +753,7 @@ describe("Field", function () {
         assert(onChangeSpy.lastCall.args[0].qualifiedName === "name")
         assert(onChangeSpy.lastCall.args[1] === "Zeno")
     });
+
     it("provides optional local validation", function () {
 
         const renderSpy = sinon.spy();
@@ -780,6 +781,10 @@ describe("Field", function () {
                                 name="name"
                                 validate={ (ctx, value) => {
 
+                                    if (value === "")
+                                    {
+                                        return "LOCAL REQUIRED";
+                                    }
                                     return value.indexOf("Z") === 0 ? "NO Z" : null;
 
                                 }}
@@ -812,6 +817,20 @@ describe("Field", function () {
         assert(formRoot.name === "Anaximander");
 
         assert(!formConfig.getErrors("name").length);
+
+        fireEvent.change(input, {
+            target: {
+                value: ""
+            }
+        });
+
+        const formConfig2 = renderSpy.lastCall.args[0];
+
+        // values deemed invalid by local validation are not written through
+        assert(formConfig2.root.name === "Anaximander");
+
+        assert.deepEqual(formConfig.getErrors("name"), ["","LOCAL REQUIRED"]);
+
     });
 
     it("validates maximum length on 'String' fields", function () {

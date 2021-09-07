@@ -314,18 +314,18 @@ class InputSchema
 
     static validate(scalarType, value, ctx = null)
     {
-        if (value === "")
+        // for the scalar type based validation, we assume the empty string to be always considered to be null so we
+        // don't do scalar type based for it
+        if (value !== "")
         {
-            return "";
-        }
-
-        const fn = handlerFn(scalarType, "validate");
-        if (fn)
-        {
-            const error = fn(value, ctx);
-            if (error)
+            const fn = handlerFn(scalarType, "validate");
+            if (fn)
             {
-                return error
+                const error = fn(value, ctx);
+                if (error)
+                {
+                    return error
+                }
             }
         }
 

@@ -197,5 +197,98 @@ describe("High-Level Validation", function () {
         assert(input.readOnly);
     });
 
+
+    it("receives empty string values", function () {
+
+        const renderSpy = sinon.spy();
+
+        /*
+            input DomainTypeInput {
+              name: String!
+              description: String
+              fields: [DomainFieldInput]!
+              primaryKey: UniqueConstraintInput!
+              foreignKeys: [ForeignKeyInput]!
+              uniqueConstraints: [UniqueConstraintInput]!
+            }
+         */
+
+        const formRoot = observable({
+            description: "Bla",
+            fields: [
+                {
+                    name: "id",
+                    type: "UUID",
+                    maxLength: 36,
+                    required: true,
+                    unique: false
+                }, {
+                    name: "description",
+                    type: "STRING",
+                    maxLength: 100,
+                    required: true,
+                    unique: false
+                }
+            ],
+            foreignKeys: [],
+            uniqueConstraints: [],
+            primaryKey: {
+                fields: ["id"]
+            }
+        });
+
+        const formContext = new FormContext(new InputSchema(rawSchema), {
+            validation: {
+                validateField: (ctx, value) => {
+
+                    if (value === "")
+                    {
+                        return "EMPTY IN HL";
+                    }
+
+                    return null;
+                }
+            }
+        })
+        formContext.useAsDefault();
+
+        const { container } = render(
+            <Form
+                type={ "DomainTypeInput" }
+                value={
+                    // we only edit the second field of the domain type
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field name="description"/>
+                        );
+                    }
+                }
+            </Form>
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        const input = getByLabelText(container,"description");
+
+        assert(input.value === "Bla");
+
+        fireEvent.change(input, {
+            target: {
+                value: ""
+            }
+        });
+
+
+        const formConfig = renderSpy.lastCall.args[0];
+        assert.deepEqual(formConfig.getErrors("description"), ["","EMPTY IN HL"]);
+    });
+
     // field validation and submission tested in field.js, text-area.js, select.js etc
 });
