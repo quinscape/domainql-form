@@ -19,7 +19,7 @@ let domainObjectFactory = (type, id) => observable({ _type: type, id});
  *
  * @param {String} type     domain type
  * @param {*} [id]          id value
- * @returns {never}
+ * @returns {object}
  */
 export function createDomainObject(type, id = null)
 {
