@@ -1,7 +1,7 @@
 import { ENUM, NON_NULL, SCALAR } from "./kind";
 import InputSchema, { unwrapNonNull } from "./InputSchema";
 
-import { action, isObservableObject, makeObservable, observable, toJS } from "mobx";
+import { action, isObservableObject, makeObservable, observable } from "mobx";
 import get from "lodash.get";
 
 
@@ -44,6 +44,20 @@ function validateEnum(schema, enumTypeName, value)
 }
 
 
+function findById(fieldContexts, id)
+{
+    for (let i = 0; i < fieldContexts.length; i++)
+    {
+        const curr = fieldContexts[i];
+        if (curr.fieldId === id)
+        {
+            return id;
+        }
+    }
+    return -1;
+}
+
+
 /**
  * The form context represents a logical context with which multiple <Form/> objects can interact with each other and
  * offer a cohesive user experience.
@@ -77,6 +91,21 @@ export default class FormContext
             errors: observable([]),
             fieldContexts: []
         }
+    }
+
+    findFieldContext(root, path)
+    {
+        const { fieldContexts } = this;
+
+        for (let i = 0; i < fieldContexts.length; i++)
+        {
+            const ctx = fieldContexts[i];
+            if ( ctx.root === root && ctx.qualifiedName === path)
+            {
+                return ctx;
+            }
+        }
+        return null;
     }
 
     get schema()
@@ -142,12 +171,16 @@ export default class FormContext
 
         if (!existing)
         {
-            errors.push({
-                    path,
-                    rootId,
-                    errorMessages: [ value !== undefined ? value : get(root, path), msg]
-                }
-            )
+            const ctx = this[secret].fieldContexts.find( ctx => ctx.root === root && ctx.qualifiedName === path)
+            if (ctx)
+            {
+                errors.push({
+                        path,
+                        rootId,
+                        errorMessages: [ value !== undefined ? value : InputSchema.scalarToValue(unwrapNonNull(ctx.fieldType).name, get(root, path)), msg]
+                    }
+                )
+            }
         }
         else
         {
@@ -261,26 +294,35 @@ export default class FormContext
         const newErrors = errors.filter(
             err => toRemove.indexOf(err.path) < 0
         );
-
-        //console.log("newErrors", newErrors, ", was", errors)
-        
         if (newErrors.length < errors.length)
         {
             errors.replace(newErrors);
         }
+        //console.log("Removed fieldContexts:", toRemove, ", newFieldContexts = ", newFieldContexts)
     }
 
     registerFieldContext(fieldContext)
     {
+        //console.log("registerFieldContext", fieldContext)
+
         const { fieldContexts, validation } = this[secret];
 
         if (validation && validation.fieldContext)
         {
             validation.fieldContext(fieldContext)
         }
-        fieldContexts.push(fieldContext);
-    }
 
+        const existingIndex = findById(fieldContexts, fieldContext.fieldId)
+        if (existingIndex >= 0)
+        {
+            fieldContexts[existingIndex] = fieldContext;
+        }
+        else
+        {
+            fieldContexts.push(fieldContext);
+        }
+    }
+    
 
     /**
      * Performs the registered high-level validation for the given field context and value
@@ -292,12 +334,101 @@ export default class FormContext
      */
     validate(fieldContext, value)
     {
+        if (!fieldContext)
+        {
+            throw new Error("Need fieldContext")
+        }
+
         const { validation } = this[secret];
+
+        let errors = [];
+
+        const add = val => {
+            if (val)
+            {
+                if (Array.isArray(val))
+                {
+                    errors = errors.concat(val)
+                }
+                else
+                {
+                    errors.push(val)
+                }
+            }
+        }
+
         if (validation && validation.validateField)
         {
-            return validation.validateField(fieldContext, value);
+            add(
+                validation.validateField(fieldContext, value)
+            )
         }
-        return null;
+
+        if (fieldContext)
+        {
+            if (typeof fieldContext.validate === "function")
+            {
+                add(
+                    fieldContext.validate(fieldContext, value)
+                )
+            }
+
+            const { validateAsync } = fieldContext;
+            if (validateAsync)
+            {
+                fieldContext.setPending(true);
+
+                const fieldId = fieldContext.fieldId;
+
+                validateAsync.invokeValidateAsync(fieldContext, value)
+                    .then(
+                        errors => {
+
+                            if (!this.fieldContexts.find(ctx => ctx.fieldId === fieldId))
+                            {
+                                // component unmounted
+                                return;
+                            }
+
+                            //console.log("RESOLVED ASYNC VALIDATION", errors)
+
+                            const { root, qualifiedName } = fieldContext;
+
+                            if (Array.isArray(errors))
+                            {
+                                //console.log("validateAsync array", errors);
+
+                                for (let i = 0; i < errors.length; i++)
+                                {
+                                    const error = errors[i];
+                                    this.addError(root, qualifiedName, error);
+                                }
+                            }
+                            else if (typeof errors === "string")
+                            {
+                                //console.log("validateAsync string", errors);
+                                
+                                if (errors.length)
+                                {
+                                    this.addError(root, qualifiedName, errors);
+                                }
+                            }
+                            else if (errors !== null)
+                            {
+                                console.error("Invalid validateAsync return value: " + errors);
+                            }
+
+                            fieldContext.setPending(false);
+                        },
+
+                        err => {
+                            console.error("Error during async validation", err);
+                            fieldContext.setPending(false);
+                        }
+                    )
+            }
+        }
+        return errors.length ? errors : null;
     }
 
 
@@ -391,7 +522,6 @@ export default class FormContext
 
             const ctx = fieldContexts[i];
             const { root, fieldType, path, qualifiedName } = ctx;
-            //console.log("Revalidate: ", toJS(root), ctx)
             const value = get(root, path);
 
 

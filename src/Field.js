@@ -1,4 +1,5 @@
-import React, { useMemo } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
+import cx from "classnames";
 import toPath from "lodash.topath"
 
 import GlobalConfig from "./GlobalConfig"
@@ -52,11 +53,83 @@ const Field = fnObserver((props, ref) => {
 
     const formConfig = useFormConfig();
 
-    const { name, mode, inputClass, labelClass, formGroupClass, helpText, children, addons: addonsFromProps, onChange, validate, fieldContext:  fieldContextCB, maxLength, tooltip } = props;
+    const [isPending, setPending ] = useState( false )
+
+    const {
+        name,
+        mode,
+        inputClass,
+        labelClass,
+        formGroupClass,
+        helpText,
+        children,
+        addons: addonsFromProps,
+        onChange,
+        validate,
+        fieldContext: fieldContextCB,
+        maxLength,
+        tooltip,
+        validateAsync: validateAsyncFromProps,
+        validateAsyncTimeout = 350
+    } = props;
+
+    /**
+     * Memoize validateAsync independently so we have a stable reference even when the field context changes.
+     */
+    const validateAsync = useMemo(
+        () => {
+            return validateAsyncFromProps ? {
+                invokeValidateAsync: (context, value) => {
+
+                    return new Promise((resolve, reject) => {
+
+                        if (validateAsync.timerId !== null)
+                        {
+                            clearTimeout(validateAsync.timerId);
+                        }
+                        else
+                        {
+                            validateAsync.resolve = resolve;
+                            validateAsync.reject = reject;
+                        }
+
+                        validateAsync.timerId = setTimeout(
+                            () => {
+
+                                const { resolve, reject } = validateAsync;
+
+                                validateAsync.timerId = null;
+                                validateAsync.resolve = null;
+                                validateAsync.reject = null;
+
+                                Promise.resolve(validateAsyncFromProps(context, value)).then(
+                                    resolve,
+                                    reject
+                                )
+                            },
+                            validateAsyncTimeout
+                        )
+                    })
+                },
+                resolve: null,
+                reject: null,
+                timerId: null
+            } : null;
+
+        },
+        [ validateAsyncTimeout ]
+    )
+
 
     const fieldContext = useMemo(
         () => {
-            const { id, label, autoFocus, placeholder, type } = props;
+            const {
+                id,
+                label,
+                autoFocus,
+                placeholder,
+                type
+            } = props;
 
             const qualifiedName = formConfig.getPath(name);
             const effectiveMode = mode || formConfig.getMode();
@@ -86,8 +159,8 @@ const Field = fnObserver((props, ref) => {
 
             if (effectiveMode === FieldMode.PLAIN_TEXT)
             {
-                addons = addons.map( addon => {
-                    const { placement, moveIfPlainText } = addon.props;
+                addons = addons.map(addon => {
+                    const {placement, moveIfPlainText} = addon.props;
 
                     if (moveIfPlainText)
                     {
@@ -108,6 +181,7 @@ const Field = fnObserver((props, ref) => {
                 });
             }
 
+
             const newFieldContext = {
                 isFieldContext: true,
                 fieldRef: ref,
@@ -118,7 +192,7 @@ const Field = fnObserver((props, ref) => {
                 path,
                 autoFocus,
                 placeholder,
-                inputClass,
+                inputClass: cx(inputClass, isPending && "pending"),
                 labelClass,
                 formGroupClass,
                 tooltip,
@@ -157,10 +231,12 @@ const Field = fnObserver((props, ref) => {
                 },
 
                 validate,
-
+                validateAsync,
                 addons,
-                section: null
+                section: null,
 
+                isPending,
+                setPending
             };
 
             if (typeof fieldContextCB === "function")
@@ -173,10 +249,12 @@ const Field = fnObserver((props, ref) => {
                 formConfig.formContext.registerFieldContext(newFieldContext);
             }
 
+            //console.log("FIELD CONTEXT", newFieldContext.fieldId, newFieldContext)
+
             return newFieldContext;
 
         },
-        [ formConfig, name, mode, inputClass, labelClass, tooltip ]
+        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending ]
     );
 
     //console.log("RENDER FIELD", fieldContext);
@@ -279,7 +357,17 @@ Field.propTypes = {
     /**
      * Maximum field length (for string fields)
      */
-    maxLength: PropTypes.number
+    maxLength: PropTypes.number,
+
+    /**
+     * Optional asynchronous validation function. ( (context,value) => Promise ).
+     */
+    validateAsync: PropTypes.func,
+
+    /**
+     * Debounce timeout for validateAsync (Default is 300).
+      */
+    validateAsyncTimeout: PropTypes.number
 };
 
 Field.displayName = "Field";

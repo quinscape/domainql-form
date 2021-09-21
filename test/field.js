@@ -24,6 +24,7 @@ import { FormContext, InputSchema } from "../src";
 import rawSchema from "./schema.json";
 import clearAndType from "./util/clearAndType";
 import findSpanByLabelText from "./util/findSpanByLabelText";
+import sleep from "./util/sleep";
 
 describe("Field", function () {
 
@@ -829,7 +830,7 @@ describe("Field", function () {
         // values deemed invalid by local validation are not written through
         assert(formConfig2.root.name === "Anaximander");
 
-        assert.deepEqual(formConfig.getErrors("name"), ["","LOCAL REQUIRED"]);
+        assert.deepEqual(formConfig.getErrors("name"), ["","EnumTypeInput.name:Field Required","LOCAL REQUIRED"]);
 
     });
 
@@ -888,5 +889,108 @@ describe("Field", function () {
         assert(formRoot.name === "Short");
 
         assert(!formConfig.getErrors("name").length);
+    });
+
+    it("provides optional local async validation", function () {
+
+        const renderSpy = sinon.spy();
+
+        const formRoot = observable({
+            _type: "EnumTypeInput",
+            name: "MyEnum",
+            description: "MyEnum desc",
+            values: ["A", "B", "C"],
+        });
+
+        const { container } = render(
+            <Form
+                type={"EnumTypeInput"}
+                options={{ isolation: false }}
+                value={
+                    formRoot
+                }
+            >
+                {
+                    ctx => {
+
+                        renderSpy(ctx);
+                        return (
+                            <Field
+                                name="description"
+                                validateAsync={ (ctx, value) => {
+
+                                    if (value === "")
+                                    {
+                                        return "ASYNC REQUIRED";
+                                    }
+                                    return value.indexOf("Z") === 0 ? "NO Z" : null;
+
+                                }}
+                                validateAsyncTimeout={ 10 }
+                            />
+                        );
+                    }
+                }
+            </Form>
+        );
+
+        //console.log(loc, mode, prettyDOM(container));
+
+
+
+        const input = queryByLabelText(container, "description");
+
+        return clearAndType(input, "Zeno", { delay: 1 })
+            .then(
+                () => {
+                    return sleep(20)
+                }
+            )
+            .then(
+                    () => {
+                        const formConfig = renderSpy.lastCall.args[0];
+
+                        // values deemed invalid by async validation *are* written through
+                        assert(formConfig.root.description === "Zeno");
+
+                        assert.deepEqual(formConfig.getErrors("description"), ["Zeno","NO Z"]);
+
+                        return act(
+                            () => clearAndType(input, "Anaximander", { delay: 1})
+                        )
+                    }
+            )
+            .then(
+                () => {
+                        const formConfig = renderSpy.lastCall.args[0];
+
+                        assert(formConfig.root.description === "Anaximander");
+                        assert(formRoot.description === "Anaximander");
+
+                        assert(!formConfig.getErrors("description").length);
+
+                        act(
+                            () => {
+                                fireEvent.change(input, {
+                                    target: {
+                                        value: ""
+                                    }
+                                });
+                            }
+                        )
+
+                        return sleep(20)
+                    }
+                )
+            .then( () => {
+                const formConfig = renderSpy.lastCall.args[0];
+
+                // values deemed invalid by async validation *are* written through
+                assert(formConfig.root.description === null);
+
+                assert.deepEqual(formConfig.getErrors("description"), ["","ASYNC REQUIRED"]);
+
+            })
+
     });
 });

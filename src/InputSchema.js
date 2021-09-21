@@ -332,12 +332,6 @@ class InputSchema
                 }
             }
         }
-
-        if (ctx && typeof ctx.validate === "function")
-        {
-            return ctx.validate(ctx, value);
-        }
-
         return ""
     }
 
