@@ -143,6 +143,10 @@ function handlerFn(typeName, handlerName)
     }
     else if (!entry)
     {
+        if (typeof typeName !== "string")
+        {
+            throw new Error("Invalid scalar name: got " + JSON.stringify(typeName));
+        }
         throw new Error("Unknown scalar " + JSON.stringify(typeName));
     }
 
