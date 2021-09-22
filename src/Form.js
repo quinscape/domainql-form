@@ -272,7 +272,7 @@ Form.propTypes = {
      * Optional alternate form-context to use for this form. Separate form contexts will have separate error storage and
      * submit/validation cycles.
      */
-    formContext: PropTypes.instanceOf(FormContext.class)
+    formContext: PropTypes.instanceOf(FormContext)
 };
 
 export default Form
