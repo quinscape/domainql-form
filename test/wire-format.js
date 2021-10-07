@@ -190,8 +190,8 @@ describe("Wire Format", function () {
                 "f2":  "2018-11-16T00:00:00.000Z"
             }]
         }, true, {
-            "foos.name" : "f1",
-            "foos.timestamp" : "f2"
+            "f1" : "foos.name",
+            "f2" : "foos.timestamp"
         });
 
         assert(converted.foos[0].f1 === "Foo #1");
@@ -223,8 +223,8 @@ describe("Wire Format", function () {
                 "f2":  "2018-11-16T00:00:00.000Z"
             }]
         },true,{
-            "foos.name" : "f1",
-            "foos.timestamp" : "f2"
+            "f1" : "foos.name",
+            "f2" : "foos.timestamp"
         });
 
 

@@ -149,14 +149,18 @@ function hasAliases(aliases, objectPath)
     {
         for (let name in aliases)
         {
-            if (
-                aliases.hasOwnProperty(name) &&
-                name.charAt(objectPath.length) === '.' &&
-                name.indexOf(objectPath) === 0 &&
-                name.lastIndexOf('.') === objectPath.length
-            )
+            if (aliases.hasOwnProperty(name))
             {
-                return true;
+                const orig = aliases[name];
+
+                if (
+                    orig.length > objectPath.length &&
+                    orig.indexOf(objectPath) === 0 &&
+                    orig.lastIndexOf(".") === objectPath.length
+                )
+                {
+                    return true;
+                }
             }
         }
     }
@@ -178,6 +182,27 @@ const CONVERT_OPTS_TO_WIRE = {
     withType: false,
     noWrapping: true
 }
+
+
+function findAlias(aliases, pathForField)
+{
+    if (aliases)
+    {
+        for (let alias in aliases)
+        {
+            if (aliases.hasOwnProperty(alias))
+            {
+                const orig = aliases[alias];
+                if (orig === pathForField)
+                {
+                    return alias;
+                }
+            }
+        }
+    }
+    return null;
+}
+
 
 export default class WireFormat {
 
@@ -307,7 +332,7 @@ export default class WireFormat {
 
         return this._convert(typeRef, value, convertOpts, aliases, path);
     }
-    
+
     _convert(typeRef, value, convertOpts, aliases, path)
     {
         try
@@ -382,7 +407,7 @@ export default class WireFormat {
                         const { name, type } = fields[i];
                         const pathForField = join(path, name);
 
-                        const alias = aliases && aliases[pathForField];
+                        const alias = findAlias(aliases, pathForField);
 
                         const propName = alias ? alias : name;
 
