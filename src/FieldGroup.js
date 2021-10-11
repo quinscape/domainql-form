@@ -41,6 +41,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
     const { labelColumnClass } = formConfig.options;
 
     const horizontal = parentConfig.options.layout === FormLayout.HORIZONTAL;
+    const isInline = parentConfig.options.layout === FormLayout.INLINE;
 
     const fieldElems = [];
     let errors = [];
@@ -110,7 +111,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
     }
 
     const haveErrors = !!errors.length;
-    const helpBlock = renderHelpBlock(haveErrors, errors, null);
+    const helpBlock = renderHelpBlock(haveErrors, errors, null, isInline);
 
     return (
         <FormConfigContext.Provider value={ formConfig }>

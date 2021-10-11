@@ -7,7 +7,7 @@ import FormLayout from "./FormLayout";
 
 
 
-export function renderHelpBlock(haveErrors, errorMessages, helpText)
+export function renderHelpBlock(haveErrors, errorMessages, helpText, isInline)
 {
     let helpBlock = false;
 
@@ -16,7 +16,7 @@ export function renderHelpBlock(haveErrors, errorMessages, helpText)
     if (formText)
     {
         helpBlock = (
-            <p className={cx(haveErrors ? "invalid-feedback d-block" : "text-muted")}>
+            <p className={cx(haveErrors ? "invalid-feedback" : "text-muted", haveErrors && !isInline ? "d-block" : "d-inline")}>
                 {formText.map((txt, idx) => <span key={idx}> {txt} </span>)}
             </p>
         )
@@ -57,6 +57,7 @@ const FormGroup = props => {
     //console.log("RENDER FormGroup", { horizontal, labelColumnClass, wrapperColumnClass });
 
     const horizontal = layout === FormLayout.HORIZONTAL;
+    const isInline = layout === FormLayout.INLINE;
 
     const labelElement = label ? (
         <label
@@ -79,7 +80,7 @@ const FormGroup = props => {
 
     const haveErrors = errorMessages && errorMessages.length > 0;
 
-    let helpBlock = renderHelpBlock(haveErrors, errorMessages, helpText);
+    let helpBlock = renderHelpBlock(haveErrors, errorMessages, helpText, isInline);
 
     if (layout === FormLayout.INLINE)
     {
