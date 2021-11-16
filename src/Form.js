@@ -98,8 +98,8 @@ const Form  = props =>  {
      */
     const formId = useMemo( () => "f" + formCounter++, []);
 
-    const { id, children, onClick, value, type, onSubmit, formContext = FormContext.getDefault(), options } = props;
-    
+    const { id, children, onClick, value, type, onSubmit, formContext = FormContext.getDefault(), options, ... rest } = props;
+
     const { schema } = formContext;
     const [ root, setRoot] = useState( () => cloneRoot(schema, value, options, parentConfig) );
 
@@ -219,6 +219,7 @@ const Form  = props =>  {
             onReset={ handleReset }
             onClick={ onClick || null }
             data-form-id={ formId }
+            { ... rest }
         >
             <FormConfigContext.Provider value={ formConfig }>
                 <Observer>
