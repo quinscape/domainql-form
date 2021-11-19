@@ -525,6 +525,12 @@ export default class FormContext
         }
     }
 
+    @action
+    removeAllErrors()
+    {
+        this[secret].errors.replace([]);
+    }
+
 
     /**
      * Performs a complete revalidation of all registered field contexts.
