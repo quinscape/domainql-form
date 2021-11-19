@@ -211,11 +211,6 @@ const Field = fnObserver((props, ref) => {
 
                     const value = target.type === "checkbox" ? target.checked : target.value;
 
-                    if (typeof onChange === "function")
-                    {
-                        onChange(newFieldContext, value);
-                    }
-
                     //console.log("Field.handleChange", fieldType, name, value);
 
                     formConfig.handleChange(newFieldContext, value);
@@ -234,6 +229,7 @@ const Field = fnObserver((props, ref) => {
                 validateAsync,
                 addons,
                 section: null,
+                fieldChangeHandler : onChange,
 
                 isPending,
                 setPending

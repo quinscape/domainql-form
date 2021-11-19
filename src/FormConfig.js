@@ -239,7 +239,16 @@ class FormConfig
             }
 
             // UPDATE
-            this.updateFromChange(qualifiedName, converted, errorsForField);
+            this.updateFromChange(qualifiedName, converted, errorsForField, fieldContext, value);
+
+            if (!haveErrors)
+            {
+                const { fieldChangeHandler } = fieldContext;
+                if (fieldChangeHandler)
+                {
+                    fieldChangeHandler(fieldContext, converted);
+                }
+            }
         }
         catch(e)
         {
