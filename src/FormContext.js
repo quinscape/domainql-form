@@ -366,6 +366,23 @@ export default class FormContext
 
         if (fieldContext)
         {
+
+            const typeDef = unwrapNonNull(fieldContext.fieldType);
+            if (typeDef.kind === SCALAR)
+            {
+                const strValue = InputSchema.scalarToValue(typeDef.name, value, fieldContext);
+                if (strValue !== "")
+                {
+                    add(
+                        InputSchema.validate(
+                            typeDef.name,
+                            strValue,
+                            fieldContext
+                        )
+                    )
+                }
+            }
+
             if (typeof fieldContext.validate === "function")
             {
                 add(
