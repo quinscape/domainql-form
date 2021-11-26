@@ -189,7 +189,7 @@ class FormConfig
     {
         try
         {
-            const { fieldType, qualifiedName } = fieldContext;
+            const { fieldType } = fieldContext;
 
 //            console.log("handleChange", { fieldType, name, value});
 
@@ -239,7 +239,7 @@ class FormConfig
             }
 
             // UPDATE
-            this.updateFromChange(qualifiedName, converted, errorsForField, fieldContext, value);
+            this.updateFromChange(fieldContext, converted, errorsForField);
 
             if (!haveErrors)
             {
@@ -268,17 +268,18 @@ class FormConfig
     };
 
     @action
-    updateFromChange(qualifiedName, converted, errorsForField)
+    updateFromChange(fieldContext, converted, errorsForField)
     {
-        //console.log("updateFromChange", qualifiedName, converted, errorsForField)
+        //console.log("updateFromChange", path, converted, errorsForField)
 
         const { root, formContext } = this;
+        const { path, qualifiedName } = fieldContext;
 
         formContext.updateErrors(root, qualifiedName, errorsForField);
 
         if (errorsForField.length < 2)
         {
-            set(root, qualifiedName, converted);
+            set(root, path, converted);
 
             if (this.options.autoSubmit)
             {
