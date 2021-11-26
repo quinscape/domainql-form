@@ -6,6 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Field.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Field.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Select.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Select.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TextArea.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/TextArea.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,6 +161,25 @@
       </test-names>
       <method v="2" />
     </configuration>
+    <configuration name="Field.renders help text" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
+      <node-interpreter>project</node-interpreter>
+      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
+      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
+      <working-directory>$PROJECT_DIR$</working-directory>
+      <pass-parent-env>true</pass-parent-env>
+      <envs>
+        <env name="BABEL_ENV" value="test" />
+      </envs>
+      <ui>bdd</ui>
+      <extra-mocha-options />
+      <test-kind>TEST</test-kind>
+      <test-file>$PROJECT_DIR$/test/field.js</test-file>
+      <test-names>
+        <name value="Field" />
+        <name value="renders help text" />
+      </test-names>
+      <method v="2" />
+    </configuration>
     <configuration name="Form Test" type="mocha-javascript-test-runner">
       <node-interpreter>project</node-interpreter>
       <node-options>-r babel-register --require ./test/setup.js</node-options>
@@ -172,25 +194,6 @@
       <extra-mocha-options />
       <test-kind>TEST_FILE</test-kind>
       <test-file>$PROJECT_DIR$/test/form.js</test-file>
-      <method v="2" />
-    </configuration>
-    <configuration name="Form.works on nested fields" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/test/form.js</test-file>
-      <test-names>
-        <name value="Form" />
-        <name value="works on nested fields" />
-      </test-names>
       <method v="2" />
     </configuration>
     <configuration name="High-Level Validation" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
@@ -252,18 +255,18 @@
       <item itemvalue="Mocha.DomainQL Form Tests" />
       <item itemvalue="Mocha.Form Test" />
       <item itemvalue="Mocha.Field" />
-      <item itemvalue="Mocha.Form.works on nested fields" />
       <item itemvalue="Mocha.Select" />
       <item itemvalue="Mocha.TextArea.renders as textarea element" />
       <item itemvalue="Mocha.High-Level Validation" />
+      <item itemvalue="Mocha.Field.renders help text" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Mocha.Field.renders help text" />
         <item itemvalue="Mocha.Select" />
         <item itemvalue="Mocha.High-Level Validation" />
         <item itemvalue="Mocha.TextArea.renders as textarea element" />
         <item itemvalue="Mocha.Field" />
-        <item itemvalue="Mocha.Form.works on nested fields" />
       </list>
     </recent_temporary>
   </component>
@@ -318,6 +321,16 @@
       <workItem from="1629802870932" duration="2413000" />
       <workItem from="1629942413482" duration="3127000" />
       <workItem from="1629993723343" duration="166000" />
+      <workItem from="1633695810509" duration="147000" />
+      <workItem from="1633787300844" duration="214000" />
+      <workItem from="1633970042957" duration="461000" />
+      <workItem from="1633970582749" duration="2892000" />
+      <workItem from="1634126646009" duration="629000" />
+      <workItem from="1637077600604" duration="1239000" />
+      <workItem from="1637344114111" duration="4070000" />
+      <workItem from="1637350169238" duration="989000" />
+      <workItem from="1637761382656" duration="1878000" />
+      <workItem from="1637926251996" duration="7146000" />
     </task>
     <servers />
   </component>
@@ -384,7 +397,6 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/node_modules/mobx/dist/mobx.cjs.development.js</url>
           <line>1755</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="4" />
         </line-breakpoint>
       </breakpoints>
