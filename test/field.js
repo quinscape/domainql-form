@@ -750,8 +750,10 @@ describe("Field", function () {
         assert(!formConfig.getErrors("name").length);
 
         assert(onChangeSpy.called)
-        assert(onChangeSpy.lastCall.args[0].isFieldContext)
-        assert(onChangeSpy.lastCall.args[0].qualifiedName === "name")
+        // clearAndType types the letters one by one and we only see the last update
+        assert(onChangeSpy.lastCall.args[0].oldValue === "Zen")
+        assert(onChangeSpy.lastCall.args[0].fieldContext.isFieldContext)
+        assert(onChangeSpy.lastCall.args[0].fieldContext.qualifiedName === "name")
         assert(onChangeSpy.lastCall.args[1] === "Zeno")
     });
 

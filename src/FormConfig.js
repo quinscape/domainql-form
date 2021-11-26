@@ -2,6 +2,7 @@ import React from "react"
 import InputSchema from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
+import get from "lodash.get"
 import set from "lodash.set"
 
 import { action, makeObservable } from "mobx"
@@ -233,21 +234,24 @@ class FormConfig
 
             // errors contains more than just our value
             const haveErrors = errorsForField.length > 1;
+            const { fieldChangeHandler } = fieldContext;
+            let oldValue
             if (!haveErrors)
             {
                 converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
+
+                const { root } = this;
+                const { path } = fieldContext;
+
+                oldValue = fieldChangeHandler && get(root, path);
             }
 
             // UPDATE
             this.updateFromChange(fieldContext, converted, errorsForField);
 
-            if (!haveErrors)
+            if (!haveErrors && fieldChangeHandler)
             {
-                const { fieldChangeHandler } = fieldContext;
-                if (fieldChangeHandler)
-                {
-                    fieldChangeHandler(fieldContext, converted);
-                }
+                fieldChangeHandler({oldValue, fieldContext}, converted);
             }
         }
         catch(e)

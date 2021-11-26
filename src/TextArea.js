@@ -98,10 +98,15 @@ TextArea.propTypes = {
      * Mode for this field. If not set or set to null, the mode will be inherited from the &lt;Form/&gt; or &lt;FormBlock&gt;.
      */
     mode: PropTypes.oneOf(FieldMode.values()),
+
     /**
-     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
+     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error. If a function
+     * is given, it should be a stable reference ( e.g. with useCallback()) to prevent creating the field context over
+     * and over. The same considerations apply to using elements. ( The expression <Bla/> recreates that element on every
+     * invocation, use static element references)
      */
-    helpText: PropTypes.string,
+    helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.element]),
+
     /**
      * Tooltip / title attribute
      */
@@ -138,6 +143,11 @@ TextArea.propTypes = {
      * Maximum field length
      */
     maxLength: PropTypes.number,
+
+    /**
+     * Optional local on-change handler ( ({oldValue, fieldContext}, value) => ... )
+     */
+    onChange: PropTypes.func,
 
     /**
      * Optional per-field validation function  ( (fieldContext, value) => error ). It receives the current value as string

@@ -316,7 +316,7 @@ Field.propTypes = {
     formGroupClass: PropTypes.string,
 
     /**
-     * Optional change handler to use to react to the single field changing
+     * Optional local on-change handler ( ({oldValue, fieldContext}, value) => ... )
      */
     onChange: PropTypes.func,
 

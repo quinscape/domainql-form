@@ -96,23 +96,13 @@ const Select = props => {
 
     const handleChange = (fieldContext, ev) => {
 
-        const { onChange } = props;
+        const scalarValue = findOptionValue(ev.target, values, valueProperty);
 
-        if (onChange)
-        {
-            onChange(ev, fieldContext);
-        }
+        const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue, fieldContext);
 
-        if (!ev.isDefaultPrevented())
-        {
-            const scalarValue = findOptionValue(ev.target, values, valueProperty);
+        //console.log("Select handleChange", scalarValue, "=>", converted);
 
-            const converted = InputSchema.scalarToValue(unwrapType(fieldContext.fieldType).name, scalarValue, fieldContext);
-
-            //console.log("Select handleChange", scalarValue, "=>", converted);
-
-            return formConfig.handleChange(fieldContext, converted);
-        }
+        return formConfig.handleChange(fieldContext, converted);
     };
 
 
@@ -227,9 +217,12 @@ Select.propTypes = {
     mode: PropTypes.oneOf(FieldMode.values()),
 
     /**
-     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
+     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error. If a function
+     * is given, it should be a stable reference ( e.g. with useCallback()) to prevent creating the field context over
+     * and over. The same considerations apply to using elements. ( The expression <Bla/> recreates that element on every
+     * invocation, use static element references)
      */
-    helpText: PropTypes.string,
+    helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.element]),
 
     /**
      * Title attribute
@@ -258,8 +251,8 @@ Select.propTypes = {
      */
     values: PropTypes.array.isRequired,
 
-    /**
-     * Local change handler. can call ev.preventDefault() to cancel change.
+     /**
+      * Optional local on-change handler ( ({oldValue, fieldContext}, value) => ... )
      */
     onChange: PropTypes.func,
 
