@@ -11,7 +11,7 @@ export function renderHelpBlock(haveErrors, errorMessages, helpText, isInline)
 {
     let helpBlock = false;
 
-    const formText = haveErrors ? errorMessages.slice(1) : helpText && [helpText];
+    const formText = haveErrors ? errorMessages.slice(1) : helpText && [ typeof helpText === "function" ? helpText() : helpText ];
 
     if (formText)
     {

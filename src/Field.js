@@ -250,7 +250,7 @@ const Field = fnObserver((props, ref) => {
             return newFieldContext;
 
         },
-        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending ]
+        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending, helpText ]
     );
 
     //console.log("RENDER FIELD", fieldContext);
@@ -284,9 +284,13 @@ Field.propTypes = {
      */
     mode: PropTypes.oneOf(FieldMode.values()),
     /**
-     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error.
+     * Additional help text for this field. Is rendered for non-erroneous fields in place of the error. If a function
+     * is given, it should be a stable reference ( e.g. with useCallback()) to prevent creating the field context over
+     * and over. The same considerations apply to using elements. ( The expression <Bla/> recreates that element on every
+     * invocation, use static element references)
      */
-    helpText: PropTypes.string,
+    helpText: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.element]),
+    
     /**
      * Tooltip / title attribute for the input element
      */

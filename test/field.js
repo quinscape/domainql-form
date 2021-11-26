@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 
 import { act, cleanup, fireEvent, render, wait, prettyDOM, queryByLabelText, getByText, queryByText } from "@testing-library/react"
 
@@ -995,4 +995,87 @@ describe("Field", function () {
             })
 
     });
+
+    it("renders help text", function () {
+
+        /*
+        input DomainFieldInput {
+            name: String!
+            description: String
+            type: FieldType!
+            required: Boolean!
+            maxLength: Int!
+            sqlType: String
+            config: [ConfigValueInput]
+            unique: Boolean
+        }
+         */
+
+        const formRoot = observable({
+            name: "MyField",
+            type: "STRING",
+            required: true,
+            maxLength: -1
+        });
+
+        const renderSpy = sinon.spy();
+
+
+        const TestForm = ({formRoot, renderSpy}) => {
+
+            // XXX: uses useState to ensure update, only needs to be a stable reference if updates are ensured
+            const [helpText,setHelpText] = useState(<span className="text-info">Info</span>)
+
+            return (
+                <Form
+                    type={"DomainFieldInput"}
+                    value={formRoot}
+                >
+                    {
+                        formConfig => {
+
+                            renderSpy(formConfig);
+                            return (
+                                <>
+                                    <Field name="name" helpText={ helpText }/>
+                                    <button
+                                        type="button"
+                                        onClick={
+                                            () => setHelpText(<span className="text-warn">Warning!</span>)
+                                        }
+                                    >
+                                        Change Info
+                                    </button>
+                                </>
+                            )
+                        }
+                    }
+                </Form>
+            )
+        }
+
+        const {container} = render(
+            <TestForm
+                formRoot={ formRoot}
+                renderSpy={ renderSpy }
+            />
+        );
+
+
+
+
+        const helpText = getByText(container, "Info");
+        assert(helpText.className === "text-info")
+
+        act(
+            () => {
+                const button = getByText(container, "Change Info");
+                button.click();
+            }
+        )
+
+        const helpText2 = getByText(container, "Warning!");
+        assert(helpText2.className === "text-warn")
+
+    })
 });
