@@ -65,6 +65,7 @@ const Field = fnObserver((props, ref) => {
         children,
         addons: addonsFromProps,
         onChange,
+        onPressEnter,
         validate,
         fieldContext: fieldContextCB,
         maxLength,
@@ -205,6 +206,18 @@ const Field = fnObserver((props, ref) => {
                 mode: effectiveMode,
                 label: effectiveLabel,
 
+                handleKeyPress: ev => {
+
+                    const { target, code, ctrlKey, altKey, shiftKey, metaKey } = ev;
+                    const modifier = {ctrlKey, altKey, shiftKey, metaKey};
+
+                    const value = target.type === "checkbox" ? target.checked : target.value;
+
+                    //console.log("Field.handleKeyPress", fieldType, name, value);
+
+                    formConfig.handleKeyPress(newFieldContext, code, modifier, value);
+                },
+
                 handleChange: ev => {
 
                     const { target } = ev;
@@ -230,6 +243,7 @@ const Field = fnObserver((props, ref) => {
                 addons,
                 section: null,
                 fieldChangeHandler : onChange,
+                fieldPressEnterHandler: onPressEnter,
 
                 isPending,
                 setPending
@@ -323,6 +337,11 @@ Field.propTypes = {
      * Optional local on-change handler ( ({oldValue, fieldContext}, value) => ... )
      */
     onChange: PropTypes.func,
+
+    /**
+     * Optional keypress handler to use to react to the single field enter button press
+     */
+    onPressEnter: PropTypes.func,
 
     /**
      * Optional per-field validation function  ( (fieldContext, value) => error ). It receives the current value as string

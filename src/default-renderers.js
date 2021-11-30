@@ -63,7 +63,20 @@ const DEFAULT_RENDERERS =
 
             render: (formConfig, ctx) =>  {
 
-                const { fieldRef, mode, fieldId, inputClass, label, labelClass, tooltip, path, qualifiedName, handleChange, handleBlur } = ctx;
+                const {
+                    fieldRef,
+                    mode,
+                    fieldId,
+                    inputClass,
+                    label,
+                    labelClass,
+                    tooltip,
+                    path,
+                    qualifiedName,
+                    handleKeyPress,
+                    handleChange,
+                    handleBlur
+                } = ctx;
 
                 const fieldValue = Field.getValue(formConfig, ctx);
 
@@ -107,6 +120,7 @@ const DEFAULT_RENDERERS =
                                 title={ tooltip }
                                 checked={ fieldValue }
                                 onChange={ handleChange }
+                                onKeyPress={ handleKeyPress }
                                 onBlur={ handleBlur }
                                 disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
                             />
@@ -153,6 +167,7 @@ const DEFAULT_RENDERERS =
                     tooltip,
                     path,
                     qualifiedName,
+                    handleKeyPress,
                     handleChange,
                     handleBlur
                 } = ctx;
@@ -180,6 +195,7 @@ const DEFAULT_RENDERERS =
                             title={ tooltip }
                             disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY}
                             value={ fieldValue }
+                            onKeyPress={ handleKeyPress }
                             onChange={ handleChange }
                             onBlur={ handleBlur }
                         >
@@ -234,6 +250,7 @@ const DEFAULT_RENDERERS =
                     tooltip,
                     fieldType,
                     qualifiedName,
+                    handleKeyPress,
                     handleChange,
                     handleBlur,
                     autoFocus
@@ -265,6 +282,7 @@ const DEFAULT_RENDERERS =
                             disabled={ mode === FieldMode.DISABLED }
                             readOnly={ mode === FieldMode.READ_ONLY }
                             value={ fieldValue }
+                            onKeyPress={ handleKeyPress }
                             onChange={ handleChange }
                             onBlur={ handleBlur }
                             autoFocus={ autoFocus ? true : null }

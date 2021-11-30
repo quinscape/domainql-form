@@ -186,6 +186,21 @@ class FormConfig
         return formContext.getErrors().length > 0;
     }
 
+    handleKeyPress(fieldContext, code, modifier, value)
+    {
+        const { fieldType, qualifiedName } = fieldContext;
+
+        // console.log("handleKeyPress", { fieldType, qualifiedName, code, value});
+
+        if (code === "Enter") {
+            const { fieldPressEnterHandler } = fieldContext;
+            if (fieldPressEnterHandler)
+            {
+                fieldPressEnterHandler(fieldContext);
+            }
+        }
+    }
+
     handleChange(fieldContext, value)
     {
         try
