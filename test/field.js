@@ -1078,4 +1078,75 @@ describe("Field", function () {
         assert(helpText2.className === "text-warn")
 
     })
+
+    it("handles missing intermediary objects", function () {
+
+
+        const formRoot = observable({
+            sub: {
+                name: "Foo"
+            }
+        });
+
+        const renderSpy = sinon.spy();
+
+
+        const TestForm = ({formRoot, renderSpy}) => {
+
+            // XXX: uses useState to ensure update, only needs to be a stable reference if updates are ensured
+            const [helpText,setHelpText] = useState(<span className="text-info">Info</span>)
+
+            return (
+                <Form
+                    value={formRoot}
+                >
+                    {
+                        formConfig => {
+
+                            renderSpy(formConfig);
+                            return (
+                                <>
+                                    <Field name="sub.name" type="String"/>
+                                    <button
+                                        type="button"
+                                        onClick={
+                                            () => runInAction(() => formRoot.sub = null)
+                                        }
+                                    >
+                                        Null sub
+                                    </button>
+                                </>
+                            )
+                        }
+                    }
+                </Form>
+            )
+        }
+
+        const {container} = render(
+            <TestForm
+                formRoot={ formRoot}
+                renderSpy={ renderSpy }
+            />
+        );
+
+        //console.log(prettyDOM(container))
+
+        const input = queryByLabelText(container, "name");
+
+        assert(input.value === "Foo")
+        assert(!input.disabled)
+
+
+        act(
+            () => {
+                const button = getByText(container, "Null sub");
+                button.click();
+            }
+        )
+
+        assert(input.value === "")
+        assert(input.disabled)
+
+    })
 });

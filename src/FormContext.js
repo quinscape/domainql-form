@@ -3,6 +3,7 @@ import InputSchema, { unwrapNonNull } from "./InputSchema";
 
 import { action, isObservableObject, makeObservable, observable } from "mobx";
 import get from "lodash.get";
+import FieldMode from "./FieldMode";
 
 
 let defaultFormContext;
@@ -544,7 +545,12 @@ export default class FormContext
         {
 
             const ctx = fieldContexts[i];
-            const { root, fieldType, path, qualifiedName } = ctx;
+            const { root, mode, fieldType, path, qualifiedName } = ctx;
+            if (mode !== FieldMode.NORMAL)
+            {
+                continue;
+            }
+
             const value = get(root, path);
 
 

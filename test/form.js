@@ -1391,4 +1391,63 @@ describe("Form", function () {
 
     });
 
+
+    it("ignores missing intermediary objects during revalidation", function () {
+
+        const renderSpyA = sinon.spy();
+        const renderSpyB = sinon.spy();
+
+
+        const formRoot = observable({
+            sub: null
+        });
+
+
+        const { container } = render(
+            <FormConfigProvider
+                options={{
+                    isolation: false
+                }}
+            >
+                <Form
+                    id="sub-form"
+                    value={
+                        formRoot
+                    }
+                >
+                    {
+                        ctx => {
+
+                            renderSpyA(ctx);
+                            return (
+                                <React.Fragment>
+                                    <Field name="sub.num" type="Int"/>
+                                </React.Fragment>
+                            );
+                        }
+                    }
+                </Form>
+            </FormConfigProvider>
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        const numInput = getByLabelText(container, "num");
+
+        // empty values on two nonNull fields
+        assert(numInput.value === "");
+        assert(numInput.disabled);
+
+
+        act(
+            () => {
+
+                const form = document.getElementById("sub-form");
+                form.submit();
+            }
+        )
+
+        assert.deepEqual(FormContext.getDefault().findError(formRoot, "sub.num"),[]);
+    });
 });

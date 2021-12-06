@@ -133,9 +133,10 @@ const Field = fnObserver((props, ref) => {
             } = props;
 
             const qualifiedName = formConfig.getPath(name);
-            const effectiveMode = mode || formConfig.getMode();
+            let effectiveMode = mode || formConfig.getMode();
 
             const path = toPath(qualifiedName);
+            const parentPath = path.length > 1 ? path.slice(0, -1) : null;
 
             let fieldId;
             let effectiveLabel;
@@ -203,7 +204,22 @@ const Field = fnObserver((props, ref) => {
 
                 root: formConfig.root,
 
-                mode: effectiveMode,
+                get mode()
+                {
+                    if (effectiveMode === FieldMode.NORMAL && parentPath)
+                    {
+                        const parentObject = get(formConfig.root, parentPath);
+                        if (!parentObject || typeof parentObject !== "object")
+                        {
+                            return FieldMode.DISABLED
+                        }
+                    }
+                    return effectiveMode
+                },
+                set mode(mode)
+                {
+                    effectiveMode = mode
+                },
                 label: effectiveLabel,
 
                 handleKeyPress: ev => {
