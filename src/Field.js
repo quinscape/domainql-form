@@ -222,7 +222,7 @@ const Field = fnObserver((props, ref) => {
                 },
                 label: effectiveLabel,
 
-                handleKeyPress: ev => {
+                handleKeyPress: !!onPressEnter ? ev => {
 
                     const { target, code, ctrlKey, altKey, shiftKey, metaKey } = ev;
                     const modifier = {ctrlKey, altKey, shiftKey, metaKey};
@@ -232,7 +232,7 @@ const Field = fnObserver((props, ref) => {
                     //console.log("Field.handleKeyPress", fieldType, name, value);
 
                     formConfig.handleKeyPress(newFieldContext, code, modifier, value);
-                },
+                } : null,
 
                 handleChange: ev => {
 
