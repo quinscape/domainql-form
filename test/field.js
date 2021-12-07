@@ -784,7 +784,7 @@ describe("Field", function () {
                                 name="name"
                                 validate={ (ctx, value) => {
 
-                                    if (value === "")
+                                    if (value === null)
                                     {
                                         return "LOCAL REQUIRED";
                                     }
@@ -921,7 +921,7 @@ describe("Field", function () {
                                 name="description"
                                 validateAsync={ (ctx, value) => {
 
-                                    if (value === "")
+                                    if (value === null)
                                     {
                                         return "ASYNC REQUIRED";
                                     }

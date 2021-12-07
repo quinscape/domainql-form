@@ -232,7 +232,9 @@ class FormConfig
                     errorsForField.push(this.formContext.getRequiredErrorMessage(fieldContext));
                 }
 
-                const highLevelResult = this.formContext.validate(fieldContext,value)
+                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
+
+                const highLevelResult = this.formContext.validate(fieldContext, converted)
 
                 if (highLevelResult)
                 {
@@ -251,14 +253,12 @@ class FormConfig
             const haveErrors = errorsForField.length > 1;
             const { fieldChangeHandler } = fieldContext;
             let oldValue
-            if (!haveErrors)
+            if (!haveErrors && fieldChangeHandler)
             {
-                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
-
                 const { root } = this;
                 const { path } = fieldContext;
 
-                oldValue = fieldChangeHandler && get(root, path);
+                oldValue = get(root, path);
             }
 
             // UPDATE

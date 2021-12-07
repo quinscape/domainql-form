@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import { describe, after, afterEach, it } from "mocha";
 import { cleanup, fireEvent, render, prettyDOM, act, getAllByLabelText, getByText, getByLabelText,flushEffects } from "@testing-library/react"
 
@@ -1449,5 +1449,98 @@ describe("Form", function () {
         )
 
         assert.deepEqual(FormContext.getDefault().findError(formRoot, "sub.num"),[]);
+    });
+
+
+    it("catches scalar type changes on revalidation", function () {
+
+        const renderSpy = sinon.spy();
+
+
+        const formRoot = observable({
+            value: "abc"
+        });
+
+        const formContext = FormContext.getDefault();
+
+        const TestComponent = ({formRoot, renderSpy}) => {
+
+            const [scalarType, setScalarType ] = useState("String")
+
+            return (
+                <FormConfigProvider
+                    options={{
+                        isolation: false
+                    }}
+                >
+                    <Form
+                        id="switch-form"
+                        value={
+                            formRoot
+                        }
+                    >
+                        {
+                            ctx => {
+
+                                renderSpy(ctx);
+                                return (
+                                    <React.Fragment>
+                                        <Field name="value" type={ scalarType }/>
+                                    </React.Fragment>
+                                );
+                            }
+                        }
+                    </Form>
+                    <button
+                        type="button"
+                        onClick={ () => {
+                            setScalarType("Int")
+                        }}
+                    >
+                        Change Type
+                    </button>
+                </FormConfigProvider>
+
+            )
+        }
+
+
+        const { container } = render(
+            <TestComponent
+                formRoot={ formRoot }
+                renderSpy={ renderSpy }
+            />
+        );
+
+
+        //console.log(prettyDOM(container))
+
+        act(
+            () => {
+
+                const form = document.getElementById("switch-form");
+                form.submit();
+            }
+        )
+
+        assert.deepEqual(formContext.findError(formRoot, "value"),[]);
+
+        act(
+            () => {
+
+                const button = getByText(container, "Change Type");
+                button.click();
+            }
+        )
+
+        act(
+            () => {
+
+                const form = document.getElementById("switch-form");
+                form.submit();
+            }
+        )
+
+        assert.deepEqual(formContext.findError(formRoot, "value"), ["abc","Invalid Integer"]);
     });
 });

@@ -198,7 +198,7 @@ describe("High-Level Validation", function () {
     });
 
 
-    it("receives empty string values", function () {
+    it("receives empty string value conversions", function () {
 
         const renderSpy = sinon.spy();
 
@@ -241,7 +241,7 @@ describe("High-Level Validation", function () {
             validation: {
                 validateField: (ctx, value) => {
 
-                    if (value === "")
+                    if (value === null)
                     {
                         return "EMPTY IN HL";
                     }

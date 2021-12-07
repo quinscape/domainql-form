@@ -328,9 +328,9 @@ export default class FormContext
     /**
      * Performs the registered high-level validation for the given field context and value
      *
-     * @param fieldContext      field context
-     * @param {*} value         scalar value
-     * 
+     * @param {Object} fieldContext                 field context
+     * @param {*} value                             scalar value
+     *
      * @return {String|Array<String>|null} error or array of errors. Might return null for no errors / no validation registered.
      */
     validate(fieldContext, value)
@@ -367,23 +367,6 @@ export default class FormContext
 
         if (fieldContext)
         {
-
-            const typeDef = unwrapNonNull(fieldContext.fieldType);
-            if (typeDef.kind === SCALAR)
-            {
-                const strValue = InputSchema.scalarToValue(typeDef.name, value, fieldContext);
-                if (strValue !== "")
-                {
-                    add(
-                        InputSchema.validate(
-                            typeDef.name,
-                            strValue,
-                            fieldContext
-                        )
-                    )
-                }
-            }
-
             if (typeof fieldContext.validate === "function")
             {
                 add(
@@ -571,7 +554,24 @@ export default class FormContext
             if (typeRef.kind === SCALAR)
             {
                 const scalarName = typeRef.name;
-                const result = this.validate(ctx, value);
+
+                const strValue = InputSchema.scalarToValue(typeRef.name, value, ctx);
+
+                let scalarResult = null
+                if (typeof strValue !== "string")
+                {
+                    scalarResult = "Invalid Value"
+                }
+                else if (strValue !== "")
+                {
+                    scalarResult = InputSchema.validate(
+                        scalarName,
+                        strValue,
+                        ctx
+                    )
+                }
+
+                const result = scalarResult || this.validate(ctx, value);
                 if (result)
                 {
                     if (Array.isArray(result))
