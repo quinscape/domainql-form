@@ -551,12 +551,16 @@ export default class FormContext
                 continue;
             }
 
-            const value = get(root, path);
+            let value = get(root, path);
 
+            if (value === undefined)
+            {
+                value = null;
+            }
 
             if (fieldType.kind === NON_NULL)
             {
-                if (value === null || value === undefined)
+                if (value === null)
                 {
                     this.addError(root, qualifiedName, this.getRequiredErrorMessage(ctx) , "");
                 }
