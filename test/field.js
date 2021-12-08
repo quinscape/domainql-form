@@ -155,8 +155,7 @@ describe("Field", function () {
                 <Form
                     type={"DomainFieldInput"}
                     options={{
-                        mode: loc === ModeLocation.INHERITED ? mode : null,
-                        isolation: true
+                        mode: loc === ModeLocation.INHERITED ? mode : null
 
                     }}
                     value={
@@ -188,13 +187,15 @@ describe("Field", function () {
 
                     assert(checkbox.checked === false);
 
-                    fireEvent.submit(
-                        container.querySelector("form")
-                    );
+                    act(
+                        () => {
+                            container.querySelector("form").submit()
+                        }
+                    )
 
-                    // Cloned object is isolated now
-                    assert(formRoot.required === true);
+                    assert(formRoot.required === false);
                     assert(container.querySelectorAll(".form-group").length === 1)
+                    assert.deepEqual(FormContext.getDefault().findError(formRoot, "required"), []);
 
                     break;
                 case FieldMode.DISABLED:

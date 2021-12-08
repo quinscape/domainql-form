@@ -555,20 +555,23 @@ export default class FormContext
             {
                 const scalarName = typeRef.name;
 
-                const strValue = InputSchema.scalarToValue(typeRef.name, value, ctx);
+                const converted = InputSchema.scalarToValue(typeRef.name, value, ctx);
 
                 let scalarResult = null
-                if (typeof strValue !== "string")
+                if (converted !== "")
                 {
-                    scalarResult = "Invalid Value"
-                }
-                else if (strValue !== "")
-                {
-                    scalarResult = InputSchema.validate(
-                        scalarName,
-                        strValue,
-                        ctx
-                    )
+                    if (typeof converted !== "boolean" && typeof converted !== "string")
+                    {
+                        scalarResult = "Invalid Value"
+                    }
+                    else
+                    {
+                        scalarResult = InputSchema.validate(
+                            scalarName,
+                            converted,
+                            ctx
+                        )
+                    }
                 }
 
                 const result = scalarResult || this.validate(ctx, value);
