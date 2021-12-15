@@ -138,7 +138,7 @@ const Field = fnObserver((props, ref) => {
             const path = toPath(qualifiedName);
             const parentPath = path.length > 1 ? path.slice(0, -1) : null;
 
-            const formId = formConfig.ctx.formId;
+            const { formId } = formConfig.ctx;
 
             let fieldId;
             let effectiveLabel;
