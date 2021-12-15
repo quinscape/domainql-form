@@ -271,15 +271,13 @@ export default class FormContext
 
         const { fieldContexts, id } = this[secret];
 
-        const prefix = "c" + id + ":" + formId + ":";
-
         const toRemove = [];
 
         const newFieldContexts = [];
         for (let i = 0; i < fieldContexts.length; i++)
         {
             const ctx = fieldContexts[i];
-            if (ctx.fieldId.indexOf(prefix) === 0)
+            if (ctx.formId === formId)
             {
                 toRemove.push(ctx.qualifiedName);
             }
