@@ -66,12 +66,15 @@ const Field = fnObserver((props, ref) => {
         addons: addonsFromProps,
         onChange,
         onPressEnter,
+        onBlur,
+        onFocus,
         validate,
         fieldContext: fieldContextCB,
         maxLength,
         tooltip,
         validateAsync: validateAsyncFromProps,
-        validateAsyncTimeout = 350
+        validateAsyncTimeout = 350,
+        isEditMode
     } = props;
     
     /**
@@ -225,6 +228,9 @@ const Field = fnObserver((props, ref) => {
                 },
                 label: effectiveLabel,
 
+                isEditMode,
+
+
                 handleKeyPress: !!onPressEnter ? ev => {
 
                     const { target, code, ctrlKey, altKey, shiftKey, metaKey } = ev;
@@ -257,12 +263,23 @@ const Field = fnObserver((props, ref) => {
                     formConfig.handleBlur(newFieldContext, value);
                 },
 
+                handleFocus: ev => {
+
+                    const { target: { value } } = ev;
+
+                    //console.log("Field.handleBlur", fieldType, name, value);
+
+                    formConfig.handleFocus(newFieldContext, value);
+                },
+
                 validate,
                 validateAsync,
                 addons,
                 section: null,
                 fieldChangeHandler : onChange,
                 fieldPressEnterHandler: onPressEnter,
+                fieldBlurHandler: onBlur,
+                fieldFocusHandler: onFocus,
 
                 isPending,
                 setPending
@@ -283,8 +300,17 @@ const Field = fnObserver((props, ref) => {
             return newFieldContext;
 
         },
-        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending, helpText ]
+        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending, helpText, isEditMode ]
     );
+
+    const isFirstRun = useRef(true);
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+        formConfig.handleChange(fieldContext, Field.getValue(formConfig, fieldContext));
+    }, [isEditMode])
 
     //console.log("RENDER FIELD", fieldContext);
 

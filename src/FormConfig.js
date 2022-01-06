@@ -232,7 +232,7 @@ class FormConfig
                     errorsForField.push(this.formContext.getRequiredErrorMessage(fieldContext));
                 }
 
-                converted = isScalar ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
+                converted = isScalar && !fieldContext.isEditMode ? InputSchema.valueToScalar(unwrapped.name, value, fieldContext) : value;
 
                 const highLevelResult = this.formContext.validate(fieldContext, converted)
 
@@ -279,10 +279,27 @@ class FormConfig
         try
         {
             //console.log("BLUR", fieldContext, value)
+            if(fieldContext.fieldBlurHandler) {
+                fieldContext.fieldBlurHandler(this, fieldContext, value);
+            }
         }
         catch(e)
         {
             console.error("HANDLE-BLUR ERROR", e);
+        }
+    };
+
+    handleFocus = (fieldContext, value) => {
+        try
+        {
+            //console.log("FOCUS", fieldContext, value)
+            if(fieldContext.fieldFocusHandler) {
+                fieldContext.fieldFocusHandler(this, fieldContext);
+            }
+        }
+        catch(e)
+        {
+            console.error("HANDLE-FOCUS ERROR", e);
         }
     };
 

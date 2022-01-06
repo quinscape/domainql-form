@@ -253,6 +253,7 @@ const DEFAULT_RENDERERS =
                     handleKeyPress,
                     handleChange,
                     handleBlur,
+                    handleFocus,
                     autoFocus
                 } = ctx;
 
@@ -285,6 +286,7 @@ const DEFAULT_RENDERERS =
                             onKeyPress={ handleKeyPress }
                             onChange={ handleChange }
                             onBlur={ handleBlur }
+                            onFocus={ handleFocus }
                             autoFocus={ autoFocus ? true : null }
                         />
                     );
