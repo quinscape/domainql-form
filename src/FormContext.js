@@ -52,7 +52,7 @@ function findById(fieldContexts, id)
         const curr = fieldContexts[i];
         if (curr.fieldId === id)
         {
-            return id;
+            return i;
         }
     }
     return -1;
