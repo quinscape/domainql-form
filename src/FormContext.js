@@ -90,7 +90,12 @@ export default class FormContext
 
             id: contextCounter++,
             errors: observable([]),
-            fieldContexts: []
+            fieldContexts: [],
+            revalidationResolve: null,
+            revalidationReject: null,
+            revalidationPromise: null,
+            asyncCounter: 0,
+            revalidationRejected: false
         }
     }
 
@@ -302,7 +307,7 @@ export default class FormContext
 
     registerFieldContext(fieldContext)
     {
-        //console.log("registerFieldContext", fieldContext)
+        //console.log("registerFieldContext", FormContext.getUniqueId(fieldContext), fieldContext)
 
         const { fieldContexts, validation } = this[secret];
 
@@ -418,11 +423,13 @@ export default class FormContext
                             }
 
                             fieldContext.setPending(false);
+                            this.endAsyncValidation()
                         },
 
                         err => {
                             console.error("Error during async validation", err);
                             fieldContext.setPending(false);
+                            this.rejectAsyncValidation()
                         }
                     )
             }
@@ -430,6 +437,37 @@ export default class FormContext
         return errors.length ? errors : null;
     }
 
+    rejectAsyncValidation()
+    {
+        this[secret].revalidationRejected = true;
+        this.endAsyncValidation()
+    }
+    endAsyncValidation()
+    {
+        if (--this[secret].asyncCounter === 0)
+        {
+            //console.log("Resolve async revalidation")
+
+            const { revalidationResolve, revalidationReject, revalidationRejected } = this[secret]
+
+            if(revalidationRejected)
+            {
+                revalidationReject();
+            }
+            else
+            {
+                revalidationResolve();
+            }
+
+            this[secret].revalidationResolve = null
+            this[secret].revalidationReject = null
+            this[secret].revalidationPromise = null
+        }
+        else
+        {
+            //console.log("Ended an async validation, ", this[secret].asyncCounter, " left")
+        }
+    }
 
     /**
      * Returns id of the form context
@@ -519,8 +557,18 @@ export default class FormContext
      */
     revalidate()
     {
+        if (this[secret].revalidationResolve)
+        {
+            console.warn("Ignoring revalidate() because an async revalidation is still running.")
+            return;
+        }
 
+
+        this[secret].asyncCounter = 0
+        this[secret].revalidationRejected = false
         const { fieldContexts } = this[secret];
+
+        //console.log("FIELD CONTEXTS", fieldContexts)
 
         for (let i = 0; i < fieldContexts.length; i++)
         {
@@ -572,6 +620,14 @@ export default class FormContext
                     }
                 }
 
+
+                const { validateAsync } = ctx;
+                if (validateAsync)
+                {
+                    this[secret].asyncCounter++
+                    //console.log("Async validation #" + this[secret].asyncCounter, ", ctx = #", FormContext.getUniqueId(ctx), ctx)
+                }
+
                 const result = scalarResult || this.validate(ctx, value);
                 if (result)
                 {
@@ -602,6 +658,33 @@ export default class FormContext
                 }
             }
         }
+
+        const promise = new Promise(
+            (resolve,reject) => {
+                if (this[secret].asyncCounter === 0)
+                {
+                    resolve()
+                }
+                else
+                {
+                    this[secret].revalidationResolve = resolve
+                    this[secret].revalidationReject = reject
+                }
+            }
+        )
+        this[secret].revalidationPromise = promise
+
+        return promise
+    }
+
+    waitForAsyncValidation()
+    {
+        const { revalidationPromise } = this[secret]
+        if ( revalidationPromise )
+        {
+            return revalidationPromise;
+        }
+        return Promise.resolve()
     }
 
 
