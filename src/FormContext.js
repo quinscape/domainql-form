@@ -575,10 +575,11 @@ export default class FormContext
 
             const ctx = fieldContexts[i];
             const { root, mode, fieldType, path, qualifiedName } = ctx;
-            if (mode !== FieldMode.NORMAL)
-            {
-                continue;
-            }
+
+            // if (mode !== FieldMode.NORMAL)
+            // {
+            //     continue;
+            // }
 
             let value = get(root, path);
 
