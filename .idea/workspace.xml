@@ -1,28 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AutoImportSettings">
-    <option name="autoReloadType" value="SELECTIVE" />
-  </component>
   <component name="ChangeListManager">
-    <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
+    <list default="true" id="c50c6765-5f51-4bc4-ae90-c35a3a57f6bf" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/DomainQL_Form_Tests.xml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Field.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Field.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Select.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Select.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TextArea.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/TextArea.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="FileTemplateManagerImpl">
-    <option name="RECENT_TEMPLATES">
-      <list>
-        <option value="JavaScript File" />
-      </list>
-    </option>
-  </component>
   <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitSEFilterConfiguration">
@@ -33,424 +31,34 @@
       <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
     </file-type-list>
   </component>
-  <component name="ProjectId" id="1P9WEHun1GHLHhO4t7bi1W8aM5d" />
+  <component name="ProjectId" id="25QDxbb3VUnqHHDJsMbJrXCib3l" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">
-    <property name="GoToClass.includeLibraries" value="false" />
-    <property name="GoToClass.toSaveIncludeLibraries" value="false" />
-    <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="MemberChooser.copyJavadoc" value="false" />
-    <property name="MemberChooser.showClasses" value="true" />
-    <property name="MemberChooser.sorted" value="false" />
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="javascript.nodejs.core.library.configured.version" value="14.17.5" />
-    <property name="javascript.nodejs.core.library.typings.version" value="14.17.5" />
-    <property name="js.last.introduce.type" value="CONST" />
-    <property name="jsgraphql-schema-editor-notification" value="false" />
-    <property name="last_opened_file_path" value="/var/www/test/plaintext.html" />
-    <property name="node.js.detected.package.eslint" value="true" />
-    <property name="node.js.detected.package.tslint" value="true" />
-    <property name="node.js.path.for.package.eslint" value="project" />
-    <property name="node.js.path.for.package.tslint" value="project" />
-    <property name="node.js.selected.package.eslint" value="(autodetect)" />
-    <property name="node.js.selected.package.tslint" value="(autodetect)" />
-    <property name="nodejs.mocha.mocha_node_package_dir" value="$PROJECT_DIR$/node_modules/mocha" />
-    <property name="nodejs_interpreter_path.stuck_in_default_project" value="/usr/bin/node" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="project.structure.last.edited" value="Project" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
-    <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
-    <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
-  </component>
-  <component name="RecentsManager">
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/src" />
-      <recent name="$PROJECT_DIR$/test" />
-      <recent name="$PROJECT_DIR$/test/_bak" />
-      <recent name="$PROJECT_DIR$/test/util" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/test" />
-    </key>
-  </component>
-  <component name="RunManager" selected="Mocha.DomainQL Form Tests">
-    <configuration default="true" type="Applet">
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
-      <Host>localhost</Host>
-      <Port>5050</Port>
-    </configuration>
-    <configuration default="true" type="Application" factoryName="Application">
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="JUnit" factoryName="JUnit">
-      <option name="TEST_OBJECT" value="class" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="TestNG">
-      <option name="TEST_OBJECT" value="CLASS" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="TEST_SEARCH_SCOPE">
-        <value defaultName="moduleWithDependencies" />
-      </option>
-      <properties />
-      <listeners />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType">
-      <module name="" />
-      <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m -ea" />
-      <option name="PROGRAM_PARAMETERS" />
-      <predefined_log_file enabled="true" id="idea.log" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="DomainQL Form Tests" type="mocha-javascript-test-runner">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>DIRECTORY</test-kind>
-      <test-directory>$PROJECT_DIR$/test</test-directory>
-      <recursive>false</recursive>
-      <method v="2" />
-    </configuration>
-    <configuration name="Field" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register -r ./test/setup.js</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/test/field.js</test-file>
-      <test-names>
-        <name value="Field" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="Field.renders help text" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/test/field.js</test-file>
-      <test-names>
-        <name value="Field" />
-        <name value="renders help text" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="Form Test" type="mocha-javascript-test-runner">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r babel-register --require ./test/setup.js</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-        <env name="NODE_ENV" value="production" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST_FILE</test-kind>
-      <test-file>$PROJECT_DIR$/test/form.js</test-file>
-      <method v="2" />
-    </configuration>
-    <configuration name="High-Level Validation" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/test/validation.js</test-file>
-      <test-names>
-        <name value="High-Level Validation" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="Select" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>SUITE</test-kind>
-      <test-file>$PROJECT_DIR$/test/select.js</test-file>
-      <test-names>
-        <name value="Select" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <configuration name="TextArea.renders as textarea element" type="mocha-javascript-test-runner" temporary="true" nameIsGenerated="true">
-      <node-interpreter>project</node-interpreter>
-      <node-options>-r @babel/register -r ./test/setup.js --exit</node-options>
-      <mocha-package>$PROJECT_DIR$/node_modules/mocha</mocha-package>
-      <working-directory>$PROJECT_DIR$</working-directory>
-      <pass-parent-env>true</pass-parent-env>
-      <envs>
-        <env name="BABEL_ENV" value="test" />
-      </envs>
-      <ui>bdd</ui>
-      <extra-mocha-options />
-      <test-kind>TEST</test-kind>
-      <test-file>$PROJECT_DIR$/test/text-area.js</test-file>
-      <test-names>
-        <name value="TextArea" />
-        <name value="renders as textarea element" />
-      </test-names>
-      <method v="2" />
-    </configuration>
-    <list>
-      <item itemvalue="Mocha.DomainQL Form Tests" />
-      <item itemvalue="Mocha.Form Test" />
-      <item itemvalue="Mocha.Field" />
-      <item itemvalue="Mocha.Select" />
-      <item itemvalue="Mocha.TextArea.renders as textarea element" />
-      <item itemvalue="Mocha.High-Level Validation" />
-      <item itemvalue="Mocha.Field.renders help text" />
-    </list>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Mocha.Field.renders help text" />
-        <item itemvalue="Mocha.Select" />
-        <item itemvalue="Mocha.High-Level Validation" />
-        <item itemvalue="Mocha.TextArea.renders as textarea element" />
-        <item itemvalue="Mocha.Field" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
-  <component name="SvnConfiguration">
-    <configuration />
-  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="" />
-      <created>1543760530516</created>
+      <changelist id="c50c6765-5f51-4bc4-ae90-c35a3a57f6bf" name="Changes" comment="" />
+      <created>1645450664668</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1543760530516</updated>
-      <workItem from="1543760532012" duration="6366000" />
-      <workItem from="1543775029853" duration="5179000" />
-      <workItem from="1543834921040" duration="10544000" />
-      <workItem from="1543917616652" duration="3354000" />
-      <workItem from="1544554594465" duration="1560000" />
-      <workItem from="1547148327207" duration="5538000" />
-      <workItem from="1547206012183" duration="19433000" />
-      <workItem from="1547297087668" duration="11570000" />
-      <workItem from="1547388904034" duration="5838000" />
-      <workItem from="1547403269188" duration="5929000" />
-      <workItem from="1547468832909" duration="16182000" />
-      <workItem from="1562062408592" duration="1828000" />
-      <workItem from="1562086700449" duration="6219000" />
-      <workItem from="1562139720890" duration="23000" />
-      <workItem from="1562139792594" duration="2172000" />
-      <workItem from="1562235811734" duration="29000" />
-      <workItem from="1562236642738" duration="3356000" />
-      <workItem from="1562259180429" duration="2778000" />
-      <workItem from="1562320949493" duration="11000" />
-      <workItem from="1562503629390" duration="2753000" />
-      <workItem from="1562582775028" duration="605000" />
-      <workItem from="1562591677701" duration="1228000" />
-      <workItem from="1562695082611" duration="854000" />
-      <workItem from="1565286680979" duration="1319000" />
-      <workItem from="1565337298279" duration="1276000" />
-      <workItem from="1565349723230" duration="8812000" />
-      <workItem from="1587139010614" duration="54000" />
-      <workItem from="1587139270527" duration="532000" />
-      <workItem from="1587143141566" duration="172000" />
-      <workItem from="1617274216697" duration="8557000" />
-      <workItem from="1617709132406" duration="3389000" />
-      <workItem from="1619530152102" duration="1245000" />
-      <workItem from="1625493937905" duration="3081000" />
-      <workItem from="1626353615463" duration="671000" />
-      <workItem from="1626790175109" duration="3432000" />
-      <workItem from="1626806791054" duration="3096000" />
-      <workItem from="1629739103048" duration="4601000" />
-      <workItem from="1629802870932" duration="2413000" />
-      <workItem from="1629942413482" duration="3127000" />
-      <workItem from="1629993723343" duration="166000" />
-      <workItem from="1633695810509" duration="147000" />
-      <workItem from="1633787300844" duration="214000" />
-      <workItem from="1633970042957" duration="461000" />
-      <workItem from="1633970582749" duration="2892000" />
-      <workItem from="1634126646009" duration="629000" />
-      <workItem from="1637077600604" duration="1239000" />
-      <workItem from="1637344114111" duration="4070000" />
-      <workItem from="1637350169238" duration="989000" />
-      <workItem from="1637761382656" duration="1878000" />
-      <workItem from="1637926251996" duration="7146000" />
+      <updated>1645450664668</updated>
+      <workItem from="1645450666412" duration="2102000" />
     </task>
     <servers />
   </component>
-  <component name="TestHistory">
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 31m 49s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 45m 22s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 45m 26s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 45m 35s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 46m 44s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 47m 50s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 48m 11s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 50m 45s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 50m 59s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-    <history-entry file="DomainQL_Form_Tests - 2019.01.14 at 18h 51m 58s.xml">
-      <configuration name="DomainQL Form Tests" configurationId="mocha-javascript-test-runner" />
-    </history-entry>
-  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State />
-          </value>
-        </entry>
-      </map>
-    </option>
-    <option name="oldMeFiltersMigrated" value="true" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/src/InputSchema.js</url>
-          <line>140</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/node_modules/mobx/src/core/derivation.ts</url>
-          <line>140</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/node_modules/mobx/dist/mobx.cjs.development.js</url>
-          <line>1755</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
-  </component>
-  <component name="masterDetails">
-    <states>
-      <state key="GlobalLibrariesConfigurable.UI">
-        <settings>
-          <last-edited>JSXTransformer</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="JdkListConfigurable.UI">
-        <settings>
-          <last-edited>1.6</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectJDKs.UI">
-        <settings>
-          <last-edited>1.6</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.20000002" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
   </component>
 </project>
