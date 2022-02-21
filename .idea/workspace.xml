@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e350b8de-801e-46f4-bf4a-da4d7dfe123d" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Field.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Field.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Select.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/Select.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TextArea.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/TextArea.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,9 +60,9 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="/usr/bin/node" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="nodejs_package_manager_path" value="yarn" />
-    <property name="project.structure.last.edited" value="Project" />
-    <property name="project.structure.proportion" value="0.0" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.20000002" />
     <property name="settings.editor.selected.configurable" value="Settings.JavaScript" />
     <property name="ts.external.directory.path" value="$APPLICATION_HOME_DIR$/plugins/JavaScriptLanguage/jsLanguageServicesImpl/external" />
   </component>
@@ -331,6 +329,9 @@
       <workItem from="1637350169238" duration="989000" />
       <workItem from="1637761382656" duration="1878000" />
       <workItem from="1637926251996" duration="7146000" />
+      <workItem from="1645187109912" duration="5759000" />
+      <workItem from="1645310543046" duration="12000" />
+      <workItem from="1645451585329" duration="1827000" />
     </task>
     <servers />
   </component>
