@@ -27,6 +27,7 @@ import Addon from "./Addon";
 import { renderStaticField } from "./default-renderers"
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
 import FormContext from "./FormContext";
+import TranslationHelper from "./util/TranslationHelper";
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -67,5 +68,7 @@ export {
     renderStaticField,
     resolveStaticRenderer,
 
-    FormContext
+    FormContext,
+
+    TranslationHelper
 }
