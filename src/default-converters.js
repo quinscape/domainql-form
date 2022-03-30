@@ -1,8 +1,6 @@
 import BigNumber from "bignumber.js"
 import parseNumber, { clean } from "./util/parse-number"
-import TranslationHelper from "./util/TranslationHelper";
-
-const {i18n} = TranslationHelper;
+import { i18n } from "./util/TranslationHelper";
 
 const BOOLEAN_RE = /^true|false|on|off$/;
 

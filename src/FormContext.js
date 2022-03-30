@@ -4,9 +4,7 @@ import InputSchema, { unwrapNonNull } from "./InputSchema";
 import { action, isObservableObject, makeObservable, observable } from "mobx";
 import get from "lodash.get";
 import FieldMode from "./FieldMode";
-import TranslationHelper from "./util/TranslationHelper";
-
-const {i18n} = TranslationHelper;
+import { i18n } from "./util/TranslationHelper";
 
 let defaultFormContext;
 
