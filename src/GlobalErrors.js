@@ -13,30 +13,15 @@ import { toJS } from "mobx";
  * @param {String} name               field name / path
  * @return {*}
  */
-function getFieldId(form, name)
+function getFieldId(name)
 {
-    if (!form)
-    {
-        return null;
-    }
-
-    const elem = form.querySelector("[name='" + name + "']");
-    return elem && elem.getAttribute("id");
+    const elem = document.querySelector(`form[data-form-id] [name="${name}"]`);
+    return elem?.getAttribute("id");
 }
 
 
 function findFieldIds(errors, component)
 {
-    let form = null;
-    if (component)
-    {
-        form = component;
-        while (form.tagName !== "FORM")
-        {
-            form = form.parentNode;
-        }
-    }
-
     const length = errors.length;
     const errorIdList = new Array(length);
 
@@ -45,7 +30,7 @@ function findFieldIds(errors, component)
         const {path, errorMessages} = errors[i];
 
         errorIdList[i] = {
-            fieldId: getFieldId(form, path),
+            fieldId: getFieldId(path),
             path,
             errorMessages
         }
@@ -68,7 +53,7 @@ const GlobalErrors = fnObserver(props => {
 
     const globalErrorsRef = useRef(null);
 
-    const errors = formConfig.formContext.getErrorsForRoot(formConfig.root);
+    const errors = formConfig.formContext.getErrors();
 
     const numErrors = errors.length;
 
@@ -96,14 +81,14 @@ const GlobalErrors = fnObserver(props => {
     errorIdList.forEach(entry => {
         const { fieldId, path, errorMessages } = entry;
 
-        // the first error is the preserved user input
+        // the first error is the preserved user inpu
         for (let i = 1; i < errorMessages.length; i++)
         {
             const err = errorMessages[i];
             errorElements.push(
-                <li key={ path + i }>
+                <li key={ path + i } className="global-error">
                     <label
-                        className="text-danger"
+                        className="global-error-message text-danger"
                         htmlFor={ fieldId }
                         data-path={ fieldId ? null : path }
                     >
@@ -140,7 +125,7 @@ const GlobalErrors = fnObserver(props => {
                         }
                     </p>
                 }
-                <ul>
+                <ul className="global-error-list">
                     {
                         errorElements
                     }
