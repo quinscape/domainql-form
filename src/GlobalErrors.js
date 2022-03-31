@@ -81,9 +81,7 @@ const GlobalErrors = fnObserver(props => {
     errorIdList.forEach(entry => {
         const { fieldId, path, errorMessages } = entry;
 
-        // const errorPostfix = errorMessages[0] !== "" ? `: ${errorMessages[0]}` : "";
-
-        // the first error is the preserved user input
+        // the first error is the preserved user inpu
         for (let i = 1; i < errorMessages.length; i++)
         {
             const err = errorMessages[i];
@@ -95,7 +93,7 @@ const GlobalErrors = fnObserver(props => {
                         data-path={ fieldId ? null : path }
                     >
                         {
-                            err /* + errorPostfix */
+                            err
                         }
                     </label>
                 </li>
