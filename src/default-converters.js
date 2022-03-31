@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js"
 import parseNumber, { clean } from "./util/parse-number"
+import { i18n } from "./util/TranslationHelper";
 
 const BOOLEAN_RE = /^true|false|on|off$/;
 
@@ -13,7 +14,7 @@ function checkInteger(lower, upper, msg)
         const num = +value;
         if (isNaN(num) || value === "" || !INTEGER_RE.test(value) || num < lower || num > upper)
         {
-            return msg;
+            return i18n(msg);
         }
         return null;
     }
@@ -25,7 +26,7 @@ function checkNumber(msg)
         const num = +value;
         if (isNaN(num))
         {
-            return msg;
+            return i18n(msg);
         }
         return null;
     }
@@ -36,7 +37,7 @@ function checkRegexp(re, msg)
     return function (value) {
         if (!re.test(value))
         {
-            return msg;
+            return i18n(msg);
         }
         return null;
     };
@@ -54,7 +55,7 @@ const DEFAULT_CONVERTERS = {
 
             if (ctx && ctx.maxLength && v.length > ctx.maxLength)
             {
-                return "Value too long";
+                return i18n("Value too long");
             }
             return null;
         },
@@ -62,7 +63,7 @@ const DEFAULT_CONVERTERS = {
         valueToScalar: false
     },
     "Boolean" : {
-        validate: v => typeof v !== "boolean" ? "Invalid boolean" : null,
+        validate: v => typeof v !== "boolean" ? i18n("Invalid boolean") : null,
         scalarToValue: function (scalar) {
             return scalar;
         },
@@ -97,7 +98,7 @@ const DEFAULT_CONVERTERS = {
             }
             if (isNaN(num) || num < CURRENCY_LIMIT_LOW || num > CURRENCY_LIMIT_HIGH)
             {
-                return "Invalid currency value";
+                return i18n("Invalid currency value");
             }
             return null;
         },
@@ -161,7 +162,7 @@ const DEFAULT_CONVERTERS = {
         }
     },
     "Date" : {
-        validate: checkRegexp(DATE_RE),
+        validate: checkRegexp(DATE_RE, "Invalid Date"),
 
         scalarToValue: function (scalar) {
             return String(scalar)
@@ -171,7 +172,7 @@ const DEFAULT_CONVERTERS = {
         }
     },
     "Timestamp" : {
-        validate: checkRegexp(DATE_RE),
+        validate: checkRegexp(DATE_RE, "Invalid Timestamp"),
 
         scalarToValue: function (scalar) {
             return String(scalar)

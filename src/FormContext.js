@@ -4,7 +4,7 @@ import InputSchema, { unwrapNonNull } from "./InputSchema";
 import { action, isObservableObject, makeObservable, observable } from "mobx";
 import get from "lodash.get";
 import FieldMode from "./FieldMode";
-
+import { i18n } from "./util/TranslationHelper";
 
 let defaultFormContext;
 
@@ -609,7 +609,7 @@ export default class FormContext
                 {
                     if (typeof converted !== "boolean" && typeof converted !== "string")
                     {
-                        scalarResult = "Invalid Value"
+                        scalarResult = i18n("Invalid Value")
                     }
                     else
                     {
@@ -655,7 +655,7 @@ export default class FormContext
                     {
                         console.warn("Invalid value for Enum " + enumTypeName + " at " + path + " in " + JSON.stringify(root) + ": " + value);
                     }
-                    this.addError(root, path, "Invalid Enum Value" , value);
+                    this.addError(root, path, i18n("Invalid Enum Value") , value);
                 }
             }
         }
@@ -711,7 +711,7 @@ export default class FormContext
             parentType = fieldName;
         }
 
-        return parentType + ":Field Required";
+        return i18n(parentType + ":Field Required");
     }
 
 
