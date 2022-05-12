@@ -50,6 +50,61 @@ export function renderStaticField(ctx, fieldValue)
     );
 }
 
+function renderFieldElement(
+    mode,
+    ctx,
+    fieldValue,
+    fieldRef,
+    fieldId,
+    qualifiedName,
+    inputClass,
+    errorMessages,
+    placeholder,
+    tooltip,
+    handleKeyPress,
+    handleChange,
+    handleBlur,
+    handleFocus,
+    autoFocus,
+    formConfig
+) {
+    let fieldElement
+    if (mode === FieldMode.PLAIN_TEXT) {
+        fieldElement = renderStaticField(ctx, fieldValue)
+    } else {
+        fieldElement = (
+            <input
+                ref={fieldRef}
+                id={fieldId}
+                name={qualifiedName}
+                className={cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid")}
+                type="text"
+                placeholder={placeholder}
+                title={tooltip}
+                disabled={mode === FieldMode.DISABLED}
+                readOnly={mode === FieldMode.READ_ONLY}
+                value={fieldValue}
+                onKeyPress={handleKeyPress}
+                onChange={handleChange}
+                onBlur={handleBlur}
+                onFocus={handleFocus}
+                autoFocus={autoFocus ? true : null} />
+        )
+    }
+
+    fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons)
+
+    return (
+        <FormGroup
+            {...ctx}
+            formConfig={formConfig}
+            errorMessages={errorMessages}
+        >
+            {fieldElement}
+        </FormGroup>
+    )
+}
+
 
 /**
  * Default rule set.
@@ -248,65 +303,25 @@ const DEFAULT_RENDERERS =
                     inputClass,
                     placeholder,
                     tooltip,
-                    fieldType,
                     qualifiedName,
                     handleKeyPress,
                     handleChange,
                     handleBlur,
                     handleFocus,
-                    autoFocus
+                    autoFocus,
+                    suspendAutoUpdate
                 } = ctx;
 
-                const { currency, currencyAddonRight } = formConfig.options;
-
                 const errorMessages = formConfig.getErrors(qualifiedName);
+
+                if (suspendAutoUpdate) {
+                    return renderFieldElement(mode, ctx, undefined, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, formConfig)
+                }
                 const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
-
-                //console.log("RENDER FIELD",{ ctx, fieldValue });
-
-                let fieldElement;
-                if (mode === FieldMode.PLAIN_TEXT)
-                {
-                    fieldElement = renderStaticField(ctx, fieldValue);
-                }
-                else
-                {
-                    fieldElement = (
-                        <input
-                            ref={fieldRef}
-                            id={ fieldId }
-                            name={ qualifiedName }
-                            className={ cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid") }
-                            type="text"
-                            placeholder={ placeholder }
-                            title={ tooltip }
-                            disabled={ mode === FieldMode.DISABLED }
-                            readOnly={ mode === FieldMode.READ_ONLY }
-                            value={ fieldValue }
-                            onKeyPress={ handleKeyPress }
-                            onChange={ handleChange }
-                            onBlur={ handleBlur }
-                            onFocus={ handleFocus }
-                            autoFocus={ autoFocus ? true : null }
-                        />
-                    );
-                }
-                
-                fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons);
-
-                return (
-                    <FormGroup
-                        { ...ctx }
-                        formConfig={ formConfig }
-                        errorMessages={ errorMessages }
-                    >
-                        {
-                            fieldElement
-                        }
-                    </FormGroup>
-                )
+                return renderFieldElement(mode, ctx, fieldValue, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, formConfig)
             }
         }
     ];
 
 export default DEFAULT_RENDERERS
+

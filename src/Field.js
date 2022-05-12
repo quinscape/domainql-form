@@ -74,7 +74,8 @@ const Field = fnObserver((props, ref) => {
         tooltip,
         validateAsync: validateAsyncFromProps,
         validateAsyncTimeout = 350,
-        isEditMode
+        isEditMode,
+        suspendAutoUpdate
     } = props;
     
     /**
@@ -206,6 +207,7 @@ const Field = fnObserver((props, ref) => {
                 tooltip,
                 helpText,
                 maxLength,
+                suspendAutoUpdate,
                 rootType: formConfig.type,
 
                 root: formConfig.root,
