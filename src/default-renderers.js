@@ -71,9 +71,7 @@ function renderFieldElement(
     let fieldElement
     if (mode === FieldMode.PLAIN_TEXT) {
         fieldElement = renderStaticField(ctx, fieldValue)
-    }
-
-    else {
+    } else {
         fieldElement = (
             <input
                 ref={fieldRef}
