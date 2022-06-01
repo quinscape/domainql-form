@@ -66,6 +66,7 @@ function renderFieldElement(
     handleBlur,
     handleFocus,
     autoFocus,
+    isSensitive,
     formConfig
 ) {
     let fieldElement
@@ -78,7 +79,7 @@ function renderFieldElement(
                 id={fieldId}
                 name={qualifiedName}
                 className={cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid")}
-                type="text"
+                type={isSensitive ? "password" : "text"}
                 placeholder={placeholder}
                 title={tooltip}
                 disabled={mode === FieldMode.DISABLED}
@@ -309,16 +310,17 @@ const DEFAULT_RENDERERS =
                     handleBlur,
                     handleFocus,
                     autoFocus,
-                    suspendAutoUpdate
+                    suspendAutoUpdate,
+                    isSensitive
                 } = ctx;
 
                 const errorMessages = formConfig.getErrors(qualifiedName);
 
                 if (suspendAutoUpdate) {
-                    return renderFieldElement(mode, ctx, undefined, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, formConfig)
+                    return renderFieldElement(mode, ctx, undefined, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
                 }
                 const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
-                return renderFieldElement(mode, ctx, fieldValue, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, formConfig)
+                return renderFieldElement(mode, ctx, fieldValue, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
             }
         }
     ];

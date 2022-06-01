@@ -75,7 +75,8 @@ const Field = fnObserver((props, ref) => {
         validateAsync: validateAsyncFromProps,
         validateAsyncTimeout = 350,
         isEditMode,
-        suspendAutoUpdate
+        suspendAutoUpdate,
+        isSensitive
     } = props;
     
     /**
@@ -208,6 +209,7 @@ const Field = fnObserver((props, ref) => {
                 helpText,
                 maxLength,
                 suspendAutoUpdate,
+                isSensitive,
                 rootType: formConfig.type,
 
                 root: formConfig.root,
@@ -433,7 +435,12 @@ Field.propTypes = {
     /**
      * Debounce timeout for validateAsync (Default is 300).
       */
-    validateAsyncTimeout: PropTypes.number
+    validateAsyncTimeout: PropTypes.number,
+
+    /**
+     * Enable masking for sensitive information.
+     */
+    isSensitive: PropTypes.bool
 };
 
 Field.displayName = "Field";
