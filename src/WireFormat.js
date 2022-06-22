@@ -414,8 +414,11 @@ export default class WireFormat {
                         const fieldValue = value[propName];
                         if (fieldValue !== undefined)
                         {
-                            //console.log("CONVERT FIELD", name, type, fieldValue, convertOpts)
-                            out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
+                            // we need to check if the property is writable or has a setter to avoid errors on dynamic data
+                            const desc = Object.getOwnPropertyDescriptor(out.constructor.prototype, propName);
+                            if (desc == null || desc.writable || desc.set != null) {
+                                out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
+                            }
                         }
                     }
 
