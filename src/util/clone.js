@@ -10,6 +10,7 @@
  */
 import { INPUT_OBJECT, LIST, NON_NULL, OBJECT, SCALAR } from "../kind";
 import { observable } from "mobx";
+import { isPropertyWritable } from "./PropertyUtils";
 
 let domainObjectFactory = (type, id) => observable({ _type: type, id});
 
@@ -152,7 +153,9 @@ function cloneOrUpdate(typeRef, value, update, inputSchema, path)
             const fieldValue = value[name];
             if (fieldValue !== undefined)
             {
-                out[name] = cloneOrUpdate(type, fieldValue, out[name], inputSchema, pathForField);
+                if(isPropertyWritable(out, name)) {
+                    out[name] = cloneOrUpdate(type, fieldValue, out[name], inputSchema, pathForField);
+                }
             }
         }
         return out;

@@ -1,5 +1,6 @@
 import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT, ENUM } from "./kind";
 import { observable, action, makeObservable } from "mobx";
+import { isPropertyWritable } from "./util/PropertyUtils";
 
 function getType(type, obj)
 {
@@ -414,9 +415,7 @@ export default class WireFormat {
                         const fieldValue = value[propName];
                         if (fieldValue !== undefined)
                         {
-                            // we need to check if the property is writable or has a setter to avoid errors on dynamic data
-                            const desc = Object.getOwnPropertyDescriptor(out.constructor.prototype, propName);
-                            if (desc == null || desc.writable || desc.set != null) {
+                            if (isPropertyWritable(out, propName)) {
                                 out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
                             }
                         }
