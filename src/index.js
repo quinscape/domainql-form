@@ -28,6 +28,7 @@ import { renderStaticField } from "./default-renderers"
 import { clone, cloneList, fallbackJSClone, registerDomainObjectFactory, registerFallbackCloneFunction } from "./util/clone";
 import FormContext from "./FormContext";
 import { registerI18n } from "./util/TranslationHelper";
+import { isPropertyWritable } from "./util/PropertyUtils"
 
 // noinspection JSUnusedGlobalSymbols
 export {
@@ -70,5 +71,7 @@ export {
 
     FormContext,
 
-    registerI18n
+    registerI18n,
+
+    isPropertyWritable
 }

@@ -1,5 +1,6 @@
 import { NON_NULL, LIST, OBJECT, SCALAR, INPUT_OBJECT, ENUM } from "./kind";
 import { observable, action, makeObservable } from "mobx";
+import { isPropertyWritable } from "./util/PropertyUtils";
 
 function getType(type, obj)
 {
@@ -414,8 +415,9 @@ export default class WireFormat {
                         const fieldValue = value[propName];
                         if (fieldValue !== undefined)
                         {
-                            //console.log("CONVERT FIELD", name, type, fieldValue, convertOpts)
-                            out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
+                            if (isPropertyWritable(out, propName)) {
+                                out[propName] = this._convert(type, fieldValue, convertOpts, aliases, pathForField);
+                            }
                         }
                     }
 
