@@ -309,6 +309,7 @@ class FormConfig
         //console.log("updateFromChange", path, converted, errorsForField)
 
         const { root, formContext } = this;
+        const { onChange } = this.options;
         const { path, qualifiedName } = fieldContext;
 
         formContext.updateErrors(root, qualifiedName, errorsForField);
@@ -316,6 +317,10 @@ class FormConfig
         if (errorsForField.length < 2)
         {
             set(root, path, converted);
+
+            if (typeof onChange === "function") {
+                onChange(root, path, converted);
+            }
 
             if (this.options.autoSubmit)
             {
