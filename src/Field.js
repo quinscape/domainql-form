@@ -16,6 +16,7 @@ import Addon from "./Addon";
 import get from "lodash.get";
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
+import Icon from "./util/Icon";
 
 function buildType(type)
 {
@@ -68,6 +69,7 @@ const Field = fnObserver((props, ref) => {
         onPressEnter,
         onBlur,
         onFocus,
+        onFieldConfigClick,
         validate,
         fieldContext: fieldContextCB,
         maxLength,
@@ -318,6 +320,24 @@ const Field = fnObserver((props, ref) => {
 
     //console.log("RENDER FIELD", fieldContext);
 
+    const fieldConfigButton = useMemo(() => {
+        if (typeof onFieldConfigClick === "function") {
+            return (
+                <button
+                    type="button"
+                    className="btn btn-light btn-field-config" // very small; absolute; top right
+                    onClick={() => {
+                        onFieldConfigClick(fieldContext);
+                    }}
+                >
+                    {
+                        <Icon className="fa-cog" />
+                    }
+                </button>
+            );
+        }
+    }, [onFieldConfigClick]);
+
     if (typeof children === "function")
     {
         return (
@@ -325,13 +345,21 @@ const Field = fnObserver((props, ref) => {
                 {
                     children(formConfig, fieldContext)
                 }
+                {fieldConfigButton}
             </React.Fragment>
         );
     }
     else
     {
         const renderFn = GlobalConfig.getRenderFn(formConfig,fieldContext);
-        return renderFn(formConfig, fieldContext);
+        return (
+            <React.Fragment>
+                {
+                    renderFn(formConfig, fieldContext)
+                }
+                {fieldConfigButton}
+            </React.Fragment>
+        );
 
     }
 
@@ -391,6 +419,12 @@ Field.propTypes = {
      * Optional keypress handler to use to react to the single field enter button press
      */
     onPressEnter: PropTypes.func,
+
+    /**
+     * Optional handler for field configuration button, if set a small button in the top-right-corner of the
+     * field is rendered and calls this handler on click with the FieldContext as single parameter
+     */
+    onFieldConfigClick: PropTypes.func,
 
     /**
      * Optional per-field validation function  ( (fieldContext, value) => error ). It receives the current scalar value
