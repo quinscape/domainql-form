@@ -54,6 +54,7 @@ function renderFieldElement(
     mode,
     ctx,
     fieldValue,
+    defaultValue,
     fieldRef,
     fieldId,
     qualifiedName,
@@ -71,7 +72,7 @@ function renderFieldElement(
 ) {
     let fieldElement
     if (mode === FieldMode.PLAIN_TEXT) {
-        fieldElement = renderStaticField(ctx, fieldValue)
+        fieldElement = renderStaticField(ctx, fieldValue ?? defaultValue)
     } else {
         fieldElement = (
             <input
@@ -85,6 +86,7 @@ function renderFieldElement(
                 disabled={mode === FieldMode.DISABLED}
                 readOnly={mode === FieldMode.READ_ONLY}
                 value={fieldValue}
+                defaultValue={defaultValue}
                 onKeyPress={handleKeyPress}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -315,12 +317,12 @@ const DEFAULT_RENDERERS =
                 } = ctx;
 
                 const errorMessages = formConfig.getErrors(qualifiedName);
+                const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
 
                 if (suspendAutoUpdate) {
-                    return renderFieldElement(mode, ctx, undefined, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
+                    return renderFieldElement(mode, ctx, undefined, fieldValue, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
                 }
-                const fieldValue = Field.getValue(formConfig, ctx, errorMessages);
-                return renderFieldElement(mode, ctx, fieldValue, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
+                return renderFieldElement(mode, ctx, fieldValue, undefined, fieldRef, fieldId, qualifiedName, inputClass, errorMessages, placeholder, tooltip, handleKeyPress, handleChange, handleBlur, handleFocus, autoFocus, isSensitive, formConfig)
             }
         }
     ];
