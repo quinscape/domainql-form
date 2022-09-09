@@ -326,8 +326,8 @@ export default class FormContext
             fieldContexts.push(fieldContext);
         }
     }
-    
 
+    
     /**
      * Performs the registered high-level validation for the given field context and value
      *
@@ -361,12 +361,21 @@ export default class FormContext
             }
         }
 
-        if (validation && validation.validateField)
-        {
+        const {validateField, validateMultiField} = validation ?? {};
+
+        if (validateField) {
             add(
-                validation.validateField(fieldContext, value)
+                validateField(fieldContext, value)
             )
         }
+
+        if (validateMultiField)
+        {
+            add(
+                validateMultiField(this[secret].fieldContexts, fieldContext, value)
+            )
+        }
+
 
         if (fieldContext)
         {
@@ -568,7 +577,7 @@ export default class FormContext
         this[secret].revalidationRejected = false
         const { fieldContexts } = this[secret];
 
-        //console.log("FIELD CONTEXTS", fieldContexts)
+        // console.log("FIELD CONTEXTS", fieldContexts)
 
         for (let i = 0; i < fieldContexts.length; i++)
         {
