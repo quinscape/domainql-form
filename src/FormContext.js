@@ -560,6 +560,11 @@ export default class FormContext
         this[secret].errors.replace([]);
     }
 
+    @action
+    updateValidation(validation)
+    {
+        this[secret].validation = validation;
+    }
 
     /**
      * Performs a complete revalidation of all registered field contexts.
