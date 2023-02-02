@@ -72,6 +72,13 @@ export function isNonNull(type)
     return type && type.kind === NON_NULL
 }
 
+function unwrapAll(type) {
+    if (type.kind === NON_NULL || type.kind === LIST)
+    {
+        return unwrapAll(type.ofType);
+    }
+    return type;
+}
 
 export function unwrapNonNull(type)
 {
@@ -479,6 +486,12 @@ class InputSchema
      */
     getFieldMeta(typeName, fieldName, meta)
     {
+        const path = toPath(fieldName);
+        if (path.length > 1) {
+            fieldName = path.pop();
+            typeName = unwrapAll(this.resolveType(typeName, path)).name;
+        }
+        
         const type = this.meta.types[typeName];
         if (!type)
         {
