@@ -219,6 +219,7 @@ const Form  = props =>  {
             onReset={ handleReset }
             onClick={ onClick || null }
             data-form-id={ formId }
+            data-domain-id={ value?.id }
             { ... rest }
         >
             <FormConfigContext.Provider value={ formConfig }>
