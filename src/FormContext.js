@@ -190,7 +190,9 @@ export default class FormContext
         }
         else
         {
-            existing.errorMessages.push(msg)
+            if(!existing.errorMessages.includes(msg)) {
+                existing.errorMessages.push(msg)
+            }
         }
     }
 
@@ -403,7 +405,7 @@ export default class FormContext
                                 return;
                             }
 
-                            //console.log("RESOLVED ASYNC VALIDATION", errors)
+                            console.log("RESOLVED ASYNC VALIDATION", errors, fieldContext)
 
                             const { root, qualifiedName } = fieldContext;
 
