@@ -190,7 +190,9 @@ export default class FormContext
         }
         else
         {
-            existing.errorMessages.push(msg)
+            if(!existing.errorMessages.includes(msg)) {
+                existing.errorMessages.push(msg)
+            }
         }
     }
 
