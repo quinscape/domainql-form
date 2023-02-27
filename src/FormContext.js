@@ -180,12 +180,26 @@ export default class FormContext
             const ctx = this[secret].fieldContexts.find( ctx => ctx.root === root && ctx.qualifiedName === path)
             if (ctx)
             {
+                const convertedValue = value != null ? value : InputSchema.scalarToValue(unwrapNonNull(ctx.fieldType).name, get(root, path));
                 errors.push({
                         path,
                         rootId,
-                        errorMessages: [ value !== undefined ? value : InputSchema.scalarToValue(unwrapNonNull(ctx.fieldType).name, get(root, path)), msg]
+                        errorMessages: [convertedValue, msg]
                     }
                 )
+            } else {
+                const type = this.schema.resolveType(root._type, path);
+                if (type != null) {
+                    const convertedValue = value != null ? value : InputSchema.scalarToValue(unwrapNonNull(type).name, get(root, path));
+                    errors.push({
+                            path,
+                            rootId,
+                            errorMessages: [convertedValue, msg]
+                        }
+                    )
+                } else {
+                    throw new Error(`can not resolve value type for path [${path}] in [${root._type}]`);
+                }
             }
         }
         else
@@ -751,7 +765,7 @@ export default class FormContext
             return existing;
         }
 
-        const newId = ++objectCounter;
+        const newId = root.id/* ++objectCounter */;
         ids.set(root, newId);
         return newId;
     }

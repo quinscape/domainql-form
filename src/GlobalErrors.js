@@ -6,31 +6,32 @@ import { toJS } from "mobx";
 
 
 /**
- * Searches for an HTML with the given name attribute and returns the id attribute of that HTML element or null if there
- * is no such element.
+ * Searches for an HTMLElement with that matches the rootId as well as the name
+ * and returns the id attribute of that element or null if there is no such element.
  *
  * @param {HTMLFormElement} form      form element
  * @param {String} name               field name / path
  * @return {*}
  */
-function getFieldId(name)
+function getFieldId(rootId, name)
 {
-    const elem = document.querySelector(`form[data-form-id] [name="${name}"]`);
+    const elem = document.querySelector(`form[data-domain-id="${rootId}"] [name="${name}"]`);
     return elem?.getAttribute("id");
 }
 
 
-function findFieldIds(errors, component)
+function generateErrorList(errors)
 {
     const length = errors.length;
     const errorIdList = new Array(length);
 
     for (let i = 0; i < length; i++)
     {
-        const {path, errorMessages} = errors[i];
+        const {rootId, path, errorMessages} = errors[i];
+        const fieldId = getFieldId(rootId, path);
 
         errorIdList[i] = {
-            fieldId: getFieldId(path),
+            fieldId,
             path,
             errorMessages
         }
@@ -51,13 +52,11 @@ const GlobalErrors = fnObserver(props => {
 
     const [ counter, setCounter ] = useState(0);
 
-    const globalErrorsRef = useRef(null);
-
     const errors = formConfig.formContext.getErrors();
 
     const numErrors = errors.length;
 
-    const errorIdList = globalErrorsRef.current ? findFieldIds(errors, globalErrorsRef.current) : [];
+    const errorIdList = generateErrorList(errors);
 
     useEffect(
         () => {
@@ -73,8 +72,6 @@ const GlobalErrors = fnObserver(props => {
     );
 
     const { heading, headingText, text} = props;
-
-    //console.log("errorIdList, errors", errorIdList, toJS(errors));
 
     const errorElements = [];
 
@@ -106,7 +103,6 @@ const GlobalErrors = fnObserver(props => {
 
     return (
         <div
-            ref={ globalErrorsRef }
             className="global-errors"
             data-errors={ numErrors }
         >
