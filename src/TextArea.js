@@ -1,4 +1,4 @@
-import React from "react"
+import React, { forwardRef } from "react"
 import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
@@ -9,6 +9,7 @@ import cx from "classnames";
 import { resolveStaticRenderer } from "./GlobalConfig"
 import Addon from "./Addon";
 import { renderStaticField } from "./default-renderers";
+import { observer } from "mobx-react-lite"
 
 
 /**
@@ -16,12 +17,13 @@ import { renderStaticField } from "./default-renderers";
  *
  * This is a good example how to implement custom fields.
  */
-const TextArea = props => {
+const TextArea = forwardRef(function TextArea(props, ref) {
 
     const { rows, cols, inputClass, children, ...fieldProps } = props;
 
     return (
         <Field
+            ref={ ref }
             { ...fieldProps }
             addons={ Addon.filterAddons(children) }
         >
@@ -87,7 +89,7 @@ const TextArea = props => {
             }
         </Field>
     )
-};
+});
 
 TextArea.propTypes = {
     /**

@@ -44,7 +44,6 @@ function buildType(type)
 
 
 
-
 /**
  * Renders a bootstrap 4 form group with an input field for the given name/path within the current form object. The actual
  * field rendered is resolved by the render rules in GlobalConfig.js ( See ["Form Customization"](./customization.md) for details)
