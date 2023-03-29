@@ -765,7 +765,7 @@ export default class FormContext
             return existing;
         }
 
-        const newId = root.id/* ++objectCounter */;
+        const newId = root.id ?? ++objectCounter;
         ids.set(root, newId);
         return newId;
     }
