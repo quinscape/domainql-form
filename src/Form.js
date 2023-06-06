@@ -105,6 +105,14 @@ const Form  = props =>  {
 
     useEffect(
         () => {
+            const root = cloneRoot(schema, value, options, parentConfig);
+            setRoot(root);
+        },
+        [schema, value, options, parentConfig]
+    )
+
+    useEffect(
+        () => {
             return () => formContext.unregisterForm(formId)
         },
         []
