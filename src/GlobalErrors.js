@@ -3,6 +3,7 @@ import { observer as fnObserver } from "mobx-react-lite"
 import PropTypes from "prop-types"
 import useFormConfig from "./useFormConfig";
 import { toJS } from "mobx";
+import { i18n } from "./util/TranslationHelper";
 
 
 /**
@@ -111,7 +112,7 @@ const GlobalErrors = fnObserver(props => {
                     display: !errorElements.length ? "none" : null
                 }}>
                 {
-                    headingText && React.createElement(heading, null, headingText)
+                    headingText && React.createElement(heading, null, i18n(headingText))
                 }
                 {
                     text &&
