@@ -1,6 +1,7 @@
-import React from "react"
+import React, { useState } from "react"
 import cx from "classnames"
 
+import { i18n } from "./util/TranslationHelper"
 import FieldMode from "./FieldMode"
 import InputSchema, { unwrapNonNull } from "./InputSchema"
 import GlobalConfig, { resolveStaticRenderer } from "./GlobalConfig"
@@ -8,6 +9,7 @@ import FormGroup from "./FormGroup"
 import FormLayout from "./FormLayout";
 import Addon from "./Addon";
 import Field from "./Field";
+import Icon from "./util/Icon"
 
 export function renderStaticField(ctx, fieldValue)
 {
@@ -70,7 +72,10 @@ function renderFieldElement(
     isSensitive,
     formConfig
 ) {
-    let fieldElement
+    let fieldElement;
+
+    const [isPasswordType, setIsPasswordType] = useState(isSensitive);
+
     if (mode === FieldMode.PLAIN_TEXT) {
         fieldElement = renderStaticField(ctx, fieldValue ?? defaultValue)
     } else {
@@ -80,7 +85,7 @@ function renderFieldElement(
                 id={fieldId}
                 name={qualifiedName}
                 className={cx(inputClass, "form-control", errorMessages.length > 0 && "is-invalid")}
-                type={isSensitive ? "password" : "text"}
+                type={isPasswordType ? "password" : "text"}
                 placeholder={placeholder}
                 title={tooltip}
                 disabled={mode === FieldMode.DISABLED}
@@ -95,7 +100,23 @@ function renderFieldElement(
         )
     }
 
-    fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons)
+    if (isSensitive) {
+        const controlMaskButton = (
+            <Addon placement={ Addon.RIGHT }>
+                <button
+                    type="button"
+                    className="btn btn-light border"
+                    title={ isPasswordType ? i18n("Show password") : i18n("Hide password") }
+                    onClick={ () => setIsPasswordType(!isPasswordType) }
+                >
+                    <Icon className={cx(isPasswordType ? "fa-eye-slash" : "fa-eye")}/>
+                </button>
+            </Addon>
+        );
+        fieldElement = Addon.renderWithAddons(fieldElement, [controlMaskButton, ...ctx.addons])
+    } else {
+        fieldElement = Addon.renderWithAddons(fieldElement, ctx.addons)
+    }
 
     return (
         <FormGroup
