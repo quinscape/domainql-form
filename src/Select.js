@@ -157,7 +157,11 @@ const Select = props => {
                                     values.map(v => {
 
                                         let name, value;
-                                        if (typeof v === "string")
+                                        if (React.isValidElement(v))
+                                        {
+                                            return v;
+                                        }
+                                        else if (typeof v === "string")
                                         {
                                             name = v;
                                             value = v;
