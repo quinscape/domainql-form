@@ -68,14 +68,15 @@ function findOptionValue(selectElem, values, valueProperty)
             if (optionElem.value === value)
             {
                 const listOption = values[index];
-                if (typeof listOption === "string")
-                {
+                if (React.isValidElement(listOption)) {
+                    return listOption.props[valueProperty];
+                }
+
+                if (typeof listOption === "string") {
                     return listOption;
                 }
-                else
-                {
-                    return listOption[valueProperty];
-                }
+
+                return listOption[valueProperty];
             }
             index++;
         }
