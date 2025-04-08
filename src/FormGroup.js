@@ -44,7 +44,8 @@ const FormGroup = props => {
         formGroupClass,
         errorMessages,
         mode,
-        children
+        children,
+        sensitiveDataText
     } = props;
 
     if (mode === FieldMode.INVISIBLE)
@@ -59,6 +60,9 @@ const FormGroup = props => {
     const horizontal = layout === FormLayout.HORIZONTAL;
     const isInline = layout === FormLayout.INLINE;
 
+    let altLabelText =    typeof sensitiveDataText === "function" ? sensitiveDataText() : sensitiveDataText ;
+    console.log("altLabelText",altLabelText)
+
     const labelElement = label ? (
         <label
             className={
@@ -70,7 +74,7 @@ const FormGroup = props => {
             }
             htmlFor={fieldId}
         >
-            {label}
+            {altLabelText?altLabelText:label}
         </label>) : (
             horizontal &&
             <div className={labelColumnClass}>

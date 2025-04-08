@@ -49,7 +49,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
     for (let i = 0; i < fields.length; i++)
     {
         const field = fields[i];
-        const { name, id, label : labelFromProps , labelClass, wrapperColumnClass } = field.props;
+        const { name, id, label : labelFromProps , labelClass, wrapperColumnClass, sensitiveDataText } = field.props;
 
         const qualifiedName = formConfig.getPath(name);
         const path = toPath(qualifiedName);
@@ -79,7 +79,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
                 }
                 htmlFor={ fieldId }
             >
-                { label }
+                { sensitiveDataText ? sensitiveDataText: label }
             </label>) : (
             horizontal &&
             <div className={labelColumnClass}>

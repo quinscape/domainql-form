@@ -155,11 +155,12 @@ const DEFAULT_RENDERERS =
                     handleKeyPress,
                     handleChange,
                     handleBlur
+
                 } = ctx;
 
                 const fieldValue = Field.getValue(formConfig, ctx);
-
                 //console.log("checkbox value = ", fieldValue);
+
 
                 let checkBoxElement;
 
