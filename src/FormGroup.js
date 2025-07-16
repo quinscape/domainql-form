@@ -3,7 +3,7 @@ import PropTypes from "prop-types"
 import cx from "classnames"
 import FieldMode from "./FieldMode"
 import FormLayout from "./FormLayout";
-
+import Icon from "./util/Icon"
 
 
 
@@ -60,8 +60,9 @@ const FormGroup = props => {
     const horizontal = layout === FormLayout.HORIZONTAL;
     const isInline = layout === FormLayout.INLINE;
 
-    let altLabelText =    typeof sensitiveDataText === "function" ? sensitiveDataText() : sensitiveDataText ;
-    console.log("altLabelText",altLabelText)
+
+    const computedSensitiveDataText =    typeof sensitiveDataText === "function" ? sensitiveDataText() : sensitiveDataText ;
+    const sensitiveDataIcon = computedSensitiveDataText ? (<Icon className="fa-eye mr-2 text-primary" title={computedSensitiveDataText}></Icon>) : null;
 
     const labelElement = label ? (
         <label
@@ -74,10 +75,12 @@ const FormGroup = props => {
             }
             htmlFor={fieldId}
         >
-            {altLabelText?altLabelText:label}
+            {sensitiveDataIcon}
+            {label}
         </label>) : (
             horizontal &&
             <div className={labelColumnClass}>
+                {sensitiveDataIcon}
                 {"\u00a0"}
             </div>
     );
