@@ -154,13 +154,15 @@ const DEFAULT_RENDERERS =
                     qualifiedName,
                     handleKeyPress,
                     handleChange,
-                    handleBlur
+                    handleBlur,
+                    sensitiveDataText
 
                 } = ctx;
 
                 const fieldValue = Field.getValue(formConfig, ctx);
                 //console.log("checkbox value = ", fieldValue);
-
+                const computedSensitiveDataText =    typeof sensitiveDataText === "function" ? sensitiveDataText() : sensitiveDataText ;
+                const sensitiveDataIcon = computedSensitiveDataText ? (<Icon className="fa-eye ml-2 text-primary" title={computedSensitiveDataText}></Icon>) : null;
 
                 let checkBoxElement;
 
@@ -204,6 +206,7 @@ const DEFAULT_RENDERERS =
                                 onBlur={ handleBlur }
                                 disabled={ mode === FieldMode.DISABLED || mode === FieldMode.READ_ONLY }
                             />
+                            {sensitiveDataIcon}
                             <label
                                 htmlFor={ fieldId }
                                 className={ cx("form-check-label", labelClass) }>
