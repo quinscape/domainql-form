@@ -68,6 +68,8 @@ const Field = fnObserver((props, ref) => {
         onPressEnter,
         onBlur,
         onFocus,
+        fieldSensibilityReason,
+        onFieldSensibilityClick,
         onFieldConfigClick,
         validate,
         fieldContext: fieldContextCB,
@@ -319,6 +321,43 @@ const Field = fnObserver((props, ref) => {
 
     //console.log("RENDER FIELD", fieldContext);
 
+    const [fieldSensibilityText, setFieldSensibilityText] = React.useState();
+    useEffect(() => {
+        if (fieldSensibilityReason == null || fieldSensibilityReason === "") {
+            setFieldSensibilityText("");
+        } else if (typeof fieldSensibilityReason === "function") {
+            setFieldSensibilityText(fieldSensibilityReason());
+        } else {
+            setFieldSensibilityText(fieldSensibilityReason);
+        }
+    }, [fieldSensibilityReason]);
+
+    const fieldSensibilitMarker = useMemo(() => {
+        if (typeof onFieldSensibilityClick === "function") {
+            return (
+                <Icon className="fa-eye" title={fieldSensibilityText} />
+            );
+        }
+    }, [fieldSensibilityText]);
+
+    const fieldSensibilityButton = useMemo(() => {
+        if (typeof onFieldSensibilityClick === "function") {
+            return (
+                <button
+                    type="button"
+                    className="btn btn-light btn-field-sensibility" // very small; absolute; top right
+                    onClick={() => {
+                        onFieldSensibilityClick(fieldContext);
+                    }}
+                >
+                    {
+                        <Icon className="fa-eye" />
+                    }
+                </button>
+            );
+        }
+    }, [onFieldSensibilityClick]);
+
     const fieldConfigButton = useMemo(() => {
         if (typeof onFieldConfigClick === "function") {
             return (
@@ -341,9 +380,11 @@ const Field = fnObserver((props, ref) => {
     {
         return (
             <React.Fragment>
+                {fieldSensibilitMarker}
                 {
                     children(formConfig, fieldContext)
                 }
+                {fieldSensibilityButton}
                 {fieldConfigButton}
             </React.Fragment>
         );
@@ -353,9 +394,11 @@ const Field = fnObserver((props, ref) => {
         const renderFn = GlobalConfig.getRenderFn(formConfig,fieldContext);
         return (
             <React.Fragment>
+                {fieldSensibilitMarker}
                 {
                     renderFn(formConfig, fieldContext)
                 }
+                {fieldSensibilityButton}
                 {fieldConfigButton}
             </React.Fragment>
         );
