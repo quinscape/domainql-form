@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react"
+import React, { forwardRef, useEffect, useRef, useState } from "react"
 import PropTypes from "prop-types"
 
 import FieldMode from "./FieldMode"
@@ -10,6 +10,8 @@ import { resolveStaticRenderer } from "./GlobalConfig"
 import Addon from "./Addon";
 import { renderStaticField } from "./default-renderers";
 import { observer } from "mobx-react-lite"
+import useResizeObserver from "./util/useResizeObserver"
+import { i18n } from "./util/TranslationHelper"
 
 
 /**
@@ -19,9 +21,18 @@ import { observer } from "mobx-react-lite"
  */
 const TextArea = forwardRef(function TextArea(props, ref) {
 
-    const { rows, cols, inputClass, children, ...fieldProps } = props;
+    const { rows, cols, inputClass, showMoreButton, children, ...fieldProps } = props;
 
-    return (
+    const textAreaRef = useRef();
+    const { height: textAreaHeight, width: textAreaWidth } = useResizeObserver(textAreaRef);
+    const [isContentOverflowing, setIsContentOverflowing] = useState(false);
+
+    useEffect(() => {
+        const targetEl = textAreaRef.current;
+        setIsContentOverflowing(targetEl.scrollHeight > targetEl.offsetHeight);
+    }, [textAreaRef.current, textAreaHeight, textAreaWidth]);
+
+    return (<>
         <Field
             ref={ ref }
             { ...fieldProps }
@@ -48,7 +59,16 @@ const TextArea = forwardRef(function TextArea(props, ref) {
                     {
                         fieldElem = (
                             <textarea
-                                ref={fieldRef}
+                                ref={
+                                    elem => {
+                                        textAreaRef.current = elem;
+                                        if (typeof fieldRef === "function") {
+                                            fieldRef(elem);
+                                        }
+                                        else if (fieldRef) {
+                                            fieldRef.current = elem;
+                                        }
+                                    }}
                                 id={fieldId}
                                 className={
                                     cx(
@@ -63,7 +83,12 @@ const TextArea = forwardRef(function TextArea(props, ref) {
                                 value={fieldValue}
                                 placeholder={placeholder}
                                 title={tooltip}
-                                onChange={handleChange}
+                                onChange={(event) => {
+                                    const targetEl = textAreaRef.current;
+                                    setIsContentOverflowing(targetEl.scrollHeight > targetEl.offsetHeight);
+
+                                    handleChange(event);
+                                }}
                                 onBlur={handleBlur}
                                 autoFocus={autoFocus}
                                 disabled={mode === FieldMode.DISABLED}
@@ -88,7 +113,21 @@ const TextArea = forwardRef(function TextArea(props, ref) {
                 }
             }
         </Field>
-    )
+        {
+            showMoreButton && isContentOverflowing ? (
+                <button
+                    className="btn btn-secondary d-block mx-auto"
+                    onClick={() => {
+                        const targetEl = textAreaRef.current;
+                        const borders = (targetEl.offsetHeight - targetEl.clientHeight);
+                        targetEl.style.height = targetEl.scrollHeight + borders + "px"
+                    }}
+                >
+                    {i18n("TextArea:More")}
+                </button>
+            ) : null
+        }
+    </>)
 });
 
 TextArea.propTypes = {
@@ -158,7 +197,14 @@ TextArea.propTypes = {
      * The local validation is executed after the type validation and also prevents invalid values from being written back
      * into the observable. The high-level validation is only executed if the local validation succeeds.
      */
-    validate: PropTypes.func
+    validate: PropTypes.func,
+
+    /**
+     * Show a "more" button if the content is bigger than the textbox (a scrollbar is visible).
+     * 
+     * The button allows the user to quickly expand the TextArea to match its content in height.
+     */
+    showMoreButton: PropTypes.bool
 
 };
 
