@@ -1,6 +1,6 @@
 import React, { useMemo } from "react"
 import cx from "classnames"
-import toPath from "lodash.topath"
+import toPath from "lodash/topath"
 import Field from "./Field";
 import FormLayout from "./FormLayout";
 import Select from "./Select";

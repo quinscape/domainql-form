@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
 import cx from "classnames";
-import toPath from "lodash.topath"
+import toPath from "lodash/topath"
 
 import GlobalConfig from "./GlobalConfig"
 
@@ -13,7 +13,7 @@ import useFormConfig from "./useFormConfig";
 
 import { ENUM, NON_NULL, SCALAR } from "./kind"
 import Addon from "./Addon";
-import get from "lodash.get";
+import get from "lodash/get";
 import InputSchema from "./InputSchema";
 import unwrapType from "./util/unwrapType";
 import Icon from "./util/Icon";

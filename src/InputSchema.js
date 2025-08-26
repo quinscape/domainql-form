@@ -1,4 +1,4 @@
-import toPath from "lodash.topath"
+import toPath from "lodash/topath"
 
 import DEFAULT_CONVERTERS from "./default-converters"
 import { INPUT_OBJECT, LIST, NON_NULL, SCALAR, OBJECT } from "./kind";

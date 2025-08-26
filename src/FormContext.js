@@ -2,7 +2,7 @@ import { ENUM, NON_NULL, SCALAR } from "./kind";
 import InputSchema, { unwrapNonNull } from "./InputSchema";
 
 import { action, isObservableObject, makeObservable, observable } from "mobx";
-import get from "lodash.get";
+import get from "lodash/get";
 import FieldMode from "./FieldMode";
 import { i18n } from "./util/TranslationHelper";
 

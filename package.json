@@ -8,11 +8,7 @@
     "license": "Apache-2.0",
     "dependencies": {
         "classnames": "^2.3.1",
-        "lodash.debounce": "^4.0.8",
-        "lodash.get": "^4.4.2",
-        "lodash.isequal": "^4.5.0",
-        "lodash.set": "^4.3.2",
-        "lodash.topath": "^4.5.2",
+        "lodash": "^4.17.21",
         "mobx": "^6.3.8",
         "mobx-react-lite": "^3.2.2",
         "mobx-utils": "^6.0.4",

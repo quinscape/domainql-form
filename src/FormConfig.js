@@ -2,8 +2,8 @@ import React from "react"
 import InputSchema from "./InputSchema";
 import FieldMode from "./FieldMode";
 import GlobalConfig from "./GlobalConfig";
-import get from "lodash.get"
-import set from "lodash.set"
+import get from "lodash/get"
+import set from "lodash/set"
 
 import { action, makeObservable } from "mobx"
 import unwrapType from "./util/unwrapType";
