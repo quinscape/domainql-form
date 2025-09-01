@@ -321,7 +321,7 @@ const Field = fnObserver((props, ref) => {
         formConfig.handleChange(fieldContext, Field.getValue(formConfig, fieldContext));
     }, [isEditMode])
 
-    console.log("RENDER FIELD", fieldContext);
+    // console.log("RENDER FIELD", fieldContext);
 
     const fieldConfigButton = useMemo(() => {
         if (typeof onFieldConfigClick === "function") {
