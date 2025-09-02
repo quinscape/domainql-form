@@ -7,6 +7,7 @@ import Select from "./Select";
 import useFormConfig from "./useFormConfig";
 import { FormConfigContext }  from "./FormConfig";
 import { renderHelpBlock } from "./FormGroup";
+import Icon from "./util/Icon"
 
 
 const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
@@ -49,7 +50,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
     for (let i = 0; i < fields.length; i++)
     {
         const field = fields[i];
-        const { name, id, label : labelFromProps , labelClass, wrapperColumnClass } = field.props;
+        const { name, id, label : labelFromProps , labelClass, wrapperColumnClass, sensitiveDataText } = field.props;
 
         const qualifiedName = formConfig.getPath(name);
         const path = toPath(qualifiedName);
@@ -66,7 +67,9 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
         {
             labelElems.push(labelSeparator)
         }
-
+        
+        const computedSensitiveDataText =    typeof sensitiveDataText === "function" ? sensitiveDataText() : sensitiveDataText ;
+        const sensitiveDataIcon = computedSensitiveDataText?(<Icon className="fa-eye mr-2" title={computedSensitiveDataText}></Icon>):null;
         const fieldErrorMessages = formConfig.getErrors(qualifiedName);
 
         const labelElement = label ? (
@@ -79,6 +82,7 @@ const FieldGroup = ({ labelSeparator = " / ", className, children }) => {
                 }
                 htmlFor={ fieldId }
             >
+                {sensitiveDataIcon}
                 { label }
             </label>) : (
             horizontal &&

@@ -69,6 +69,8 @@ const Field = fnObserver((props, ref) => {
         onBlur,
         onFocus,
         onFieldConfigClick,
+        onSensitiveDataClick,
+        sensitiveDataText,
         validate,
         fieldContext: fieldContextCB,
         maxLength,
@@ -287,7 +289,9 @@ const Field = fnObserver((props, ref) => {
                 fieldFocusHandler: onFocus,
 
                 isPending,
-                setPending
+                setPending,
+
+                sensitiveDataText
             };
 
             if (typeof fieldContextCB === "function")
@@ -305,7 +309,7 @@ const Field = fnObserver((props, ref) => {
             return newFieldContext;
 
         },
-        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending, helpText, isEditMode ]
+        [ formConfig, name, mode, inputClass, labelClass, tooltip, isPending, helpText, isEditMode,sensitiveDataText ]
     );
 
     const isFirstRun = useRef(true);
@@ -317,7 +321,7 @@ const Field = fnObserver((props, ref) => {
         formConfig.handleChange(fieldContext, Field.getValue(formConfig, fieldContext));
     }, [isEditMode])
 
-    //console.log("RENDER FIELD", fieldContext);
+    // console.log("RENDER FIELD", fieldContext);
 
     const fieldConfigButton = useMemo(() => {
         if (typeof onFieldConfigClick === "function") {
@@ -337,6 +341,24 @@ const Field = fnObserver((props, ref) => {
         }
     }, [onFieldConfigClick]);
 
+    const sensitiveDataConfigButton = useMemo(() => {
+        if (typeof onSensitiveDataClick === "function") {
+            return (
+                <button
+                    type="button"
+                    className="btn btn-light btn-field-config" // very small; absolute; top right
+                    onClick={() => {
+                        onSensitiveDataClick(fieldContext);
+                    }}
+                >
+                    {
+                        <Icon className="fa-eye" />
+                    }
+                </button>
+            );
+        }
+    }, [onSensitiveDataClick]);
+
     if (typeof children === "function")
     {
         return (
@@ -345,6 +367,7 @@ const Field = fnObserver((props, ref) => {
                     children(formConfig, fieldContext)
                 }
                 {fieldConfigButton}
+                {sensitiveDataConfigButton}
             </React.Fragment>
         );
     }
@@ -357,6 +380,7 @@ const Field = fnObserver((props, ref) => {
                     renderFn(formConfig, fieldContext)
                 }
                 {fieldConfigButton}
+                {sensitiveDataConfigButton}
             </React.Fragment>
         );
 
@@ -424,6 +448,17 @@ Field.propTypes = {
      * field is rendered and calls this handler on click with the FieldContext as single parameter
      */
     onFieldConfigClick: PropTypes.func,
+
+    /**
+     * Optional handler for marking a field as sensitive button, if set a small button in the top-right-corner of the
+     * field is rendered and calls this handler on click with the FieldContext as single parameter
+     */
+    onSensitiveDataClick: PropTypes.func,
+
+    /**
+     * The text to display if sensitive data for this field is present
+     */
+    sensitiveDataText: PropTypes.oneOfType([PropTypes.string, PropTypes.func, PropTypes.element]),
 
     /**
      * Optional per-field validation function  ( (fieldContext, value) => error ). It receives the current scalar value
